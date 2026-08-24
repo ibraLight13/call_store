@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light" data-role="buyer">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>خَطّ — سوق فن الخط العربي (نموذج أولي)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Aref+Ruqaa:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fbfaf8; --surface:#ffffff; --surface-2:#f4f1ec; --surface-3:#ece7de;
+    --ink:#1c1a17; --ink-soft:#6b6459; --ink-faint:#9a9184;
+    --line:#e9e3d9; --line-strong:#d8d0c3;
+    --primary:#0f7b6c; --primary-ink:#0b5c50; --primary-wash:#e6f2ef;
+    --gold:#b8893a; --gold-wash:#f6edda;
+    --danger:#c0473b;
+    --shadow-1:0 1px 2px rgba(20,18,15,.05);
+    --shadow-2:0 2px 6px rgba(20,18,15,.06), 0 12px 30px rgba(20,18,15,.07);
+    --radius:16px; --radius-sm:11px; --radius-lg:22px;
+    --rail-w:78px; --top-h:66px;
+    --f-ar:'IBM Plex Sans Arabic',system-ui,sans-serif;
+    --f-lat:'Manrope',system-ui,sans-serif;
+    --f-disp:'Amiri',serif;
+    --ease:cubic-bezier(.2,.7,.3,1);
+  }
+  [data-theme="dark"]{
+    --bg:#141310; --surface:#1e1c18; --surface-2:#26231d; --surface-3:#302c24;
+    --ink:#f2ece1; --ink-soft:#a89f90; --ink-faint:#786f61;
+    --line:#312d26; --line-strong:#3d382f;
+    --primary:#3fb39f; --primary-ink:#63c7b6; --primary-wash:#17302b;
+    --gold:#d6a94f; --gold-wash:#2c2413;
+    --shadow-1:0 1px 2px rgba(0,0,0,.3);
+    --shadow-2:0 2px 6px rgba(0,0,0,.35), 0 14px 34px rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:var(--f-ar); font-size:15px; line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  html[dir="ltr"] body{font-family:var(--f-lat)}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  :focus-visible{outline:2.5px solid var(--primary);outline-offset:2px;border-radius:6px}
+  ::selection{background:var(--gold-wash)}
+
+  /* ---------- Topbar ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:60;height:var(--top-h);
+    display:flex;align-items:center;gap:16px;padding:0 18px;
+    background:color-mix(in srgb,var(--surface) 88%, transparent);
+    backdrop-filter:saturate(1.4) blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .brand{display:flex;align-items:center;gap:11px;padding-inline-end:6px;cursor:pointer;flex-shrink:0}
+  .brand .mark{
+    width:40px;height:40px;border-radius:12px;display:grid;place-items:center;
+    background:linear-gradient(150deg,var(--primary),var(--primary-ink));color:#fff;
+    box-shadow:var(--shadow-1);
+  }
+  .brand .mark svg{width:22px;height:22px}
+  .brand .name{font-family:var(--f-disp);font-size:27px;font-weight:700;line-height:1;color:var(--ink)}
+  .brand .tag{font-size:10.5px;color:var(--ink-faint);letter-spacing:.02em;margin-top:1px}
+  .brand .ph{font-size:9px;color:var(--gold);border:1px solid var(--gold);border-radius:20px;padding:1px 6px;margin-inline-start:2px}
+
+  .search{
+    flex:1;max-width:620px;display:flex;align-items:center;gap:9px;
+    background:var(--surface-2);border:1.5px solid transparent;
+    border-radius:26px;padding:0 16px;height:44px;transition:.18s var(--ease);
+  }
+  .search:focus-within{background:var(--surface);border-color:var(--primary);box-shadow:0 0 0 4px var(--primary-wash)}
+  .search svg{width:19px;height:19px;color:var(--ink-faint);flex-shrink:0}
+  .search input{flex:1;border:none;background:none;font:inherit;color:var(--ink);outline:none}
+  .search input::placeholder{color:var(--ink-faint)}
+
+  .controls{display:flex;align-items:center;gap:10px;margin-inline-start:auto;flex-shrink:0}
+  .seg{display:flex;background:var(--surface-2);border-radius:12px;padding:3px;gap:2px}
+  .seg button{padding:6px 11px;border-radius:9px;font-size:13px;font-weight:600;color:var(--ink-soft);white-space:nowrap}
+  .seg button.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow-1)}
+  [data-theme="dark"] .seg button.on{background:var(--surface-3)}
+  .iconbtn{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;color:var(--ink-soft);background:var(--surface-2)}
+  .iconbtn:hover{color:var(--ink)}
+  .iconbtn svg{width:20px;height:20px}
+  .role-select{position:relative}
+  .role-select select{
+    appearance:none;background:var(--surface-2);border:1px solid var(--line);
+    border-radius:11px;padding:9px 34px 9px 13px;font:inherit;font-weight:600;font-size:13.5px;
+    color:var(--ink);cursor:pointer;
+  }
+  html[dir="ltr"] .role-select select{padding:9px 13px 9px 34px}
+  .role-select::after{content:"▾";position:absolute;inset-inline-end:12px;top:9px;color:var(--ink-faint);pointer-events:none}
+  html[dir="ltr"] .role-select::after{inset-inline-end:auto;inset-inline-start:14px}
+  .avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(140deg,var(--gold),#8a6420);color:#fff;display:grid;place-items:center;font-weight:700;font-size:15px;box-shadow:var(--shadow-1)}
+
+  /* ---------- Layout ---------- */
+  .shell{display:flex;min-height:calc(100vh - var(--top-h))}
+  .rail{
+    width:var(--rail-w);flex-shrink:0;padding:14px 0;position:sticky;top:var(--top-h);
+    height:calc(100vh - var(--top-h));border-inline-end:1px solid var(--line);
+    display:flex;flex-direction:column;gap:4px;background:var(--surface);
+  }
+  .rail-item{
+    display:flex;flex-direction:column;align-items:center;gap:5px;padding:9px 4px;margin:0 9px;
+    border-radius:14px;color:var(--ink-soft);font-size:10.5px;font-weight:600;transition:.15s var(--ease);
+  }
+  .rail-item svg{width:23px;height:23px;stroke-width:1.9}
+  .rail-item:hover{background:var(--surface-2);color:var(--ink)}
+  .rail-item.active{background:var(--primary-wash);color:var(--primary-ink)}
+  .rail-item[hidden]{display:none}
+  .rail .spacer{flex:1}
+
+  main{flex:1;min-width:0}
+  .page{display:none;padding:26px 30px 80px;max-width:1500px;margin:0 auto}
+  .page.active{display:block;animation:fade .28s var(--ease)}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .h1{font-family:var(--f-disp);font-size:30px;font-weight:700;margin:0 0 4px}
+  html[dir="ltr"] .h1{font-family:var(--f-lat);font-weight:700}
+  .sub{color:var(--ink-soft);margin:0 0 20px;font-size:14px}
+  .eyebrow{font-size:12px;font-weight:700;letter-spacing:.09em;color:var(--primary);text-transform:uppercase;margin-bottom:6px}
+
+  /* ---------- Chips / filter bar ---------- */
+  .chips{display:flex;gap:9px;overflow-x:auto;padding:2px 0 16px;scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{
+    white-space:nowrap;padding:8px 15px;border-radius:22px;background:var(--surface-2);
+    color:var(--ink-soft);font-size:13.5px;font-weight:600;border:1.5px solid transparent;transition:.15s var(--ease);
+  }
+  .chip:hover{color:var(--ink)}
+  .chip.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+  .chip .ar{font-family:var(--f-disp);font-size:16px;margin-inline-end:5px}
+
+  .filterbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:13px 15px;margin-bottom:20px}
+  .filterbar .fl{font-size:12px;font-weight:700;color:var(--ink-faint);margin-inline-end:2px}
+  .pill{padding:7px 13px;border-radius:20px;border:1.5px solid var(--line-strong);font-size:13px;font-weight:600;color:var(--ink-soft)}
+  .pill.on{border-color:var(--primary);background:var(--primary-wash);color:var(--primary-ink)}
+  .swatch{width:26px;height:26px;border-radius:50%;border:2px solid var(--surface);box-shadow:0 0 0 1.5px var(--line-strong);cursor:pointer}
+
+  /* ---------- Masonry pins ---------- */
+  .pin-grid{columns:5;column-gap:16px}
+  @media(max-width:1400px){.pin-grid{columns:4}}
+  @media(max-width:1080px){.pin-grid{columns:3}}
+  @media(max-width:760px){.pin-grid{columns:2}}
+  .pin{break-inside:avoid;margin-bottom:16px;position:relative;cursor:pointer}
+  .canvas{
+    border-radius:var(--radius);overflow:hidden;position:relative;
+    display:grid;place-items:center;text-align:center;padding:26px 20px;min-height:120px;
+    box-shadow:var(--shadow-1);transition:transform .2s var(--ease),box-shadow .2s var(--ease);
+  }
+  .pin:hover .canvas{transform:translateY(-3px);box-shadow:var(--shadow-2)}
+  .canvas .art{font-family:var(--f-disp);line-height:1.4;font-weight:700;word-break:break-word}
+  .canvas .paper-edge{position:absolute;inset:0;border-radius:var(--radius);box-shadow:inset 0 0 0 1px rgba(0,0,0,.05);pointer-events:none}
+  .pin .save{
+    position:absolute;top:11px;inset-inline-end:11px;background:var(--danger);color:#fff;
+    font-weight:700;font-size:13px;padding:8px 15px;border-radius:22px;opacity:0;transform:translateY(-4px);
+    transition:.16s var(--ease);box-shadow:var(--shadow-1);z-index:2;
+  }
+  .pin:hover .save{opacity:1;transform:none}
+  .pin .quick{position:absolute;bottom:11px;inset-inline-start:11px;display:flex;gap:6px;opacity:0;transition:.16s var(--ease);z-index:2}
+  .pin:hover .quick{opacity:1}
+  .qbtn{width:32px;height:32px;border-radius:50%;background:color-mix(in srgb,var(--surface) 92%,transparent);display:grid;place-items:center;box-shadow:var(--shadow-1)}
+  .qbtn svg{width:16px;height:16px}
+  .pin .meta{display:flex;align-items:center;gap:8px;padding:9px 4px 2px}
+  .pin .meta .who{display:flex;align-items:center;gap:7px;min-width:0}
+  .dot{width:22px;height:22px;border-radius:50%;background:var(--surface-3);display:grid;place-items:center;font-size:10px;font-weight:700;color:var(--ink-soft);flex-shrink:0}
+  .pin .meta .nm{font-size:12.5px;font-weight:600;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pin .meta .pr{margin-inline-start:auto;font-size:12.5px;font-weight:700;color:var(--ink)}
+  .scr-chip{position:absolute;top:11px;inset-inline-start:11px;font-family:var(--f-ar);font-size:11px;font-weight:600;background:color-mix(in srgb,var(--surface) 85%,transparent);padding:3px 9px;border-radius:20px;color:var(--ink-soft);z-index:2}
+
+  /* ---------- Buttons ---------- */
+  .btn{display:inline-flex;align-items:center;gap:8px;justify-content:center;padding:11px 18px;border-radius:26px;font-weight:700;font-size:14px;transition:.15s var(--ease)}
+  .btn svg{width:18px;height:18px}
+  .btn-primary{background:var(--danger);color:#fff}
+  .btn-primary:hover{filter:brightness(.94)}
+  .btn-dark{background:var(--ink);color:var(--surface)}
+  .btn-gold{background:var(--gold);color:#fff}
+  .btn-ghost{background:var(--surface-2);color:var(--ink)}
+  .btn-ghost:hover{background:var(--surface-3)}
+  .btn-outline{border:1.6px solid var(--line-strong);color:var(--ink)}
+  .btn-block{width:100%}
+  .btn-sm{padding:8px 13px;font-size:13px}
+
+  /* ---------- Cards / panels ---------- */
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+  .grid2{display:grid;grid-template-columns:1.15fr .85fr;gap:26px}
+  @media(max-width:900px){.grid2{grid-template-columns:1fr}}
+  .kv{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px dashed var(--line);font-size:14px}
+  .kv:last-child{border-bottom:none}
+  .kv .k{color:var(--ink-soft)}
+  .kv .v{font-weight:600}
+  .badge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:12px;font-weight:700}
+  .badge-primary{background:var(--primary-wash);color:var(--primary-ink)}
+  .badge-gold{background:var(--gold-wash);color:var(--gold)}
+  .badge-soft{background:var(--surface-2);color:var(--ink-soft)}
+
+  /* ---------- Stats ---------- */
+  .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
+  @media(max-width:900px){.stat-row{grid-template-columns:repeat(2,1fr)}}
+  .stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+  .stat .lbl{font-size:12.5px;color:var(--ink-soft);font-weight:600}
+  .stat .num{font-family:var(--f-lat);font-size:29px;font-weight:700;margin-top:4px;letter-spacing:-.02em}
+  .stat .delta{font-size:12px;font-weight:700;color:var(--primary);margin-top:2px}
+
+  /* ---------- Table ---------- */
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:start;padding:12px 12px;border-bottom:1px solid var(--line)}
+  th{font-size:12px;color:var(--ink-faint);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+  tbody tr:hover{background:var(--surface-2)}
+
+  /* ---------- Forms ---------- */
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:13px;font-weight:700;margin-bottom:7px}
+  .field .hint{font-size:12px;color:var(--ink-faint);font-weight:400;margin-inline-start:6px}
+  .input,textarea,select.input{
+    width:100%;background:var(--surface-2);border:1.5px solid var(--line);border-radius:12px;
+    padding:12px 14px;font:inherit;color:var(--ink);outline:none;transition:.15s var(--ease);
+  }
+  .input:focus,textarea:focus{border-color:var(--primary);background:var(--surface);box-shadow:0 0 0 4px var(--primary-wash)}
+  .arabic-input{font-family:var(--f-disp);font-size:22px;text-align:center;padding:18px}
+  textarea{resize:vertical;min-height:90px}
+  .row{display:flex;gap:14px}.row>*{flex:1}
+  .drop{border:2px dashed var(--line-strong);border-radius:14px;padding:26px;text-align:center;color:var(--ink-soft);background:var(--surface-2)}
+  .drop svg{width:30px;height:30px;color:var(--ink-faint);margin-bottom:6px}
+
+  /* ---------- Stepper ---------- */
+  .steps{display:flex;gap:8px;margin-bottom:26px;flex-wrap:wrap}
+  .step{display:flex;align-items:center;gap:9px;padding:10px 15px;border-radius:12px;background:var(--surface-2);font-size:13.5px;font-weight:600;color:var(--ink-soft)}
+  .step .n{width:24px;height:24px;border-radius:50%;background:var(--surface-3);display:grid;place-items:center;font-size:12px;font-weight:700}
+  .step.on{background:var(--primary-wash);color:var(--primary-ink)}
+  .step.on .n{background:var(--primary);color:#fff}
+  .step.done .n{background:var(--primary);color:#fff}
+
+  /* ---------- Timeline ---------- */
+  .tl{position:relative;padding-inline-start:26px}
+  .tl::before{content:"";position:absolute;inset-inline-start:8px;top:6px;bottom:6px;width:2px;background:var(--line)}
+  .tl-item{position:relative;padding-bottom:20px}
+  .tl-item::before{content:"";position:absolute;inset-inline-start:-22px;top:4px;width:14px;height:14px;border-radius:50%;background:var(--surface);border:3px solid var(--line-strong)}
+  .tl-item.done::before{background:var(--primary);border-color:var(--primary)}
+  .tl-item.now::before{background:var(--gold);border-color:var(--gold);box-shadow:0 0 0 4px var(--gold-wash)}
+  .tl-item .t{font-weight:700;font-size:14px}
+  .tl-item .d{font-size:12.5px;color:var(--ink-soft)}
+
+  /* ---------- Chat thread ---------- */
+  .thread{display:flex;flex-direction:column;gap:12px;max-height:340px;overflow-y:auto;padding-inline-end:4px}
+  .msg{max-width:78%;padding:11px 14px;border-radius:16px;font-size:14px}
+  .msg .mn{font-size:11px;font-weight:700;color:var(--ink-faint);margin-bottom:3px}
+  .msg.them{background:var(--surface-2);align-self:flex-start;border-bottom-inline-start-radius:4px}
+  .msg.me{background:var(--primary);color:#fff;align-self:flex-end;border-bottom-inline-end-radius:4px}
+  .msg.me .mn{color:rgba(255,255,255,.7)}
+
+  /* ---------- Profile ---------- */
+  .cover{height:210px;border-radius:var(--radius-lg);background:linear-gradient(120deg,#0f7b6c,#0b5c50 60%,#123);position:relative;overflow:hidden}
+  .cover .ghost{position:absolute;font-family:var(--f-disp);font-size:150px;color:rgba(255,255,255,.09);inset-inline-end:30px;top:-8px;white-space:nowrap}
+  .prof-head{display:flex;align-items:flex-end;gap:20px;margin-top:-46px;padding:0 24px 22px;position:relative}
+  .prof-av{width:104px;height:104px;border-radius:50%;background:linear-gradient(140deg,var(--gold),#7a5310);border:5px solid var(--surface);display:grid;place-items:center;color:#fff;font-family:var(--f-disp);font-size:44px;font-weight:700;flex-shrink:0}
+  .prof-meta{flex:1;padding-bottom:6px}
+  .prof-meta h2{margin:0;font-family:var(--f-disp);font-size:26px}
+  .prof-stats{display:flex;gap:22px;margin-top:8px;color:var(--ink-soft);font-size:13.5px}
+  .prof-stats b{color:var(--ink);font-family:var(--f-lat)}
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:8px 0 22px}
+  .tab{padding:12px 18px;font-weight:700;font-size:14px;color:var(--ink-soft);border-bottom:3px solid transparent;margin-bottom:-1px}
+  .tab.on{color:var(--ink);border-color:var(--ink)}
+
+  /* ---------- Comments ---------- */
+  .cmt{display:flex;gap:11px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .cmt .body{flex:1}
+  .cmt .nm{font-weight:700;font-size:13.5px}
+  .cmt .tx{font-size:14px;margin-top:2px}
+  .cmt .mut{font-size:11.5px;color:var(--ink-faint)}
+
+  .sec-title{display:flex;align-items:center;gap:10px;margin:34px 0 16px}
+  .sec-title h3{margin:0;font-family:var(--f-disp);font-size:22px}
+  html[dir="ltr"] .sec-title h3,html[dir="ltr"] .h1,html[dir="ltr"] .prof-meta h2{font-family:var(--f-lat)}
+  .muted{color:var(--ink-soft)}
+  .divider{height:1px;background:var(--line);margin:22px 0}
+
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  @media(max-width:680px){
+    .brand .tag,.brand .ph{display:none}
+    .seg,.role-select select{font-size:12px}
+    .page{padding:18px 14px 70px}
+    .rail-item span{display:none}
+    :root{--rail-w:60px}
+  }
+  .hide{display:none!important}
+</style>
+</head>
+<body>
+
+<!-- ===================== TOPBAR ===================== -->
+<header class="topbar">
+  <div class="brand" onclick="go('home')" title="اسم العلامة مؤقت — سيُستبدل عند تصميم الهوية">
+    <div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21c3-1 5-3 8-8 2-3.5 4-8 8-10-1 5-3 9-6 12-2.5 2.5-5 4-10 6z"/><path d="M14 6l4 4"/></svg></div>
+    <div>
+      <div style="display:flex;align-items:center"><span class="name">خَطّ</span><span class="ph">اسم مؤقت</span></div>
+      <div class="tag" data-i18n="tagline">سوق فن الخط العربي المصنوع يدويًا</div>
+    </div>
+  </div>
+
+  <div class="search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-3.5-3.5"/></svg>
+    <input placeholder="ابحث باسم، آية، أسلوب خط، أو فنان…" data-i18n-ph="searchph" onfocus="go('explore')">
+  </div>
+
+  <div class="controls">
+    <div class="role-select" title="اعرض الموقع بأدوار مختلفة">
+      <select id="roleSel" onchange="setRole(this.value)">
+        <option value="guest" data-i18n="r_guest">زائر</option>
+        <option value="buyer" selected data-i18n="r_buyer">مشتري</option>
+        <option value="artist" data-i18n="r_artist">فنان</option>
+        <option value="admin" data-i18n="r_admin">مشرف</option>
+      </select>
+    </div>
+    <div class="seg" title="اللغة">
+      <button id="lgAr" class="on" onclick="setLang('ar')">ع</button>
+      <button id="lgEn" onclick="setLang('en')">EN</button>
+    </div>
+    <button class="iconbtn" onclick="toggleTheme()" title="الوضع الليلي" id="thBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
+    </button>
+    <div class="avatar" title="حسابك">ن</div>
+  </div>
+</header>
+
+<div class="shell">
+  <!-- ===================== RAIL ===================== -->
+  <nav class="rail">
+    <button class="rail-item active" data-page="home" onclick="go('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 10.5 12 3l9 7.5V21H3z"/></svg><span data-i18n="nav_home">الرئيسية</span>
+    </button>
+    <button class="rail-item" data-page="explore" onclick="go('explore')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="m21 21-3.5-3.5"/></svg><span data-i18n="nav_explore">استكشف</span>
+    </button>
+    <button class="rail-item" data-page="create" data-roles="artist admin" onclick="go('create')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg><span data-i18n="nav_create">أنشئ</span>
+    </button>
+    <button class="rail-item" data-page="commission" data-roles="buyer artist admin" onclick="go('commission')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/><path d="M15 3h6v6" opacity=".5"/></svg><span data-i18n="nav_orders">طلباتي</span>
+    </button>
+    <button class="rail-item" data-page="cart" data-roles="buyer artist admin" onclick="go('cart')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.4 12.4a1.6 1.6 0 0 0 1.6 1.3h8.6a1.6 1.6 0 0 0 1.6-1.3L22 7H6"/></svg><span data-i18n="nav_cart">السلة</span>
+    </button>
+    <button class="rail-item" data-page="dashboard" data-roles="artist admin" onclick="go('dashboard')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3h8v8H3zM13 3h8v5h-8zM13 12h8v9h-8zM3 15h8v6H3z"/></svg><span data-i18n="nav_dash">لوحتي</span>
+    </button>
+    <button class="rail-item" data-page="admin" data-roles="admin" onclick="go('admin')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3l7 3v6c0 5-3 7-7 9-4-2-7-4-7-9V6z"/></svg><span data-i18n="nav_admin">الإشراف</span>
+    </button>
+    <div class="spacer"></div>
+    <button class="rail-item" data-page="artist" onclick="go('artist')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span data-i18n="nav_profile">حسابي</span>
+    </button>
+  </nav>
+
+  <main>
+  <!-- ===================== HOME ===================== -->
+  <section class="page active" id="page-home">
+    <div class="eyebrow" data-i18n="home_eyebrow">مختارات لك</div>
+    <h1 class="h1" data-i18n="home_title">لوحاتٌ من نور الحرف</h1>
+    <p class="sub" data-i18n="home_sub">تصفّح، احفظ في لوحاتك، أو اطلب قطعة مصمّمة خصيصًا لك من فنّان الخط.</p>
+    <div class="chips" id="homeChips"></div>
+    <div class="pin-grid" id="homeGrid"></div>
+  </section>
+
+  <!-- ===================== EXPLORE / SEARCH ===================== -->
+  <section class="page" id="page-explore">
+    <h1 class="h1"><span data-i18n="exp_for">نتائج البحث عن</span> <span style="font-family:var(--f-disp)">«يا رحمن»</span></h1>
+    <p class="sub"><span id="resCount">184</span> <span data-i18n="exp_results">قطعة</span></p>
+    <div class="filterbar">
+      <span class="fl" data-i18n="f_script">الأسلوب</span>
+      <button class="pill on" onclick="tog(this)">الكل</button>
+      <button class="pill" onclick="tog(this)">ثلث</button>
+      <button class="pill" onclick="tog(this)">ديواني</button>
+      <button class="pill" onclick="tog(this)">كوفي</button>
+      <button class="pill" onclick="tog(this)">نسخ</button>
+      <button class="pill" onclick="tog(this)">رقعة</button>
+      <span style="width:1px;height:26px;background:var(--line);margin:0 4px"></span>
+      <span class="fl" data-i18n="f_theme">الموضوع</span>
+      <button class="pill" onclick="tog(this)">قرآني</button>
+      <button class="pill" onclick="tog(this)">أسماء</button>
+      <button class="pill" onclick="tog(this)">زفاف</button>
+      <button class="pill" onclick="tog(this)">ديكور</button>
+      <span style="width:1px;height:26px;background:var(--line);margin:0 4px"></span>
+      <span class="fl" data-i18n="f_type">النوع</span>
+      <button class="pill" onclick="tog(this)" data-i18n="t_ready">جاهزة للشراء</button>
+      <button class="pill" onclick="tog(this)" data-i18n="t_commission">قابلة للطلب</button>
+    </div>
+    <div class="filterbar">
+      <span class="fl" data-i18n="f_color">اللون</span>
+      <span class="swatch" style="background:#1c1a17"></span>
+      <span class="swatch" style="background:#0f7b6c"></span>
+      <span class="swatch" style="background:#b8893a"></span>
+      <span class="swatch" style="background:#8a2e22"></span>
+      <span class="swatch" style="background:#22406b"></span>
+      <span class="swatch" style="background:#46356e"></span>
+      <span style="width:1px;height:26px;background:var(--line);margin:0 6px"></span>
+      <span class="fl" data-i18n="f_price">السعر</span>
+      <button class="pill" onclick="tog(this)">‹ ٥٠٠</button>
+      <button class="pill" onclick="tog(this)">٥٠٠–١٥٠٠</button>
+      <button class="pill" onclick="tog(this)">١٥٠٠ ›</button>
+    </div>
+    <div class="pin-grid" id="exploreGrid"></div>
+  </section>
+
+  <!-- ===================== PIECE DETAIL ===================== -->
+  <section class="page" id="page-piece">
+    <button class="btn btn-ghost btn-sm" style="margin-bottom:16px" onclick="go('home')">← <span data-i18n="back">رجوع</span></button>
+    <div class="grid2">
+      <div>
+        <div class="canvas" style="background:#fdf6e9;min-height:440px;border-radius:var(--radius-lg)">
+          <div class="art" style="color:#7a2f1e;font-size:58px">وَقُل رَّبِّ<br>زِدْني عِلْمًا</div>
+          <div class="paper-edge"></div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <div class="canvas" style="background:#e7f0ec;min-height:78px;flex:1;padding:12px"><div class="art" style="color:#0f5c4f;font-size:20px">تفصيل</div></div>
+          <div class="canvas" style="background:#23201b;min-height:78px;flex:1;padding:12px"><div class="art" style="color:#f0e6d2;font-size:20px">إطار</div></div>
+          <div class="canvas" style="background:#f2ece0;min-height:78px;flex:1;padding:12px"><div class="art" style="color:#4a3a1e;font-size:20px">توقيع</div></div>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <span class="badge badge-primary">خط الثلث</span>
+          <span class="badge badge-gold" data-i18n="theme_quran">قرآني</span>
+          <span class="badge badge-soft" data-i18n="handmade">صناعة يدوية</span>
+        </div>
+        <h1 class="h1" style="font-size:26px">وقل ربِّ زدني علمًا</h1>
+        <div style="display:flex;align-items:center;gap:10px;margin:12px 0 18px;cursor:pointer" onclick="go('artist')">
+          <div class="prof-av" style="width:46px;height:46px;font-size:20px;border-width:3px">أ</div>
+          <div><div style="font-weight:700">أستاذ أنس الخطّاط</div><div class="muted" style="font-size:13px" data-i18n="verified">فنّان موثّق · حماة</div></div>
+          <button class="btn btn-outline btn-sm" style="margin-inline-start:auto" data-i18n="follow" onclick="event.stopPropagation()">متابعة</button>
+        </div>
+
+        <div class="panel" style="margin-bottom:16px">
+          <div class="kv"><span class="k" data-i18n="d_text">النص</span><span class="v" style="font-family:var(--f-disp);font-size:17px">وقل ربِّ زدني علمًا</span></div>
+          <div class="kv"><span class="k" data-i18n="d_script">الأسلوب</span><span class="v">ثلث · Thuluth</span></div>
+          <div class="kv"><span class="k" data-i18n="d_medium">الخامة</span><span class="v" data-i18n="m_ink">حبر ذهبي على ورق قطني</span></div>
+          <div class="kv"><span class="k" data-i18n="d_size">المقاس</span><span class="v">٥٠ × ٧٠ سم</span></div>
+          <div class="kv"><span class="k" data-i18n="d_avail">التوفّر</span><span class="v badge badge-soft" data-i18n="unique">قطعة فريدة (١ فقط)</span></div>
+        </div>
+
+        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:14px">
+          <span style="font-family:var(--f-lat);font-size:32px;font-weight:700">١٬٤٥٠</span>
+          <span class="muted">SAR</span>
+        </div>
+        <div class="row" style="margin-bottom:10px">
+          <button class="btn btn-primary btn-block"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg><span data-i18n="buy_now">اشترِ الآن</span></button>
+          <button class="btn btn-ghost btn-block" onclick="go('cart')" data-i18n="add_cart">أضف للسلة</button>
+        </div>
+        <button class="btn btn-outline btn-block" onclick="go('commission-request')" style="margin-bottom:10px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+          <span data-i18n="req_variant">اطلب نسخة مخصّصة من هذه القطعة</span>
+        </button>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-ghost btn-block btn-sm">♡ <span data-i18n="like">إعجاب</span> · ٣١٢</button>
+          <button class="btn btn-ghost btn-block btn-sm">🔖 <span data-i18n="save">احفظ</span></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-title"><h3 data-i18n="comments">التعليقات</h3><span class="badge badge-soft">١٤</span></div>
+    <div class="panel">
+      <div class="cmt"><div class="dot" style="width:38px;height:38px">م</div><div class="body"><div class="nm">مريم ن.</div><div class="tx">تحفة فنية بمعنى الكلمة، توازن الحروف مذهل 🤍</div><div class="mut">قبل ٣ أيام · ١٢ إعجاب</div></div></div>
+      <div class="cmt"><div class="dot" style="width:38px;height:38px">ي</div><div class="body"><div class="nm">يوسف إ.</div><div class="tx">هل يمكن تنفيذها بمقاس أكبر للمكتب؟</div><div class="mut">قبل يومين</div></div></div>
+      <div style="display:flex;gap:10px;margin-top:14px"><input class="input" placeholder="أضف تعليقًا…" data-i18n-ph="add_comment"><button class="btn btn-dark" data-i18n="send">إرسال</button></div>
+    </div>
+
+    <div class="sec-title"><h3 data-i18n="related">قطع مشابهة</h3></div>
+    <div class="pin-grid" id="relatedGrid"></div>
+  </section>
+
+  <!-- ===================== ARTIST PROFILE ===================== -->
+  <section class="page" id="page-artist">
+    <div class="cover"><div class="ghost">خَطّ</div></div>
+    <div class="prof-head">
+      <div class="prof-av">أ</div>
+      <div class="prof-meta">
+        <h2>أستاذ أنس الخطّاط</h2>
+        <div class="muted" style="margin-top:4px">خطّاط · إجازة في الثلث والديواني · حماة، سوريا</div>
+        <div class="prof-stats">
+          <span><b>٤٨</b> <span data-i18n="s_pieces">قطعة</span></span>
+          <span><b>٢٫٣ﻙ</b> <span data-i18n="s_followers">متابع</span></span>
+          <span><b>٤٫٩</b>★ <span data-i18n="s_rating">تقييم</span></span>
+          <span><b>٩٦٪</b> <span data-i18n="s_ontime">في الموعد</span></span>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;padding-bottom:8px">
+        <button class="btn btn-dark" data-i18n="follow">متابعة</button>
+        <button class="btn btn-outline" onclick="go('commission-request')" data-i18n="req_custom">اطلب قطعة</button>
+      </div>
+    </div>
+    <div class="tabs">
+      <div class="tab on" data-i18n="tab_pieces">القطع</div>
+      <div class="tab" data-i18n="tab_boards">اللوحات</div>
+      <div class="tab" data-i18n="tab_about">نبذة</div>
+    </div>
+    <div class="pin-grid" id="artistGrid"></div>
+  </section>
+
+  <!-- ===================== BOARD ===================== -->
+  <section class="page" id="page-board">
+    <button class="btn btn-ghost btn-sm" style="margin-bottom:14px" onclick="go('artist')">← <span data-i18n="back">رجوع</span></button>
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:8px">
+      <div class="mark" style="width:60px;height:60px;border-radius:18px;background:linear-gradient(150deg,var(--gold),#7a5310)"></div>
+      <div>
+        <h1 class="h1" style="margin:0">لوحة عرس عبير</h1>
+        <div class="muted">لوحة خاصّة · ٢٣ قطعة محفوظة</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" style="margin-inline-start:auto">🔒 <span data-i18n="private">خاصة</span></button>
+      <button class="btn btn-dark btn-sm" data-i18n="b_share">مشاركة</button>
+    </div>
+    <p class="sub">أفكار خط لبطاقات وديكور حفل الزفاف — أسلوب ديواني ونستعليق.</p>
+    <div class="pin-grid" id="boardGrid"></div>
+  </section>
+
+  <!-- ===================== CREATE PIECE (WIZARD) ===================== -->
+  <section class="page" id="page-create">
+    <h1 class="h1" data-i18n="create_title">أضف قطعة جديدة</h1>
+    <p class="sub" data-i18n="create_sub">اعرض عملك اليدوي، أو أتِحه للطلب المخصّص — بأربع خطوات.</p>
+    <div class="steps">
+      <div class="step done"><span class="n">✓</span> <span data-i18n="step1">الصور</span></div>
+      <div class="step on"><span class="n">٢</span> <span data-i18n="step2">النص والأسلوب</span></div>
+      <div class="step"><span class="n">٣</span> <span data-i18n="step3">التفاصيل</span></div>
+      <div class="step"><span class="n">٤</span> <span data-i18n="step4">العرض والسعر</span></div>
+    </div>
+    <div class="grid2">
+      <div class="panel">
+        <div class="field">
+          <label data-i18n="c_text">النص المكتوب <span class="hint" data-i18n="c_text_h">(الآية أو الاسم أو العبارة)</span></label>
+          <input class="input arabic-input" value="بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيم">
+        </div>
+        <div class="row">
+          <div class="field"><label data-i18n="c_script">الأسلوب</label>
+            <select class="input"><option>ثلث — Thuluth</option><option>ديواني — Diwani</option><option>كوفي — Kufic</option><option>نسخ — Naskh</option><option>رقعة — Ruqʿah</option><option>نستعليق — Nastaliq</option></select>
+          </div>
+          <div class="field"><label data-i18n="c_lang">لغة النص</label>
+            <select class="input"><option>العربية</option><option>English</option></select>
+          </div>
+        </div>
+        <div class="field"><label data-i18n="c_translit">النقحرة <span class="hint">(اختياري)</span></label><input class="input" placeholder="Bismillah al-Rahman al-Rahim"></div>
+        <div style="display:flex;gap:10px;margin-top:8px">
+          <button class="btn btn-ghost">← <span data-i18n="prev">السابق</span></button>
+          <button class="btn btn-dark" style="margin-inline-start:auto"><span data-i18n="next">التالي</span> →</button>
+        </div>
+      </div>
+      <div>
+        <div class="drop" style="margin-bottom:14px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 16V4M6 10l6-6 6 6"/><path d="M4 20h16" opacity=".5"/></svg>
+          <div style="font-weight:700" data-i18n="drop_t">أفلت صور القطعة هنا</div>
+          <div style="font-size:12px" data-i18n="drop_h">صورة رئيسية + زوايا وتفاصيل · حتى ٨ صور</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <div class="canvas" style="background:#fdf6e9;flex:1;min-height:80px;padding:10px"><div class="art" style="color:#7a2f1e;font-size:17px">١ رئيسية</div></div>
+          <div class="canvas" style="background:#e7f0ec;flex:1;min-height:80px;padding:10px"><div class="art" style="color:#0f5c4f;font-size:17px">٢</div></div>
+          <div class="canvas" style="background:#eef1ea;flex:1;min-height:80px;padding:10px;border:2px dashed var(--line-strong);box-shadow:none"><div class="art" style="color:var(--ink-faint);font-size:26px">+</div></div>
+        </div>
+        <p class="muted" style="font-size:12.5px;margin-top:12px">🛡️ <span data-i18n="wm_note">تُضاف علامة مائية تلقائيًا على الصور المعروضة لحماية عملك؛ الأصل يبقى محفوظًا.</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== COMMISSION REQUEST ===================== -->
+  <section class="page" id="page-commission-request">
+    <button class="btn btn-ghost btn-sm" style="margin-bottom:14px" onclick="go('artist')">← <span data-i18n="back">رجوع</span></button>
+    <div class="eyebrow">طلب مخصّص</div>
+    <h1 class="h1" data-i18n="cr_title">اطلب قطعة خط مصمّمة لك</h1>
+    <p class="sub"><span data-i18n="cr_to">إلى الفنان</span> <b>أستاذ أنس الخطّاط</b> — <span data-i18n="cr_lead">مدة التنفيذ المعتادة ١٠–١٤ يومًا</span></p>
+    <div class="grid2">
+      <div class="panel">
+        <div class="field"><label data-i18n="cr_text">النص المطلوب كتابته *</label><input class="input arabic-input" placeholder="اكتب الآية / الاسم / العبارة"></div>
+        <div class="row">
+          <div class="field"><label data-i18n="cr_script">الأسلوب المفضّل</label><select class="input"><option data-i18n="no_pref">بلا تفضيل — يقترحه الفنان</option><option>ثلث</option><option>ديواني</option><option>كوفي</option><option>نسخ</option><option>رقعة</option></select></div>
+          <div class="field"><label data-i18n="cr_medium">الخامة</label><select class="input"><option>ورق قطني</option><option>قماش (كانفاس)</option><option>خشب</option><option>ورق + ذهب</option></select></div>
+        </div>
+        <div class="row">
+          <div class="field"><label data-i18n="cr_w">العرض (سم)</label><input class="input" placeholder="٥٠"></div>
+          <div class="field"><label data-i18n="cr_h">الارتفاع (سم)</label><input class="input" placeholder="٧٠"></div>
+        </div>
+        <div class="field"><label data-i18n="cr_colors">الألوان المفضّلة</label>
+          <div style="display:flex;gap:8px">
+            <span class="swatch" style="background:#1c1a17"></span><span class="swatch" style="background:#0f7b6c;box-shadow:0 0 0 2px var(--primary)"></span><span class="swatch" style="background:#b8893a;box-shadow:0 0 0 2px var(--gold)"></span><span class="swatch" style="background:#8a2e22"></span><span class="swatch" style="background:#22406b"></span><span class="swatch" style="background:#fff"></span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field"><label data-i18n="cr_budget">الميزانية (SAR)</label><input class="input" placeholder="١٥٠٠"></div>
+          <div class="field"><label data-i18n="cr_deadline">الموعد المطلوب</label><input class="input" type="date"></div>
+        </div>
+        <div class="field"><label data-i18n="cr_msg">رسالة للفنان</label><textarea placeholder="صف فكرتك، مناسبتها، وأي تفاصيل مهمة…"></textarea></div>
+        <button class="btn btn-primary btn-block" onclick="go('commission')" data-i18n="cr_submit">أرسل الطلب</button>
+        <p class="muted" style="font-size:12.5px;text-align:center;margin-top:10px" data-i18n="cr_free">إرسال الطلب مجاني — تدفع فقط بعد موافقتك على السعر.</p>
+      </div>
+      <div>
+        <div class="panel" style="margin-bottom:14px">
+          <label style="font-weight:700;display:block;margin-bottom:8px" data-i18n="cr_ref">صور مرجعية <span class="hint" data-i18n="optional">(اختياري)</span></label>
+          <div class="drop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 15l-5-5L5 21"/><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/></svg><div style="font-size:12.5px" data-i18n="cr_ref_h">أرفق صورًا تلهم الفنان بأسلوبك المطلوب</div></div>
+        </div>
+        <div class="panel" style="background:var(--surface-2)">
+          <div style="font-weight:700;margin-bottom:10px" data-i18n="how_works">كيف تسير الأمور؟</div>
+          <div class="tl" style="margin-top:6px">
+            <div class="tl-item done"><div class="t" data-i18n="s_send">ترسل الطلب</div></div>
+            <div class="tl-item done"><div class="t" data-i18n="s_quote">يرسل الفنان سعرًا ومدة</div></div>
+            <div class="tl-item"><div class="t" data-i18n="s_deposit">تدفع عربونًا وتبدأ</div></div>
+            <div class="tl-item"><div class="t" data-i18n="s_proof">تراجع المعاينة وتعتمدها</div></div>
+            <div class="tl-item"><div class="t" data-i18n="s_final">تدفع الباقي ويُشحن إليك</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== COMMISSION WORKSPACE ===================== -->
+  <section class="page" id="page-commission">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px">
+      <h1 class="h1" style="margin:0">طلب مخصّص <span style="font-family:var(--f-lat);color:var(--ink-faint)">#CM-2048</span></h1>
+      <span class="badge badge-gold" id="commStatus" data-i18n="st_proof">بانتظار اعتمادك للمعاينة</span>
+    </div>
+    <p class="sub" data-i18n="comm_between">بينك وبين أستاذ أنس الخطّاط · بدأ قبل ٦ أيام</p>
+    <div class="grid2">
+      <div>
+        <div class="panel" style="margin-bottom:16px">
+          <div style="font-weight:700;margin-bottom:12px">📋 <span data-i18n="brief">ملخّص الطلب</span></div>
+          <div class="kv"><span class="k" data-i18n="d_text">النص</span><span class="v" style="font-family:var(--f-disp);font-size:18px">بيتٌ يسعه الخير</span></div>
+          <div class="kv"><span class="k" data-i18n="d_script">الأسلوب</span><span class="v">ديواني</span></div>
+          <div class="kv"><span class="k" data-i18n="d_size">المقاس</span><span class="v">٦٠ × ٤٠ سم · خشب</span></div>
+          <div class="kv"><span class="k" data-i18n="cr_deadline">الموعد</span><span class="v">٢٥ رمضان</span></div>
+        </div>
+
+        <div class="panel" style="margin-bottom:16px">
+          <div style="display:flex;align-items:center;margin-bottom:14px"><span style="font-weight:700">🖼️ <span data-i18n="proof_t">المعاينة — النسخة ٢</span></span><span class="badge badge-gold" style="margin-inline-start:auto" data-i18n="await_you">بانتظارك</span></div>
+          <div class="canvas" style="background:#f2ece0;min-height:220px;border-radius:var(--radius)"><div class="art" style="color:#4a3a1e;font-size:34px">بيتٌ يسعه الخير</div></div>
+          <p class="muted" style="font-size:13px;margin:12px 0">💬 <span data-i18n="artist_note">ملاحظة الفنان:</span> «عدّلت ميلان الألف كما طلبتِ، وأضفت زخرفة خفيفة في الزاوية.»</p>
+          <div class="row">
+            <button class="btn btn-gold btn-block" onclick="approveProof()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg> <span data-i18n="approve">اعتمد المعاينة</span></button>
+            <button class="btn btn-outline btn-block" data-i18n="request_rev">اطلب تعديلًا</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div style="font-weight:700;margin-bottom:12px">💬 <span data-i18n="thread_t">المحادثة</span></div>
+          <div class="thread">
+            <div class="msg them"><div class="mn">أنس الخطّاط</div>أهلًا عبير، تسعدني كتابة هذه العبارة. أقترح الديواني ليتناسب مع الخشب.</div>
+            <div class="msg me"><div class="mn">أنتِ</div>رائع! لكن أفضّل ألوانًا داكنة مع لمسة ذهب.</div>
+            <div class="msg them"><div class="mn">أنس الخطّاط</div>تمام. هذا عرضي: ١٬٨٠٠ ريال، والتسليم خلال ١٢ يومًا.</div>
+            <div class="msg me"><div class="mn">أنتِ</div>موافقة، دفعت العربون ✅</div>
+            <div class="msg them"><div class="mn">أنس الخطّاط</div>رفعت لكِ المعاينة الثانية بالأعلى 👆</div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:14px"><input class="input" placeholder="اكتب رسالة…" data-i18n-ph="type_msg"><button class="btn btn-dark" data-i18n="send">إرسال</button></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="panel" style="margin-bottom:16px">
+          <div style="font-weight:700;margin-bottom:14px" data-i18n="progress">مراحل الطلب</div>
+          <div class="tl">
+            <div class="tl-item done"><div class="t" data-i18n="st1">تم إرسال الطلب</div><div class="d">٦ أيام</div></div>
+            <div class="tl-item done"><div class="t" data-i18n="st2">تم استلام السعر</div><div class="d">١٬٨٠٠ ريال · ١٢ يومًا</div></div>
+            <div class="tl-item done"><div class="t" data-i18n="st3">دُفع العربون</div><div class="d">٥٤٠ ريال (٣٠٪)</div></div>
+            <div class="tl-item done"><div class="t" data-i18n="st4">جارٍ التنفيذ</div></div>
+            <div class="tl-item now"><div class="t" data-i18n="st5">اعتماد المعاينة</div><div class="d" data-i18n="you_here">← أنت هنا</div></div>
+            <div class="tl-item"><div class="t" data-i18n="st6">دفع الباقي</div><div class="d">١٬٢٦٠ ريال</div></div>
+            <div class="tl-item"><div class="t" data-i18n="st7">الشحن والتسليم</div></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div style="font-weight:700;margin-bottom:12px">💳 <span data-i18n="payment">الدفع</span></div>
+          <div class="kv"><span class="k" data-i18n="p_total">الإجمالي المتفق</span><span class="v">١٬٨٠٠ SAR</span></div>
+          <div class="kv"><span class="k" data-i18n="p_deposit">العربون (مدفوع)</span><span class="v" style="color:var(--primary)">٥٤٠ ✓</span></div>
+          <div class="kv"><span class="k" data-i18n="p_remain">المتبقّي عند الاعتماد</span><span class="v">١٬٢٦٠</span></div>
+          <p class="muted" style="font-size:12px;margin-top:12px">🔒 <span data-i18n="p_secure">المدفوعات محفوظة عبر Stripe ولا تُحوّل للفنان إلا بعد اعتمادك.</span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CART / CHECKOUT ===================== -->
+  <section class="page" id="page-cart">
+    <h1 class="h1" data-i18n="cart_title">سلّة الشراء</h1>
+    <p class="sub" data-i18n="cart_sub">قطع جاهزة من فنّانين مختلفين — تُدفع دفعة واحدة وتُوزّع تلقائيًا.</p>
+    <div class="grid2">
+      <div>
+        <div class="panel" style="margin-bottom:16px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><div class="dot" style="width:30px;height:30px">أ</div><b>أستاذ أنس الخطّاط</b><span class="badge badge-soft" style="margin-inline-start:auto" data-i18n="ships">يُشحن من حماة</span></div>
+          <div style="display:flex;gap:14px;align-items:center;padding:10px 0;border-top:1px solid var(--line)">
+            <div class="canvas" style="background:#fdf6e9;width:88px;height:88px;min-height:0;padding:8px;flex-shrink:0"><div class="art" style="color:#7a2f1e;font-size:15px">وقل ربِّ زدني علمًا</div></div>
+            <div style="flex:1"><div style="font-weight:700">وقل ربِّ زدني علمًا</div><div class="muted" style="font-size:13px">ثلث · ٥٠×٧٠ · قطعة فريدة</div></div>
+            <div style="font-family:var(--f-lat);font-weight:700">١٬٤٥٠</div>
+          </div>
+        </div>
+        <div class="panel">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><div class="dot" style="width:30px;height:30px">س</div><b>سلمى للخط والزخرفة</b><span class="badge badge-soft" style="margin-inline-start:auto" data-i18n="ships">يُشحن من دمشق</span></div>
+          <div style="display:flex;gap:14px;align-items:center;padding:10px 0;border-top:1px solid var(--line)">
+            <div class="canvas" style="background:#e8eef7;width:88px;height:88px;min-height:0;padding:8px;flex-shrink:0"><div class="art" style="color:#22406b;font-size:17px">ما شاء الله</div></div>
+            <div style="flex:1"><div style="font-weight:700">ما شاء الله</div><div class="muted" style="font-size:13px">كوفي · ٤٠×٤٠ · قماش</div></div>
+            <div style="font-family:var(--f-lat);font-weight:700">٦٢٠</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="panel">
+          <div style="font-weight:700;margin-bottom:12px" data-i18n="summary">ملخّص الطلب</div>
+          <div class="kv"><span class="k" data-i18n="subtotal">المجموع</span><span class="v">٢٬٠٧٠</span></div>
+          <div class="kv"><span class="k" data-i18n="shipping">الشحن</span><span class="v">١٢٠</span></div>
+          <div class="kv"><span class="k" style="font-weight:700;color:var(--ink)" data-i18n="total">الإجمالي</span><span class="v" style="font-size:19px">٢٬١٩٠ SAR</span></div>
+          <div class="field" style="margin:16px 0 10px"><label data-i18n="ship_to">الشحن إلى</label><select class="input"><option>عبير — الرياض، السعودية</option><option data-i18n="add_addr">+ أضف عنوانًا</option></select></div>
+          <button class="btn btn-primary btn-block"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg> <span data-i18n="pay_stripe">ادفع عبر Stripe</span></button>
+          <p class="muted" style="font-size:12px;text-align:center;margin-top:10px">🔒 <span data-i18n="split_note">دفعة واحدة تُقسَّم لكل فنّان تلقائيًا (Stripe Connect).</span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SELLER DASHBOARD ===================== -->
+  <section class="page" id="page-dashboard">
+    <h1 class="h1" data-i18n="dash_title">لوحة الفنّان</h1>
+    <p class="sub" data-i18n="dash_sub">نظرة على أعمالك وطلباتك وأرباحك.</p>
+    <div class="stat-row">
+      <div class="stat"><div class="lbl" data-i18n="k_earn">أرباح الشهر</div><div class="num">٨٬٤٥٠</div><div class="delta">▲ ١٨٪</div></div>
+      <div class="stat"><div class="lbl" data-i18n="k_active">طلبات مخصّصة نشطة</div><div class="num">٥</div><div class="delta" style="color:var(--gold)" data-i18n="k_two_wait">٢ بانتظارك</div></div>
+      <div class="stat"><div class="lbl" data-i18n="k_orders">طلبات شراء جديدة</div><div class="num">٣</div><div class="delta">▲ ١</div></div>
+      <div class="stat"><div class="lbl" data-i18n="k_views">مشاهدات قطعك</div><div class="num">١٢٫٤ﻙ</div><div class="delta">▲ ٩٪</div></div>
+    </div>
+    <div class="grid2">
+      <div class="panel">
+        <div style="font-weight:700;margin-bottom:8px" data-i18n="new_requests">طلبات مخصّصة جديدة</div>
+        <table>
+          <thead><tr><th data-i18n="th_client">العميل</th><th data-i18n="th_text">النص</th><th data-i18n="th_budget">الميزانية</th><th></th></tr></thead>
+          <tbody>
+            <tr><td>عبير م.</td><td style="font-family:var(--f-disp)">بيتٌ يسعه الخير</td><td>١٬٨٠٠</td><td><button class="btn btn-dark btn-sm" onclick="go('commission')" data-i18n="open">فتح</button></td></tr>
+            <tr><td>خالد ر.</td><td style="font-family:var(--f-disp)">توكلت على الله</td><td>٩٠٠</td><td><button class="btn btn-ghost btn-sm" data-i18n="quote">تسعير</button></td></tr>
+            <tr><td>ليان س.</td><td style="font-family:var(--f-disp)">اسم «ريان»</td><td>٤٥٠</td><td><button class="btn btn-ghost btn-sm" data-i18n="quote">تسعير</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="panel">
+        <div style="font-weight:700;margin-bottom:8px" data-i18n="recent_orders">طلبات شراء أخيرة</div>
+        <table>
+          <thead><tr><th>#</th><th data-i18n="th_piece">القطعة</th><th data-i18n="th_status">الحالة</th></tr></thead>
+          <tbody>
+            <tr><td>٢٠٤٧</td><td>وقل ربِّ زدني علمًا</td><td><span class="badge badge-gold" data-i18n="o_ship">قيد الشحن</span></td></tr>
+            <tr><td>٢٠٤٥</td><td>الحمد لله</td><td><span class="badge badge-primary" data-i18n="o_done">مكتمل</span></td></tr>
+            <tr><td>٢٠٤١</td><td>يا رحمن</td><td><span class="badge badge-soft" data-i18n="o_paid">مدفوع</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="sec-title"><h3 data-i18n="your_pieces">قطعك</h3><button class="btn btn-dark btn-sm" style="margin-inline-start:auto" onclick="go('create')">+ <span data-i18n="nav_create">أنشئ</span></button></div>
+    <div class="pin-grid" id="dashGrid"></div>
+  </section>
+
+  <!-- ===================== ADMIN MODERATION ===================== -->
+  <section class="page" id="page-admin">
+    <h1 class="h1" data-i18n="adm_title">مراجعة القطع الجديدة</h1>
+    <p class="sub" data-i18n="adm_sub">القطع المرفوعة تظهر للعامة بعد اعتمادها هنا (يمكن تعطيل هذا لاحقًا).</p>
+    <div class="stat-row" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat"><div class="lbl" data-i18n="adm_pending">بانتظار المراجعة</div><div class="num">٧</div></div>
+      <div class="stat"><div class="lbl" data-i18n="adm_today">اعتُمد اليوم</div><div class="num">١٩</div></div>
+      <div class="stat"><div class="lbl" data-i18n="adm_sellers">فنّانون نشطون</div><div class="num">٨٦</div></div>
+    </div>
+    <div class="panel">
+      <table>
+        <thead><tr><th data-i18n="th_preview">معاينة</th><th data-i18n="th_text">النص</th><th data-i18n="th_artist">الفنان</th><th data-i18n="th_script">الأسلوب</th><th data-i18n="th_action">إجراء</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><div class="canvas" style="width:60px;height:44px;min-height:0;padding:4px;background:#efeaf6"><div class="art" style="color:#46356e;font-size:12px">حبّ وسلام</div></div></td>
+            <td style="font-family:var(--f-disp);font-size:16px">حبٌّ وسلام</td><td>سلمى للخط</td><td>رقعة</td>
+            <td style="display:flex;gap:6px"><button class="btn btn-gold btn-sm" data-i18n="adm_ok">اعتماد</button><button class="btn btn-outline btn-sm" data-i18n="adm_no">رفض</button></td>
+          </tr>
+          <tr>
+            <td><div class="canvas" style="width:60px;height:44px;min-height:0;padding:4px;background:#e6f4ee"><div class="art" style="color:#14664f;font-size:12px">رزق</div></div></td>
+            <td style="font-family:var(--f-disp);font-size:16px">رزقٌ وبركة</td><td>أنس الخطّاط</td><td>ثلث</td>
+            <td style="display:flex;gap:6px"><button class="btn btn-gold btn-sm" data-i18n="adm_ok">اعتماد</button><button class="btn btn-outline btn-sm" data-i18n="adm_no">رفض</button></td>
+          </tr>
+          <tr>
+            <td><div class="canvas" style="width:60px;height:44px;min-height:0;padding:4px;background:#f7edd6"><div class="art" style="color:#7a5a12;font-size:12px">اقرأ</div></div></td>
+            <td style="font-family:var(--f-disp);font-size:16px">اقرأ باسم ربك</td><td>مركز البيان</td><td>كوفي</td>
+            <td style="display:flex;gap:6px"><button class="btn btn-gold btn-sm" data-i18n="adm_ok">اعتماد</button><button class="btn btn-outline btn-sm" data-i18n="adm_no">رفض</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+  </main>
+</div>
+
+<script>
+/* ---------------- Sample calligraphy pieces (art rendered from the phrases) ---------------- */
+const SCRIPTS = {
+  thuluth:{ar:'ثلث',en:'Thuluth',font:"'Amiri',serif",w:700},
+  diwani:{ar:'ديواني',en:'Diwani',font:"'Aref Ruqaa',serif",w:700},
+  naskh:{ar:'نسخ',en:'Naskh',font:"'Amiri',serif",w:400},
+  kufic:{ar:'كوفي',en:'Kufic',font:"'Reem Kufi',sans-serif",w:600},
+  ruqah:{ar:'رقعة',en:'Ruqʿah',font:"'Aref Ruqaa',serif",w:400},
+  nastaliq:{ar:'نستعليق',en:'Nastaliq',font:"'Aref Ruqaa',serif",w:400},
+};
+const TINTS=[
+  ['#fdf6e9','#7a2f1e'],['#e7f0ec','#0f5c4f'],['#fbeae6','#8a2e22'],['#e8eef7','#22406b'],
+  ['#23201b','#f0e6d2'],['#f2ece0','#4a3a1e'],['#efeaf6','#46356e'],['#e6f4ee','#14664f'],
+  ['#f7edd6','#7a5a12'],['#1c2b2a','#cfe6df'],['#eef1ea','#33402a'],['#fceee4','#9a4a1e'],
+];
+const P=[
+  ['بِسمِ اللَّهِ الرَّحمٰنِ الرَّحيم','thuluth','أنس الخطّاط','١٬٩٠٠',48],
+  ['الحَمدُ لِلَّه','ruqah','سلمى للخط','buy',34],
+  ['وَقُل رَّبِّ زِدني عِلمًا','naskh','أنس الخطّاط','١٬٤٥٠',42],
+  ['ما شاءَ اللَّه','kufic','مركز البيان','٦٢٠',30],
+  ['الصَّبرُ مِفتاحُ الفَرَج','diwani','خطّاطة نور','commission',38],
+  ['مُحَمَّد','thuluth','أنس الخطّاط','٨٥٠',54],
+  ['سُبحانَ اللَّه','nastaliq','مركز البيان','buy',40],
+  ['لكَ في القَلبِ مَقام','diwani','سلمى للخط','٧٩٠',44],
+  ['عِزٌّ وَفَخر','ruqah','خطّاطة نور','commission',36],
+  ['فَنٌّ يُلامِسُ الرّوح','naskh','مركز البيان','buy',38],
+  ['بِالخَيرِ تَزهُرُ القُلوب','diwani','سلمى للخط','١٬١٠٠',34],
+  ['اللَّهُ نورُ السَّماوات','kufic','أنس الخطّاط','٢٬٤٠٠',30],
+  ['تَوَكَّلتُ عَلى اللَّه','naskh','خطّاطة نور','٦٨٠',42],
+  ['رِزقٌ وَبَرَكة','thuluth','أنس الخطّاط','commission',46],
+  ['اقرَأ بِاسمِ رَبِّك','kufic','مركز البيان','buy',32],
+  ['يا رَحمٰن','diwani','سلمى للخط','٥٥٠',50],
+  ['حُبٌّ وَسَلام','ruqah','خطّاطة نور','buy',40],
+  ['بَيتٌ يَسَعُهُ الخَير','nastaliq','أنس الخطّاط','٩٦٠',36],
+];
+function pinHTML(p,i){
+  const s=SCRIPTS[p[1]], [bg,ink]=TINTS[i%TINTS.length];
+  const priceRaw=p[3];
+  let pr = priceRaw==='buy'?'<span class="badge badge-soft" style="font-size:11px" data-i18n="t_ready">جاهزة</span>'
+         : priceRaw==='commission'?'<span class="badge badge-primary" style="font-size:11px" data-i18n="t_commission">قابلة للطلب</span>'
+         : priceRaw+' <span style="font-size:11px;color:var(--ink-faint)">SAR</span>';
+  const init=p[2].trim().charAt(0);
+  return `<div class="pin" onclick="go('piece')">
+    <div class="canvas" style="background:${bg}">
+      <span class="scr-chip">${s.ar}</span>
+      <button class="save" onclick="event.stopPropagation()" data-i18n="save">احفظ</button>
+      <div class="art" style="color:${ink};font-family:${s.font};font-weight:${s.w};font-size:${p[4]}px">${p[0]}</div>
+      <div class="quick">
+        <span class="qbtn" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 5.6a5 5 0 0 0-7 0L12 7.3l-1.8-1.7a5 5 0 0 0-7 7L12 21l8.8-8.4a5 5 0 0 0 0-7z"/></svg></span>
+        <span class="qbtn" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12s3-7 8-7 8 7 8 7-3 7-8 7-8-7-8-7z"/><circle cx="12" cy="12" r="2.5"/></svg></span>
+      </div>
+    </div>
+    <div class="meta"><div class="who"><span class="dot">${init}</span><span class="nm">${p[2]}</span></div><span class="pr">${pr}</span></div>
+  </div>`;
+}
+function fill(id,arr){const el=document.getElementById(id);if(el)el.innerHTML=arr.map((p,i)=>pinHTML(p,i)).join('')}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=(i*7+3)%(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
+
+fill('homeGrid',P);
+fill('exploreGrid',shuffle(P));
+fill('artistGrid',P.filter(p=>p[2]==='أنس الخطّاط').concat(P.slice(0,4)));
+fill('boardGrid',P.slice(4,13));
+fill('relatedGrid',shuffle(P).slice(0,10));
+fill('dashGrid',P.filter(p=>p[2]==='أنس الخطّاط'));
+
+/* home chips */
+const CHIPS=[['','الكل','All'],['ﺍ','قرآني','Quranic'],['ﻡ','أسماء','Names'],['ﺩ','زفاف','Wedding'],['ﺙ','ثلث','Thuluth'],['ﺩ','ديواني','Diwani'],['ﻙ','كوفي','Kufic'],['ﺯ','ديكور منزلي','Home decor'],['ﺵ','عبارات','Quotes'],['ﻥ','نستعليق','Nastaliq']];
+document.getElementById('homeChips').innerHTML=CHIPS.map((c,i)=>`<button class="chip ${i===0?'on':''}" onclick="chipTog(this)">${c[0]?`<span class="ar">${c[0]}</span>`:''}<span data-ar="${c[1]}" data-en="${c[2]}">${c[1]}</span></button>`).join('');
+
+/* ---------------- Navigation ---------------- */
+function go(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const el=document.getElementById('page-'+page); if(el)el.classList.add('active');
+  document.querySelectorAll('.rail-item').forEach(r=>r.classList.toggle('active',r.dataset.page===page));
+  window.scrollTo({top:0,behavior:'instant'});
+}
+function chipTog(b){b.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));b.classList.add('on')}
+function tog(b){b.classList.toggle('on'); if(b.textContent.trim()==='الكل'||b.textContent.trim()==='All'){b.parentElement.querySelectorAll('.pill').forEach(x=>{if(x!==b)x.classList.remove('on')})}}
+
+/* ---------------- Roles (gate the rail like qalb gated the ledger) ---------------- */
+const ALLOWED={
+  guest:['home','explore','piece','artist','board'],
+  buyer:['home','explore','piece','artist','board','commission','cart','commission-request'],
+  artist:['home','explore','piece','artist','board','commission','cart','commission-request','create','dashboard'],
+  admin:['home','explore','piece','artist','board','commission','cart','commission-request','create','dashboard','admin'],
+};
+function setRole(role){
+  document.documentElement.dataset.role=role;
+  document.getElementById('roleSel').value=role;
+  document.querySelectorAll('.rail-item[data-roles]').forEach(it=>{
+    it.hidden = !it.dataset.roles.split(' ').includes(role);
+  });
+  // if current page not allowed, bounce home
+  const cur=[...document.querySelectorAll('.page')].find(p=>p.classList.contains('active'));
+  const id=cur?cur.id.replace('page-',''):'home';
+  if(!ALLOWED[role].includes(id)) go('home');
+  // guest avatar
+  document.querySelector('.avatar').textContent = role==='guest'?'?':'ن';
+}
+
+/* ---------------- Theme ---------------- */
+function toggleTheme(){
+  const h=document.documentElement;
+  h.dataset.theme = h.dataset.theme==='dark'?'light':'dark';
+}
+
+/* ---------------- Language (RTL/LTR) ---------------- */
+const T={
+  ar:{tagline:'سوق فن الخط العربي المصنوع يدويًا',searchph:'ابحث باسم، آية، أسلوب خط، أو فنان…',
+    r_guest:'زائر',r_buyer:'مشتري',r_artist:'فنان',r_admin:'مشرف',
+    nav_home:'الرئيسية',nav_explore:'استكشف',nav_create:'أنشئ',nav_orders:'طلباتي',nav_cart:'السلة',nav_dash:'لوحتي',nav_admin:'الإشراف',nav_profile:'حسابي',
+    home_eyebrow:'مختارات لك',home_title:'لوحاتٌ من نور الحرف',home_sub:'تصفّح، احفظ في لوحاتك، أو اطلب قطعة مصمّمة خصيصًا لك من فنّان الخط.',
+    exp_for:'نتائج البحث عن',exp_results:'قطعة',f_script:'الأسلوب',f_theme:'الموضوع',f_type:'النوع',f_color:'اللون',f_price:'السعر',t_ready:'جاهزة للشراء',t_commission:'قابلة للطلب',
+    back:'رجوع',theme_quran:'قرآني',handmade:'صناعة يدوية',verified:'فنّان موثّق · حماة',follow:'متابعة',
+    d_text:'النص',d_script:'الأسلوب',d_medium:'الخامة',m_ink:'حبر ذهبي على ورق قطني',d_size:'المقاس',d_avail:'التوفّر',unique:'قطعة فريدة (١ فقط)',
+    buy_now:'اشترِ الآن',add_cart:'أضف للسلة',req_variant:'اطلب نسخة مخصّصة من هذه القطعة',like:'إعجاب',save:'احفظ',
+    comments:'التعليقات',add_comment:'أضف تعليقًا…',send:'إرسال',related:'قطع مشابهة',
+    s_pieces:'قطعة',s_followers:'متابع',s_rating:'تقييم',s_ontime:'في الموعد',req_custom:'اطلب قطعة',tab_pieces:'القطع',tab_boards:'اللوحات',tab_about:'نبذة',
+    private:'خاصة',b_share:'مشاركة',
+    create_title:'أضف قطعة جديدة',create_sub:'اعرض عملك اليدوي، أو أتِحه للطلب المخصّص — بأربع خطوات.',step1:'الصور',step2:'النص والأسلوب',step3:'التفاصيل',step4:'العرض والسعر',
+    c_text:'النص المكتوب',c_text_h:'(الآية أو الاسم أو العبارة)',c_script:'الأسلوب',c_lang:'لغة النص',c_translit:'النقحرة',prev:'السابق',next:'التالي',
+    drop_t:'أفلت صور القطعة هنا',drop_h:'صورة رئيسية + زوايا وتفاصيل · حتى ٨ صور',wm_note:'تُضاف علامة مائية تلقائيًا على الصور المعروضة لحماية عملك؛ الأصل يبقى محفوظًا.',
+    cr_title:'اطلب قطعة خط مصمّمة لك',cr_to:'إلى الفنان',cr_lead:'مدة التنفيذ المعتادة ١٠–١٤ يومًا',cr_text:'النص المطلوب كتابته *',cr_script:'الأسلوب المفضّل',no_pref:'بلا تفضيل — يقترحه الفنان',cr_medium:'الخامة',cr_w:'العرض (سم)',cr_h:'الارتفاع (سم)',cr_colors:'الألوان المفضّلة',cr_budget:'الميزانية (SAR)',cr_deadline:'الموعد المطلوب',cr_msg:'رسالة للفنان',cr_submit:'أرسل الطلب',cr_free:'إرسال الطلب مجاني — تدفع فقط بعد موافقتك على السعر.',cr_ref:'صور مرجعية',optional:'(اختياري)',cr_ref_h:'أرفق صورًا تلهم الفنان بأسلوبك المطلوب',
+    how_works:'كيف تسير الأمور؟',s_send:'ترسل الطلب',s_quote:'يرسل الفنان سعرًا ومدة',s_deposit:'تدفع عربونًا وتبدأ',s_proof:'تراجع المعاينة وتعتمدها',s_final:'تدفع الباقي ويُشحن إليك',
+    st_proof:'بانتظار اعتمادك للمعاينة',comm_between:'بينك وبين أستاذ أنس الخطّاط · بدأ قبل ٦ أيام',brief:'ملخّص الطلب',proof_t:'المعاينة — النسخة ٢',await_you:'بانتظارك',artist_note:'ملاحظة الفنان:',approve:'اعتمد المعاينة',request_rev:'اطلب تعديلًا',thread_t:'المحادثة',type_msg:'اكتب رسالة…',
+    progress:'مراحل الطلب',st1:'تم إرسال الطلب',st2:'تم استلام السعر',st3:'دُفع العربون',st4:'جارٍ التنفيذ',st5:'اعتماد المعاينة',you_here:'← أنت هنا',st6:'دفع الباقي',st7:'الشحن والتسليم',
+    payment:'الدفع',p_total:'الإجمالي المتفق',p_deposit:'العربون (مدفوع)',p_remain:'المتبقّي عند الاعتماد',p_secure:'المدفوعات محفوظة عبر Stripe ولا تُحوّل للفنان إلا بعد اعتمادك.',
+    cart_title:'سلّة الشراء',cart_sub:'قطع جاهزة من فنّانين مختلفين — تُدفع دفعة واحدة وتُوزّع تلقائيًا.',ships:'يُشحن',summary:'ملخّص الطلب',subtotal:'المجموع',shipping:'الشحن',total:'الإجمالي',ship_to:'الشحن إلى',add_addr:'+ أضف عنوانًا',pay_stripe:'ادفع عبر Stripe',split_note:'دفعة واحدة تُقسَّم لكل فنّان تلقائيًا (Stripe Connect).',
+    dash_title:'لوحة الفنّان',dash_sub:'نظرة على أعمالك وطلباتك وأرباحك.',k_earn:'أرباح الشهر',k_active:'طلبات مخصّصة نشطة',k_two_wait:'٢ بانتظارك',k_orders:'طلبات شراء جديدة',k_views:'مشاهدات قطعك',new_requests:'طلبات مخصّصة جديدة',th_client:'العميل',th_text:'النص',th_budget:'الميزانية',open:'فتح',quote:'تسعير',recent_orders:'طلبات شراء أخيرة',th_piece:'القطعة',th_status:'الحالة',o_ship:'قيد الشحن',o_done:'مكتمل',o_paid:'مدفوع',your_pieces:'قطعك',
+    adm_title:'مراجعة القطع الجديدة',adm_sub:'القطع المرفوعة تظهر للعامة بعد اعتمادها هنا (يمكن تعطيل هذا لاحقًا).',adm_pending:'بانتظار المراجعة',adm_today:'اعتُمد اليوم',adm_sellers:'فنّانون نشطون',th_preview:'معاينة',th_artist:'الفنان',th_script:'الأسلوب',th_action:'إجراء',adm_ok:'اعتماد',adm_no:'رفض',
+  },
+  en:{tagline:'Handmade Arabic calligraphy art market',searchph:'Search a name, verse, script style, or artist…',
+    r_guest:'Guest',r_buyer:'Buyer',r_artist:'Artist',r_admin:'Admin',
+    nav_home:'Home',nav_explore:'Explore',nav_create:'Create',nav_orders:'Orders',nav_cart:'Cart',nav_dash:'Dashboard',nav_admin:'Moderate',nav_profile:'Profile',
+    home_eyebrow:'Picked for you',home_title:'Art from the light of letters',home_sub:'Browse, save to your boards, or request a piece made just for you by a calligrapher.',
+    exp_for:'Results for',exp_results:'pieces',f_script:'Script',f_theme:'Theme',f_type:'Type',f_color:'Color',f_price:'Price',t_ready:'Ready to buy',t_commission:'Commissionable',
+    back:'Back',theme_quran:'Quranic',handmade:'Handmade',verified:'Verified artist · Hama',follow:'Follow',
+    d_text:'Text',d_script:'Script',d_medium:'Medium',m_ink:'Gold ink on cotton paper',d_size:'Size',d_avail:'Availability',unique:'One of a kind (1 only)',
+    buy_now:'Buy now',add_cart:'Add to cart',req_variant:'Request a custom version of this piece',like:'Like',save:'Save',
+    comments:'Comments',add_comment:'Add a comment…',send:'Send',related:'Related pieces',
+    s_pieces:'pieces',s_followers:'followers',s_rating:'rating',s_ontime:'on time',req_custom:'Request a piece',tab_pieces:'Pieces',tab_boards:'Boards',tab_about:'About',
+    private:'Private',b_share:'Share',
+    create_title:'Add a new piece',create_sub:'Showcase your handmade work, or open it for custom orders — in four steps.',step1:'Images',step2:'Text & script',step3:'Details',step4:'Listing & price',
+    c_text:'Written text',c_text_h:'(the verse, name, or phrase)',c_script:'Script',c_lang:'Text language',c_translit:'Transliteration',prev:'Back',next:'Next',
+    drop_t:'Drop the piece images here',drop_h:'A main photo + angles and details · up to 8',wm_note:'A watermark is added automatically to displayed images to protect your work; the original stays private.',
+    cr_title:'Request a calligraphy piece made for you',cr_to:'To artist',cr_lead:'Typical turnaround 10–14 days',cr_text:'Text to be written *',cr_script:'Preferred script',no_pref:'No preference — let the artist suggest',cr_medium:'Medium',cr_w:'Width (cm)',cr_h:'Height (cm)',cr_colors:'Preferred colors',cr_budget:'Budget (SAR)',cr_deadline:'Needed by',cr_msg:'Message to the artist',cr_submit:'Send request',cr_free:'Sending is free — you only pay after you approve the price.',cr_ref:'Reference images',optional:'(optional)',cr_ref_h:'Attach images that inspire the style you want',
+    how_works:'How it works',s_send:'You send the request',s_quote:'Artist sends a price & timeline',s_deposit:'You pay a deposit and work begins',s_proof:'You review the proof and approve it',s_final:'You pay the balance and it ships',
+    st_proof:'Awaiting your proof approval',comm_between:'Between you and Ustath Anas · started 6 days ago',brief:'Request summary',proof_t:'Proof — version 2',await_you:'Waiting on you',artist_note:'Artist note:',approve:'Approve proof',request_rev:'Request a change',thread_t:'Conversation',type_msg:'Type a message…',
+    progress:'Order stages',st1:'Request sent',st2:'Quote received',st3:'Deposit paid',st4:'In progress',st5:'Proof approval',you_here:'← you are here',st6:'Balance payment',st7:'Shipping & delivery',
+    payment:'Payment',p_total:'Agreed total',p_deposit:'Deposit (paid)',p_remain:'Due on approval',p_secure:'Payments are held via Stripe and released to the artist only after you approve.',
+    cart_title:'Shopping cart',cart_sub:'Ready pieces from different artists — paid once and split automatically.',ships:'Ships',summary:'Order summary',subtotal:'Subtotal',shipping:'Shipping',total:'Total',ship_to:'Ship to',add_addr:'+ Add an address',pay_stripe:'Pay with Stripe',split_note:'One payment split to each artist automatically (Stripe Connect).',
+    dash_title:'Artist dashboard',dash_sub:'A look at your work, orders, and earnings.',k_earn:'This month’s earnings',k_active:'Active commissions',k_two_wait:'2 waiting on you',k_orders:'New purchase orders',k_views:'Views on your pieces',new_requests:'New commission requests',th_client:'Client',th_text:'Text',th_budget:'Budget',open:'Open',quote:'Quote',recent_orders:'Recent purchase orders',th_piece:'Piece',th_status:'Status',o_ship:'Shipping',o_done:'Completed',o_paid:'Paid',your_pieces:'Your pieces',
+    adm_title:'Review new pieces',adm_sub:'Uploaded pieces go public after approval here (can be turned off later).',adm_pending:'Pending review',adm_today:'Approved today',adm_sellers:'Active artists',th_preview:'Preview',th_artist:'Artist',th_script:'Script',th_action:'Action',adm_ok:'Approve',adm_no:'Reject',
+  }
+};
+function setLang(lang){
+  const h=document.documentElement;
+  h.lang=lang; h.dir = lang==='ar'?'rtl':'ltr';
+  document.getElementById('lgAr').classList.toggle('on',lang==='ar');
+  document.getElementById('lgEn').classList.toggle('on',lang==='en');
+  const dict=T[lang];
+  document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n; if(dict[k]!=null)el.textContent=dict[k]});
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{const k=el.dataset.i18nPh; if(dict[k]!=null)el.placeholder=dict[k]});
+  document.querySelectorAll('[data-ar]').forEach(el=>{el.textContent = lang==='ar'?el.dataset.ar:el.dataset.en});
+}
+
+/* ---------------- Commission proof approval demo ---------------- */
+function approveProof(){
+  const b=document.getElementById('commStatus');
+  b.className='badge badge-primary'; b.textContent = document.documentElement.lang==='en'?'Approved — awaiting balance':'تم الاعتماد — بانتظار دفع الباقي';
+  document.querySelector('#page-commission .tl-item.now')?.classList.add('done');
+  alert(document.documentElement.lang==='en'?'Proof approved. Balance payment unlocked (demo).':'تم اعتماد المعاينة. فُتح دفع الباقي (نموذج توضيحي).');
+}
+
+/* init */
+setRole('buyer');
+</script>
+</body>
+</html>

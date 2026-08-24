@@ -1,0 +1,47 @@
+<?php
+
+return [
+    'tagline' => 'Handmade Arabic calligraphy art market',
+    'search_ph' => 'Search a name, verse, script style, or artist…',
+    'theme' => 'Dark mode',
+    'login' => 'Log in',
+    'register' => 'Sign up',
+    'logout' => 'Log out',
+    'account' => 'Your account',
+
+    'nav_home' => 'Home',
+    'nav_explore' => 'Explore',
+    'nav_create' => 'Create',
+    'nav_orders' => 'Orders',
+    'nav_cart' => 'Cart',
+    'nav_dash' => 'Dashboard',
+    'nav_admin' => 'Moderate',
+    'nav_profile' => 'Profile',
+
+    'home_eyebrow' => 'Picked for you',
+    'home_title' => 'Art from the light of letters',
+    'home_sub' => 'Browse, save to your boards, or request a piece made just for you by a calligrapher.',
+    'empty_feed_title' => 'The gallery is preparing its first pieces',
+    'empty_feed_sub' => 'Soon you will see authentic handmade works by talented calligraphers here.',
+
+    'soon_title' => 'Coming soon',
+    'soon_sub' => 'This page is being built in upcoming phases.',
+
+    'auth_login_title' => 'Welcome back',
+    'auth_login_sub' => 'Log in to continue to your boards and orders.',
+    'auth_register_title' => 'Join Khatt',
+    'auth_register_sub' => 'Save what inspires you, or start selling your calligraphy.',
+    'name' => 'Name',
+    'email' => 'Email',
+    'password' => 'Password',
+    'password_confirmation' => 'Confirm password',
+    'account_type' => 'Account type',
+    'buyer' => 'Buyer — I browse and purchase',
+    'seller' => 'Calligrapher — I showcase my work',
+    'enter' => 'Enter',
+    'create_account' => 'Create account',
+    'no_account' => "Don't have an account?",
+    'have_account' => 'Already have an account?',
+
+    'err_required' => 'This field is required.',
+];
