@@ -3,6 +3,13 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Catalog\PieceController;
 use App\Http\Controllers\Catalog\PiecesController;
+use App\Http\Controllers\Commerce\CartController;
+use App\Http\Controllers\Commerce\CheckoutController;
+use App\Http\Controllers\Commerce\FakePayController;
+use App\Http\Controllers\Commerce\OrdersController;
+use App\Http\Controllers\Commerce\RefundController;
+use App\Http\Controllers\Commerce\SellerOrderController;
+use App\Http\Controllers\Commerce\WebhookController;
 use App\Http\Controllers\Discovery\ExploreController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
@@ -10,7 +17,12 @@ use App\Http\Controllers\Settings\ProfileController as ProfileSettingsController
 use App\Http\Controllers\Social\BoardsController;
 use App\Http\Controllers\Social\CommentController;
 use App\Http\Controllers\Social\NotificationsController;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Support\Facades\Route;
+
+Route::post('/webhooks/stripe', [WebhookController::class, 'stripe'])
+    ->name('webhooks.stripe')
+    ->withoutMiddleware([PreventRequestForgery::class]);
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -29,8 +41,22 @@ Route::middleware('guest')->group(function (): void {
 Route::middleware('auth')->group(function (): void {
     Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
 
-    Route::get('/cart', fn () => view('pages.placeholder', ['title' => __('shell.nav_cart')]))->name('cart');
-    Route::get('/orders', fn () => view('pages.placeholder', ['title' => __('shell.nav_orders')]))->name('orders');
+    Route::get('/orders', [OrdersController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{order}', [OrdersController::class, 'show'])->name('orders.show');
+    Route::post('/orders/{order}/refund', [RefundController::class, 'store'])->name('orders.refund')->middleware('can:refund,order');
+
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/{piece}', [CartController::class, 'add'])->name('cart.add')->middleware('throttle:social-writes');
+    Route::delete('/cart/{piece}', [CartController::class, 'remove'])->name('cart.remove');
+
+    Route::get('/checkout', [CheckoutController::class, 'create'])->name('checkout.create');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::post('/checkout/{order}/fake-pay', [FakePayController::class, 'pay'])->name('checkout.fake_pay');
+
+    Route::middleware('role:seller')->prefix('studio-orders')->group(function (): void {
+        Route::get('/', [SellerOrderController::class, 'index'])->name('seller.orders.index');
+        Route::post('/{group}/ship', [SellerOrderController::class, 'ship'])->name('seller.orders.ship');
+    });
 
     Route::get('/settings/profile', [ProfileSettingsController::class, 'edit'])->name('settings.profile.edit');
     Route::put('/settings/profile', [ProfileSettingsController::class, 'update'])->name('settings.profile.update');

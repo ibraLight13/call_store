@@ -22,6 +22,7 @@ use Spatie\ModelStates\HasStates;
  * @property string $listing_type
  * @property int|null $price_minor
  * @property string $currency
+ * @property Carbon|null $sold_at
  * @property Carbon|null $published_at
  * @property Carbon|null $reviewed_at
  * @property string|null $rejection_reason
@@ -49,6 +50,7 @@ final class Piece extends Model
         'unique_stock',
         'description',
         'state',
+        'sold_at',
         'published_at',
         'reviewed_by',
         'reviewed_at',
@@ -60,6 +62,7 @@ final class Piece extends Model
         return [
             'published_at' => 'datetime',
             'reviewed_at' => 'datetime',
+            'sold_at' => 'datetime',
             'unique_stock' => 'boolean',
             'price_minor' => 'integer',
             'state' => PieceState::class,

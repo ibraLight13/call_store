@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}"
       data-theme="{{ request()->cookie('theme', 'light') }}">
 <head>
@@ -35,9 +35,9 @@
             <a href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}" class="{{ app()->getLocale() === 'en' ? 'on' : '' }}">EN</a>
         </div>
         @auth
+            @php($unreadCount = auth()->user()->unreadNotifications()->count())
             <a class="iconbtn" href="{{ route('notifications.index') }}" title="{{ __('social.notifications') }}" style="position:relative">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
-                @php($unreadCount = auth()->user()->unreadNotifications()->count())
                 @if ($unreadCount > 0)
                     <span style="position:absolute;top:-5px;inset-inline-end:-5px;background:var(--danger);color:#fff;font-size:10px;font-weight:700;min-width:17px;height:17px;border-radius:9px;display:grid;place-items:center;padding:0 4px">{{ $unreadCount > 9 ? '٩+' : $unreadCount }}</span>
                 @endif
@@ -69,7 +69,7 @@
         </a>
         @endrole
         @role('seller')
-        <a class="rail-item" href="/studio">
+        <a class="rail-item {{ request()->routeIs('seller.orders.*') ? 'active' : '' }}" href="{{ route('seller.orders.index') }}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3h8v8H3zM13 3h8v5h-8zM13 12h8v9h-8zM3 15h8v6H3z"/></svg><span>{{ __('shell.nav_dash') }}</span>
         </a>
         @endrole
@@ -79,22 +79,20 @@
         </a>
         @endrole
         @auth
-        <a class="rail-item {{ request()->routeIs('cart') ? 'active' : '' }}" href="{{ route('cart') }}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.4 12.4a1.6 1.6 0 0 0 1.6 1.3h8.6a1.6 1.6 0 0 0 1.6-1.3L22 7H6"/></svg><span>{{ __('shell.nav_cart') }}</span>
-        </a>
-        <a class="rail-item {{ request()->routeIs('orders') ? 'active' : '' }}" href="{{ route('orders') }}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/><path d="M15 3h6v6" opacity=".5"/></svg><span>{{ __('shell.nav_orders') }}</span>
-        </a>
-        @endauth
-        <div class="spacer"></div>
-        @auth
         <a class="rail-item {{ request()->routeIs('boards.*') ? 'active' : '' }}" href="{{ route('boards.index') }}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="10" rx="1.5"/><rect x="14" y="3" width="7" height="6" rx="1.5"/><rect x="14" y="13" width="7" height="8" rx="1.5"/><rect x="3" y="17" width="7" height="4" rx="1.5"/></svg><span>{{ __('social.my_boards') }}</span>
+        </a>
+        <a class="rail-item {{ request()->routeIs('cart.index') || request()->routeIs('checkout.*') ? 'active' : '' }}" href="{{ route('cart.index') }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.4 12.4a1.6 1.6 0 0 0 1.6 1.3h8.6a1.6 1.6 0 0 0 1.6-1.3L22 7H6"/></svg><span>{{ __('shell.nav_cart') }}</span>
+        </a>
+        <a class="rail-item {{ request()->routeIs('orders.index') || request()->routeIs('orders.show') ? 'active' : '' }}" href="{{ route('orders.index') }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/><path d="M15 3h6v6" opacity=".5"/></svg><span>{{ __('shell.nav_orders') }}</span>
         </a>
         <a class="rail-item {{ request()->routeIs('profile.show') || request()->routeIs('settings.profile.*') ? 'active' : '' }}" href="{{ auth()->user()->profileUrl() }}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>{{ __('shell.nav_profile') }}</span>
         </a>
         @endauth
+        <div class="spacer"></div>
     </nav>
 
     <main>

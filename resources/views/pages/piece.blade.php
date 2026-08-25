@@ -70,15 +70,26 @@
                 </div>
             </div>
 
-            @if ($piece->isReady())
+            @php($sold = $piece->sold_at !== null)
+
+            @if ($piece->isReady() && ! $sold)
                 <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:14px">
                     <span style="font-family:var(--f-lat);font-size:32px;font-weight:700">{{ \App\Support\Money::format($piece->price_minor) }}</span>
                     <span class="muted">SAR</span>
                 </div>
 
                 <div class="row" style="margin-bottom:10px">
-                    <button type="button" class="btn btn-primary btn-block" disabled title="{{ __('shell.soon_title') }}">{{ __('shell.buy_now') }}</button>
+                    @auth
+                        <form method="POST" action="{{ route('cart.add', $piece) }}" style="flex:1">
+                            @csrf
+                            <button type="submit" class="btn btn-primary btn-block">{{ __('commerce.add_to_cart') }}</button>
+                        </form>
+                    @else
+                        <a href="{{ route('login') }}" class="btn btn-primary btn-block">{{ __('commerce.add_to_cart') }}</a>
+                    @endauth
                 </div>
+            @elseif ($sold)
+                <div class="badge badge-gold" style="font-size:14px;padding:8px 16px;margin-bottom:14px">✔ {{ __('commerce.sold') }}</div>
             @endif
 
             <div class="row">

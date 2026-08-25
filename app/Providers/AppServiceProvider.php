@@ -17,6 +17,11 @@ use App\Domain\Discovery\Queries\MysqlFulltextSearcher;
 use App\Domain\Identity\Events\UserFollowed;
 use App\Domain\Identity\Notifications\NewFollower;
 use App\Domain\Identity\Policies\UserPolicy;
+use App\Domain\Orders\Models\Order;
+use App\Domain\Orders\Policies\OrderPolicy;
+use App\Domain\Payments\Contracts\PaymentGateway;
+use App\Domain\Payments\Gateways\FakeGateway;
+use App\Domain\Payments\Gateways\StripeGateway;
 use App\Domain\Social\Events\PieceLiked;
 use App\Domain\Social\Events\PieceSaved;
 use App\Domain\Social\Events\PieceUnliked;
@@ -48,6 +53,23 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(Clock::class, SystemClock::class);
         $this->app->singleton(ImageManager::class, fn (): ImageManager => new ImageManager(new Driver));
         $this->app->bind(PieceSearcher::class, MysqlFulltextSearcher::class);
+
+        $this->app->bind(PaymentGateway::class, function (): PaymentGateway {
+            if (config('commerce.gateway') === 'stripe') {
+                $secret = config('services.stripe.secret');
+
+                if (is_string($secret) && $secret !== '') {
+                    $webhookSecret = config('services.stripe.webhook_secret');
+
+                    return new StripeGateway(
+                        secretKey: $secret,
+                        webhookSecret: is_string($webhookSecret) ? $webhookSecret : '',
+                    );
+                }
+            }
+
+            return new FakeGateway;
+        });
     }
 
     public function boot(): void
@@ -56,6 +78,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Piece::class, PiecePolicy::class);
         Gate::policy(Board::class, BoardPolicy::class);
         Gate::policy(Comment::class, CommentPolicy::class);
+        Gate::policy(Order::class, OrderPolicy::class);
         Model::preventLazyLoading(! $this->app->isProduction());
 
         Event::listen(PieceApproved::class, FlushDiscoveryCache::class);
