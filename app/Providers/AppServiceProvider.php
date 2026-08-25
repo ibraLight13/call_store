@@ -14,14 +14,28 @@ use App\Domain\Discovery\Cache\FeedCache;
 use App\Domain\Discovery\Contracts\PieceSearcher;
 use App\Domain\Discovery\Listeners\FlushDiscoveryCache;
 use App\Domain\Discovery\Queries\MysqlFulltextSearcher;
+use App\Domain\Identity\Events\UserFollowed;
+use App\Domain\Identity\Notifications\NewFollower;
 use App\Domain\Identity\Policies\UserPolicy;
+use App\Domain\Social\Events\PieceLiked;
+use App\Domain\Social\Events\PieceSaved;
+use App\Domain\Social\Events\PieceUnliked;
+use App\Domain\Social\Events\PieceUnsaved;
+use App\Domain\Social\Listeners\UpdatePieceCounters;
+use App\Domain\Social\Models\Board;
+use App\Domain\Social\Models\Comment;
+use App\Domain\Social\Policies\BoardPolicy;
+use App\Domain\Social\Policies\CommentPolicy;
 use App\Models\User;
 use App\Support\Clock;
 use App\Support\SystemClock;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -40,10 +54,25 @@ class AppServiceProvider extends ServiceProvider
     {
         Gate::policy(User::class, UserPolicy::class);
         Gate::policy(Piece::class, PiecePolicy::class);
+        Gate::policy(Board::class, BoardPolicy::class);
+        Gate::policy(Comment::class, CommentPolicy::class);
         Model::preventLazyLoading(! $this->app->isProduction());
 
         Event::listen(PieceApproved::class, FlushDiscoveryCache::class);
         Event::listen(PieceRejected::class, FlushDiscoveryCache::class);
+
+        Event::listen(PieceLiked::class, UpdatePieceCounters::class);
+        Event::listen(PieceUnliked::class, UpdatePieceCounters::class);
+        Event::listen(PieceSaved::class, UpdatePieceCounters::class);
+        Event::listen(PieceUnsaved::class, UpdatePieceCounters::class);
+
+        Event::listen(UserFollowed::class, function (UserFollowed $event): void {
+            $event->followed->notify(new NewFollower($event->follower));
+        });
+
+        RateLimiter::for('social-writes', fn (Request $request) => Limit::perMinute(30)->by(
+            ($request->user()?->id ?: $request->ip()).'|'.$request->ip(),
+        ));
 
         Piece::saved(fn () => FeedCache::flush());
 

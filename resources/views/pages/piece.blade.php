@@ -57,7 +57,11 @@
                 <div class="kv">
                     <span class="k">{{ __('shell.d_avail') }}</span>
                     <span class="v">
-                        @if ($piece->isReady())
+            @if ($piece->description)
+                <p class="muted" style="white-space:pre-line;margin-bottom:16px">{{ $piece->description }}</p>
+            @endif
+
+            @if ($piece->isReady())
                             {{ __('shell.t_ready') }}
                         @else
                             {{ __('shell.t_commission') }}
@@ -71,17 +75,44 @@
                     <span style="font-family:var(--f-lat);font-size:32px;font-weight:700">{{ \App\Support\Money::format($piece->price_minor) }}</span>
                     <span class="muted">SAR</span>
                 </div>
+
+                <div class="row" style="margin-bottom:10px">
+                    <button type="button" class="btn btn-primary btn-block" disabled title="{{ __('shell.soon_title') }}">{{ __('shell.buy_now') }}</button>
+                </div>
             @endif
 
-            @if ($piece->description)
-                <p class="muted" style="white-space:pre-line;margin-bottom:16px">{{ $piece->description }}</p>
-            @endif
-
-            <div class="row" style="margin-bottom:10px">
-                <button type="button" class="btn btn-primary btn-block" disabled title="{{ __('shell.soon_title') }}">{{ __('shell.buy_now') }}</button>
+            <div class="row">
+                @livewire(\App\Livewire\LikeButton::class, ['piece' => $piece], key('like-'.$piece->id))
+                @livewire(\App\Livewire\SaveToBoardButton::class, ['piece' => $piece], key('save-'.$piece->id))
             </div>
-            <button type="button" class="btn btn-outline btn-block" onclick="location.href='{{ route('explore', ['q' => '', 'script' => $piece->script_id]) }}'" hidden></button>
         </div>
+    </div>
+
+    <div class="sec-title">
+        <h3>{{ __('social.comments') }}</h3>
+        <span class="badge badge-soft">{{ $topLevel->count() + $repliesByParent->sum(fn ($replies) => $replies->count()) }}</span>
+    </div>
+    <div class="panel">
+        @forelse ($topLevel as $comment)
+            @include('partials.comment', ['comment' => $comment])
+        @empty
+            <p class="muted" style="margin:0">{{ __('social.no_comments') }}</p>
+        @endforelse
+
+        @auth
+            <form method="POST" action="{{ route('comments.store', $piece) }}" style="margin-top:16px">
+                @csrf
+                <textarea name="body" required minlength="2" maxlength="2000" placeholder="{{ __('social.add_comment') }}"></textarea>
+                @error('body')<div class="err">{{ $message }}</div>@enderror
+                <div style="text-align:end;margin-top:10px">
+                    <button type="submit" class="btn btn-dark btn-sm">{{ __('shell.send') }}</button>
+                </div>
+            </form>
+        @else
+            <p class="muted" style="margin:16px 0 0;text-align:center">
+                <a href="{{ route('login') }}" style="color:var(--primary-ink);font-weight:700">{{ __('shell.login') }}</a> {{ __('social.to_comment') }}
+            </p>
+        @endauth
     </div>
 
     <div class="sec-title"><h3>{{ __('shell.related') }}</h3></div>

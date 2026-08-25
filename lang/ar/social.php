@@ -1,0 +1,42 @@
+<?php
+
+return [
+    'save' => 'احفظ',
+    'saved' => 'محفوظة',
+    'save_to_board' => 'حفظ في لوحة',
+    'new_board_ph' => 'لوحة جديدة…',
+    'no_boards' => 'لا لوحات بعد — أنشئ أول واحدة بالأسفل.',
+    'my_boards' => 'لوحاتي',
+    'boards_sub' => 'اجمع القطع التي تعجبك في لوحات خاصة بك.',
+    'pieces' => 'قطعة',
+    'private' => 'خاصة',
+    'public' => 'عامة',
+    'no_boards_yet' => 'لم تنشئ أي لوحة بعد. احفظ أول قطعة من المعرض.',
+    'board_empty' => 'هذه اللوحة فارغة حتى الآن.',
+
+    'comments' => 'التعليقات',
+    'add_comment' => 'أضف تعليقًا…',
+    'to_comment' => 'للمشاركة في التعليقات.',
+    'no_comments' => 'لا تعليقات بعد — كن أول من يعلّق.',
+    'reply' => 'ردّ',
+    'reply_ph' => 'اكتب ردك…',
+    'delete' => 'حذف',
+    'delete_confirm' => 'حذف هذا التعليق؟',
+    'comment_added' => 'تم نشر تعليقك.',
+    'comment_deleted' => 'تم حذف التعليق.',
+    'comment_invalid' => 'التعليق مطلوب (٢ إلى ٢٠٠٠ حرف).',
+    'reply_target_invalid' => 'لا يمكن الرد على هذا التعليق.',
+
+    'notifications' => 'الإشعارات',
+    'mark_read' => 'تعليم الكل كمقروء',
+    'no_notifications' => 'لا إشعارات حتى الآن.',
+    'notif_comment_subject' => 'تعليق جديد على قطعتك — خَطّ',
+    'notif_comment_line' => 'علّق :name على قطعتك:',
+    'notif_reply_line' => 'ردّ :name على تعليق:',
+    'view_piece' => 'عرض القطعة',
+    'notif_follow_subject' => 'متابع جديد — خَطّ',
+    'notif_follow_line' => 'بدأ :name بمتابعتك.',
+    'view_profile' => 'عرض الملف الشخصي',
+
+    'hello' => 'مرحبًا :name،',
+];

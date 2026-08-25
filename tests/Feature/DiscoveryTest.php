@@ -135,6 +135,8 @@ it('keeps related pieces approved and excludes the current one', function () {
     $view = $this->view('pages.piece', [
         'piece' => $base->load(['script', 'medium', 'theme', 'color', 'seller']),
         'related' => collect(),
+        'topLevel' => collect(),
+        'repliesByParent' => collect(),
     ]);
 
     $related = Piece::query()

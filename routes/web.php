@@ -7,6 +7,9 @@ use App\Http\Controllers\Discovery\ExploreController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Settings\ProfileController as ProfileSettingsController;
+use App\Http\Controllers\Social\BoardsController;
+use App\Http\Controllers\Social\CommentController;
+use App\Http\Controllers\Social\NotificationsController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -31,6 +34,17 @@ Route::middleware('auth')->group(function (): void {
 
     Route::get('/settings/profile', [ProfileSettingsController::class, 'edit'])->name('settings.profile.edit');
     Route::put('/settings/profile', [ProfileSettingsController::class, 'update'])->name('settings.profile.update');
+
+    Route::middleware('throttle:social-writes')->group(function (): void {
+        Route::post('/pieces/{piece}/comments', [CommentController::class, 'store'])->name('comments.store');
+    });
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+
+    Route::get('/notifications', [NotificationsController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/read-all', [NotificationsController::class, 'readAll'])->name('notifications.read_all');
+
+    Route::get('/boards', [BoardsController::class, 'index'])->name('boards.index');
+    Route::get('/boards/{board}', [BoardsController::class, 'show'])->name('boards.show');
 });
 
 Route::middleware(['auth', 'role:seller'])->group(function (): void {

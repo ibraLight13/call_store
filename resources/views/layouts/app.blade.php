@@ -34,6 +34,15 @@
             <a href="{{ request()->fullUrlWithQuery(['lang' => 'ar']) }}" class="{{ app()->getLocale() === 'ar' ? 'on' : '' }}">ع</a>
             <a href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}" class="{{ app()->getLocale() === 'en' ? 'on' : '' }}">EN</a>
         </div>
+        @auth
+            <a class="iconbtn" href="{{ route('notifications.index') }}" title="{{ __('social.notifications') }}" style="position:relative">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+                @php($unreadCount = auth()->user()->unreadNotifications()->count())
+                @if ($unreadCount > 0)
+                    <span style="position:absolute;top:-5px;inset-inline-end:-5px;background:var(--danger);color:#fff;font-size:10px;font-weight:700;min-width:17px;height:17px;border-radius:9px;display:grid;place-items:center;padding:0 4px">{{ $unreadCount > 9 ? '٩+' : $unreadCount }}</span>
+                @endif
+            </a>
+        @endauth
         <button class="iconbtn" id="thBtn" title="{{ __('shell.theme') }}" onclick="toggleTheme()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
         </button>
@@ -79,6 +88,9 @@
         @endauth
         <div class="spacer"></div>
         @auth
+        <a class="rail-item {{ request()->routeIs('boards.*') ? 'active' : '' }}" href="{{ route('boards.index') }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="10" rx="1.5"/><rect x="14" y="3" width="7" height="6" rx="1.5"/><rect x="14" y="13" width="7" height="8" rx="1.5"/><rect x="3" y="17" width="7" height="4" rx="1.5"/></svg><span>{{ __('social.my_boards') }}</span>
+        </a>
         <a class="rail-item {{ request()->routeIs('profile.show') || request()->routeIs('settings.profile.*') ? 'active' : '' }}" href="{{ auth()->user()->profileUrl() }}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>{{ __('shell.nav_profile') }}</span>
         </a>

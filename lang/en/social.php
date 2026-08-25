@@ -1,0 +1,42 @@
+<?php
+
+return [
+    'save' => 'Save',
+    'saved' => 'Saved',
+    'save_to_board' => 'Save to board',
+    'new_board_ph' => 'New board…',
+    'no_boards' => 'No boards yet — create your first one below.',
+    'my_boards' => 'My boards',
+    'boards_sub' => 'Collect the pieces you love into your own boards.',
+    'pieces' => 'pieces',
+    'private' => 'Private',
+    'public' => 'Public',
+    'no_boards_yet' => 'No boards yet. Save your first piece from the gallery.',
+    'board_empty' => 'This board is empty so far.',
+
+    'comments' => 'Comments',
+    'add_comment' => 'Add a comment…',
+    'to_comment' => 'to join the conversation.',
+    'no_comments' => 'No comments yet — be the first.',
+    'reply' => 'Reply',
+    'reply_ph' => 'Write your reply…',
+    'delete' => 'Delete',
+    'delete_confirm' => 'Delete this comment?',
+    'comment_added' => 'Your comment was posted.',
+    'comment_deleted' => 'The comment was deleted.',
+    'comment_invalid' => 'A comment is required (2 to 2000 characters).',
+    'reply_target_invalid' => 'This comment cannot be replied to.',
+
+    'notifications' => 'Notifications',
+    'mark_read' => 'Mark all as read',
+    'no_notifications' => 'No notifications yet.',
+    'notif_comment_subject' => 'New comment on your piece — Khatt',
+    'notif_comment_line' => ':name commented on your piece:',
+    'notif_reply_line' => ':name replied to a comment:',
+    'view_piece' => 'View piece',
+    'notif_follow_subject' => 'New follower — Khatt',
+    'notif_follow_line' => ':name started following you.',
+    'view_profile' => 'View profile',
+
+    'hello' => 'Hello :name,',
+];

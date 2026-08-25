@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Catalog;
 
 use App\Domain\Catalog\Models\Piece;
+use App\Domain\Social\Models\Comment;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -34,9 +35,17 @@ final class PiecesController extends Controller
             ->limit(10)
             ->get();
 
+        $comments = Comment::query()
+            ->where('piece_id', $piece->id)
+            ->with(['user:id,name,username'])
+            ->oldest()
+            ->get();
+
         return view('pages.piece', [
             'piece' => $piece->load(['script', 'medium', 'theme', 'color', 'seller']),
             'related' => $related,
+            'topLevel' => $comments->whereNull('parent_id')->values(),
+            'repliesByParent' => $comments->filter(fn ($c) => $c->parent_id !== null)->groupBy('parent_id'),
         ]);
     }
 }
