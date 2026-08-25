@@ -2,9 +2,9 @@
 
 namespace App\Support;
 
-use DateTimeInterface;
+use Illuminate\Support\Carbon;
 
 interface Clock
 {
-    public function now(): DateTimeInterface;
+    public function now(): Carbon;
 }

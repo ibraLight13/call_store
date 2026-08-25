@@ -2,13 +2,12 @@
 
 namespace App\Support;
 
-use Carbon\CarbonImmutable;
-use DateTimeInterface;
+use Illuminate\Support\Carbon;
 
 final class SystemClock implements Clock
 {
-    public function now(): DateTimeInterface
+    public function now(): Carbon
     {
-        return CarbonImmutable::now();
+        return Carbon::now();
     }
 }

@@ -24,12 +24,16 @@
         @endforeach
     </div>
 
-    <div class="pin-grid" style="columns:1">
-        <div class="empty-state">
-            <div class="art">خَطٌّ يُلامِسُ النّور</div>
-            <div style="font-weight:700;font-size:16px;margin-bottom:4px">{{ __('shell.empty_feed_title') }}</div>
-            <div>{{ __('shell.empty_feed_sub') }}</div>
-        </div>
+    <div class="pin-grid">
+        @forelse ($pieces as $index => $piece)
+            @include('partials.pin-card', ['piece' => $piece, 'index' => $loop->index])
+        @empty
+            <div class="empty-state">
+                <div class="art">خَطٌّ يُلامِسُ النّور</div>
+                <div style="font-weight:700;font-size:16px;margin-bottom:4px">{{ __('shell.empty_feed_title') }}</div>
+                <div>{{ __('shell.empty_feed_sub') }}</div>
+            </div>
+        @endforelse
     </div>
 </section>
 @endsection

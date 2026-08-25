@@ -47,6 +47,7 @@ return [
     'follow' => 'متابعة',
     'unfollow' => 'إلغاء المتابعة',
     'cannot_follow_self' => 'لا يمكنك متابعة نفسك.',
+    't_commission' => 'قابلة للطلب',
     's_following' => 'يتابع',
     'tab_pieces' => 'القطع',
     'tab_boards' => 'اللوحات',

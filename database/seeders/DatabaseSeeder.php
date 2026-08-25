@@ -40,5 +40,8 @@ final class DatabaseSeeder extends Seeder
             ['email' => 'abeer@khatt.test'],
             ['name' => 'عبير م.', 'username' => 'abeer', 'password' => 'password'],
         )->assignRole('buyer');
+
+        $this->call(CatalogSeeder::class);
+        $this->call(DemoPiecesSeeder::class);
     }
 }
