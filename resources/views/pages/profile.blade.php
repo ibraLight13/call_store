@@ -28,8 +28,11 @@
             @if ($isSelf)
                 <a href="{{ route('settings.profile.edit') }}" class="btn btn-outline btn-sm">{{ __('shell.edit_profile') }}</a>
             @else
+                @auth
+                    <a href="{{ route('commissions.create', $profile) }}" class="btn btn-gold btn-sm">{{ __('commissions.request_cta') }}</a>
+                @endauth
                 @livewire(\App\Livewire\FollowButton::class, ['profile' => $profile], key('follow-'.$profile->id))
-            @endif
+                @endif
         </div>
     </div>
 

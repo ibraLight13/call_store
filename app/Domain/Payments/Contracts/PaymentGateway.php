@@ -2,6 +2,7 @@
 
 namespace App\Domain\Payments\Contracts;
 
+use App\Domain\Commissions\Models\Commission;
 use App\Domain\Orders\Models\Order;
 use App\Domain\Orders\Models\OrderSeller;
 use App\Models\User;
@@ -31,4 +32,17 @@ interface PaymentGateway
 
     /** Reverse a previously created transfer (refund path). */
     public function reverseTransfer(OrderSeller $group): void;
+
+    /**
+     * Hosted checkout for a commission capture. $purpose is 'deposit' or
+     * 'balance'; the returned session ref is stored on the commission so the
+     * webhook/settlement can find it.
+     */
+    public function createCommissionCheckout(Commission $commission, string $purpose, int $amountMinor): string;
+
+    /** Move the approved commission's payout to the seller's connected account. */
+    public function createCommissionTransfer(Commission $commission): string;
+
+    /** Reverse a commission payout (refund path). */
+    public function reverseCommissionTransfer(Commission $commission): void;
 }

@@ -2,6 +2,7 @@
 
 namespace App\Domain\Payments\Gateways;
 
+use App\Domain\Commissions\Models\Commission;
 use App\Domain\Orders\Models\Order;
 use App\Domain\Orders\Models\OrderSeller;
 use App\Domain\Payments\Contracts\ConnectOnboarding;
@@ -163,5 +164,58 @@ final class StripeGateway implements PaymentGateway
         }
 
         $this->client->transfers->createReversal($group->transfer_ref);
+    }
+
+    public function createCommissionCheckout(Commission $commission, string $purpose, int $amountMinor): string
+    {
+        $session = $this->client->checkout->sessions->create([
+            'mode' => 'payment',
+            'client_reference_id' => $commission->number.'|'.$purpose,
+            'metadata' => [
+                'commission_id' => (string) $commission->id,
+                'purpose' => $purpose,
+            ],
+            'customer_email' => $commission->buyer->email,
+            'line_items' => [[
+                'quantity' => 1,
+                'price_data' => [
+                    'currency' => strtolower($commission->currency),
+                    'unit_amount' => $amountMinor,
+                    'product_data' => ['name' => __('commissions.checkout_item', [
+                        'number' => $commission->number,
+                        'purpose' => __('commissions.purpose_'.$purpose),
+                    ])],
+                ],
+            ]],
+        ]);
+
+        return (string) $session->url;
+    }
+
+    public function createCommissionTransfer(Commission $commission): string
+    {
+        $accountId = $commission->seller->stripe_account_id;
+
+        if ($accountId === null) {
+            throw new \RuntimeException(__('commerce.seller_not_connected'));
+        }
+
+        $transfer = $this->client->transfers->create([
+            'amount' => (int) ($commission->quote_minor ?? 0),
+            'currency' => strtolower($commission->currency),
+            'destination' => $accountId,
+            'metadata' => ['commission_number' => $commission->number],
+        ]);
+
+        return (string) $transfer->id;
+    }
+
+    public function reverseCommissionTransfer(Commission $commission): void
+    {
+        if ($commission->transfer_ref === null || str_starts_with($commission->transfer_ref, 'tr_fake_')) {
+            return;
+        }
+
+        $this->client->transfers->createReversal($commission->transfer_ref);
     }
 }

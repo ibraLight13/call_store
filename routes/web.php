@@ -10,6 +10,11 @@ use App\Http\Controllers\Commerce\OrdersController;
 use App\Http\Controllers\Commerce\RefundController;
 use App\Http\Controllers\Commerce\SellerOrderController;
 use App\Http\Controllers\Commerce\WebhookController;
+use App\Http\Controllers\Commissions\CommissionActionController;
+use App\Http\Controllers\Commissions\CommissionController;
+use App\Http\Controllers\Commissions\CommissionFakePayController;
+use App\Http\Controllers\Commissions\CommissionProofController;
+use App\Http\Controllers\Commissions\CommissionRequestController;
 use App\Http\Controllers\Discovery\ExploreController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
@@ -71,6 +76,33 @@ Route::middleware('auth')->group(function (): void {
 
     Route::get('/boards', [BoardsController::class, 'index'])->name('boards.index');
     Route::get('/boards/{board}', [BoardsController::class, 'show'])->name('boards.show');
+
+    // Commissions — the shared buyer↔seller workspace.
+    Route::get('/commissions', [CommissionController::class, 'index'])->name('commissions.index');
+    Route::get('/commissions/request/{seller}', [CommissionRequestController::class, 'create'])
+        ->name('commissions.create');
+    Route::post('/commissions/request/{seller}', [CommissionRequestController::class, 'store'])
+        ->name('commissions.request')->middleware('throttle:social-writes');
+
+    Route::prefix('commissions/{commission}')->group(function (): void {
+        Route::get('/', [CommissionController::class, 'show'])->name('commissions.show');
+        Route::get('/proofs/{proof}', [CommissionProofController::class, 'show'])->name('commissions.proof');
+
+        Route::middleware('throttle:social-writes')->group(function (): void {
+            Route::post('/quote', [CommissionActionController::class, 'quote'])->name('commissions.quote');
+            Route::post('/decline', [CommissionActionController::class, 'decline'])->name('commissions.decline');
+            Route::post('/start', [CommissionActionController::class, 'start'])->name('commissions.start');
+            Route::post('/proof', [CommissionActionController::class, 'submitProof'])->name('commissions.submit_proof');
+            Route::post('/revision', [CommissionActionController::class, 'revision'])->name('commissions.revision');
+            Route::post('/approve', [CommissionActionController::class, 'approve'])->name('commissions.approve');
+            Route::post('/balance', [CommissionActionController::class, 'balance'])->name('commissions.balance');
+            Route::post('/ship', [CommissionActionController::class, 'ship'])->name('commissions.ship');
+            Route::post('/complete', [CommissionActionController::class, 'complete'])->name('commissions.complete');
+            Route::post('/cancel', [CommissionActionController::class, 'cancel'])->name('commissions.cancel');
+            Route::post('/messages', [CommissionActionController::class, 'message'])->name('commissions.message');
+            Route::post('/fake-pay/{purpose}', [CommissionFakePayController::class, 'pay'])->name('commissions.fake_pay');
+        });
+    });
 });
 
 Route::middleware(['auth', 'role:seller'])->group(function (): void {

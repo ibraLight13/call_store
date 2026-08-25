@@ -2,6 +2,7 @@
 
 namespace App\Domain\Payments\Gateways;
 
+use App\Domain\Commissions\Models\Commission;
 use App\Domain\Orders\Models\Order;
 use App\Domain\Orders\Models\OrderSeller;
 use App\Domain\Payments\Contracts\ConnectOnboarding;
@@ -66,6 +67,21 @@ final class FakeGateway implements PaymentGateway
     }
 
     public function reverseTransfer(OrderSeller $group): void
+    {
+        // Instant, deterministic reversal.
+    }
+
+    public function createCommissionCheckout(Commission $commission, string $purpose, int $amountMinor): string
+    {
+        return route('commissions.fake_pay', ['commission' => $commission, 'purpose' => $purpose]);
+    }
+
+    public function createCommissionTransfer(Commission $commission): string
+    {
+        return 'tr_fake_cm_'.$commission->id.'_'.$commission->seller_id;
+    }
+
+    public function reverseCommissionTransfer(Commission $commission): void
     {
         // Instant, deterministic reversal.
     }

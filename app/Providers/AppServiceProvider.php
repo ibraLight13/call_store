@@ -10,6 +10,8 @@ use App\Domain\Catalog\Models\Piece;
 use App\Domain\Catalog\Models\Script;
 use App\Domain\Catalog\Models\Theme;
 use App\Domain\Catalog\Policies\PiecePolicy;
+use App\Domain\Commissions\Models\Commission;
+use App\Domain\Commissions\Policies\CommissionPolicy;
 use App\Domain\Discovery\Cache\FeedCache;
 use App\Domain\Discovery\Contracts\PieceSearcher;
 use App\Domain\Discovery\Listeners\FlushDiscoveryCache;
@@ -79,6 +81,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Board::class, BoardPolicy::class);
         Gate::policy(Comment::class, CommentPolicy::class);
         Gate::policy(Order::class, OrderPolicy::class);
+        Gate::policy(Commission::class, CommissionPolicy::class);
         Model::preventLazyLoading(! $this->app->isProduction());
 
         Event::listen(PieceApproved::class, FlushDiscoveryCache::class);
