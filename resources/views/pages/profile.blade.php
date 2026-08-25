@@ -22,6 +22,9 @@
                 <span><b>{{ $profile->pieces_count ?? 0 }}</b> <span>{{ __('shell.s_pieces') }}</span></span>
                 <span><b>{{ number_format($profile->followers_count) }}</b> <span>{{ __('shell.s_followers') }}</span></span>
                 <span><b>{{ number_format($profile->following_count) }}</b> <span>{{ __('shell.s_following') }}</span></span>
+                @if ($reviewsTotal > 0)
+                    <span><b>{{ number_format($avgRating, 1) }}★</b> <span>{{ __('reviews.rating_avg') }} ({{ $reviewsTotal }})</span></span>
+                @endif
             </div>
         </div>
         <div style="display:flex;gap:10px;padding-bottom:8px;align-items:flex-start">
@@ -47,15 +50,39 @@
             <div class="art">✦</div>
             <div>{{ __('shell.no_pieces_yet') }}</div>
         </div>
+    <div class="sec-title"><h3>{{ __('reviews.reviews') }}</h3><span class="badge badge-gold">{{ $reviewsTotal }}</span></div>
+    <div class="panel">
+        @forelse ($reviews as $review)
+            <div class="cmt">
+                <span class="dot" style="width:38px;height:38px">{{ mb_substr($review->buyer->name, 0, 1) }}</span>
+                <div class="body">
+                    <div class="nm">{{ $review->buyer->name }} <span class="badge badge-primary" style="font-size:10px">{{ __('reviews.verified_buyer') }}</span></div>
+                    <div class="tx" style="color:var(--gold);letter-spacing:2px">{{ str_repeat('★', $review->rating) }}{{ str_repeat('☆', 5 - $review->rating) }}</div>
+                    @if ($review->body)<div class="tx">{{ $review->body }}</div>@endif
+                    <div class="mut">{{ $review->created_at->diffForHumans() }}</div>
+                </div>
+            </div>
+        @empty
+            <p class="muted" style="margin:0;text-align:center;padding:14px 0">{{ __('reviews.no_reviews') }}</p>
+        @endforelse
     </div>
 
-    <div class="sec-title"><h3>{{ __('shell.tab_about') }}</h3></div>
-    <div class="panel">
-        @if ($profile->bio)
-            <p style="margin:0;white-space:pre-line">{{ $profile->bio }}</p>
-        @else
-            <p class="muted" style="margin:0">{{ __('shell.no_bio') }}</p>
-        @endif
-    </div>
+    @if (! $isSelf)
+        <details class="panel" style="margin-top:14px">
+            <summary class="muted" style="cursor:pointer;font-size:13.5px">🚩 {{ __('reviews.report') }}</summary>
+            <form method="POST" action="{{ route('reports.store') }}" style="margin-top:12px">
+                @csrf
+                <input type="hidden" name="reportable_type" value="user">
+                <input type="hidden" name="reportable_id" value="{{ $profile->id }}">
+                <select name="reason" class="input" required>
+                    @foreach (['inappropriate', 'offensive', 'copyright', 'scam', 'other'] as $reason)
+                        <option value="{{ $reason }}">{{ __("reports.reason_$reason") }}</option>
+                    @endforeach
+                </select>
+                <textarea name="note" class="input" style="margin-top:8px" maxlength="1000"></textarea>
+                <button type="submit" class="btn btn-outline btn-sm" style="margin-top:8px">{{ __('reviews.report') }}</button>
+            </form>
+        </details>
+    @endif
 </section>
 @endsection

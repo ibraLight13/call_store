@@ -24,6 +24,7 @@ abstract class PieceState extends State
             ->allowTransition(Draft::class, PendingReview::class)
             ->allowTransition(PendingReview::class, Approved::class)
             ->allowTransition(PendingReview::class, Rejected::class)
+            ->allowTransition(Approved::class, Rejected::class)
             ->allowTransition(Rejected::class, Draft::class);
     }
 }

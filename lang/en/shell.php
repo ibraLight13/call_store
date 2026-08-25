@@ -87,4 +87,8 @@ return [
     'handmade' => 'Handmade',
     'd_avail' => 'Availability',
     'soon_title' => 'Enabled with the commerce phase',
+
+    'send' => 'Send',
+    'skip_to_content' => 'Skip to content',
+    'name' => 'Name',
 ];

@@ -15,10 +15,13 @@ use App\Http\Controllers\Commissions\CommissionController;
 use App\Http\Controllers\Commissions\CommissionFakePayController;
 use App\Http\Controllers\Commissions\CommissionProofController;
 use App\Http\Controllers\Commissions\CommissionRequestController;
+use App\Http\Controllers\Commissions\ReviewController;
 use App\Http\Controllers\Discovery\ExploreController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Moderation\ReportController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Settings\ProfileController as ProfileSettingsController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\Social\BoardsController;
 use App\Http\Controllers\Social\CommentController;
 use App\Http\Controllers\Social\NotificationsController;
@@ -30,6 +33,9 @@ Route::post('/webhooks/stripe', [WebhookController::class, 'stripe'])
     ->withoutMiddleware([PreventRequestForgery::class]);
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
+Route::get('/robots.txt', fn () => response(view('robots'))->header('Content-Type', 'text/plain'));
 
 Route::get('/explore', ExploreController::class)->name('explore');
 Route::get('/pieces/{piece}', [PiecesController::class, 'show'])->name('pieces.show');
@@ -68,6 +74,9 @@ Route::middleware('auth')->group(function (): void {
 
     Route::middleware('throttle:social-writes')->group(function (): void {
         Route::post('/pieces/{piece}/comments', [CommentController::class, 'store'])->name('comments.store');
+        Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
+        Route::post('/commissions/{commission}/reviews', [ReviewController::class, 'store'])
+            ->name('reviews.store');
     });
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 

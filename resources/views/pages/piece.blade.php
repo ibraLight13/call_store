@@ -102,6 +102,23 @@
     <div class="sec-title">
         <h3>{{ __('social.comments') }}</h3>
         <span class="badge badge-soft">{{ $topLevel->count() + $repliesByParent->sum(fn ($replies) => $replies->count()) }}</span>
+        @auth
+            <details style="margin-inline-start:auto">
+                <summary class="muted" style="cursor:pointer;font-size:12.5px">🚩 {{ __('reviews.report') }}</summary>
+                <form method="POST" action="{{ route('reports.store') }}" style="margin-top:10px;max-width:420px" onsubmit="this.querySelector('button').disabled=true">
+                    @csrf
+                    <input type="hidden" name="reportable_type" value="piece">
+                    <input type="hidden" name="reportable_id" value="{{ $piece->id }}">
+                    <select name="reason" class="input" required>
+                        @foreach (['inappropriate', 'offensive', 'copyright', 'scam', 'other'] as $reason)
+                            <option value="{{ $reason }}">{{ __("reports.reason_$reason") }}</option>
+                        @endforeach
+                    </select>
+                    <textarea name="note" class="input" style="margin-top:8px" maxlength="1000"></textarea>
+                    <button type="submit" class="btn btn-outline btn-sm" style="margin-top:8px">{{ __('reviews.report') }}</button>
+                </form>
+            </details>
+        @endauth
     </div>
     <div class="panel">
         @forelse ($topLevel as $comment)

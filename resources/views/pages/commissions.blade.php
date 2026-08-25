@@ -15,7 +15,7 @@
                 <div style="flex:1;min-width:0">
                     <div style="font-weight:700">{{ __('commerce.order') }} {{ $commission->number }} · {{ \Illuminate\Support\Str::limit($commission->text, 34) }}</div>
                     <div class="muted" style="font-size:12.5px">
-                        {{ $iAmBuyer ? __('shell.f_script').': '.$commission->seller->name : __('shell.name').': '.$commission->buyer->name }}
+                        {{ $iAmBuyer ? __('commissions.between').' '.$commission->seller->name : __('commissions.between').' '.$commission->buyer->name }}
                     </div>
                 </div>
                 @if ($commission->quote_minor)

@@ -6,12 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', __('shell.nav_home')) — خَطّ</title>
+    <meta name="description" content="@yield('meta_description', __('shell.tagline'))">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <meta property="og:site_name" content="خَطّ">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="@yield('title', __('shell.nav_home')) — خَطّ">
+    <meta property="og:description" content="@yield('meta_description', __('shell.tagline'))">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta name="twitter:card" content="summary">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Aref+Ruqaa:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
+
+<a class="skip-link" href="#main-content">{{ __('shell.skip_to_content') }}</a>
 
 <header class="topbar">
     <a class="brand" href="{{ route('home') }}">
@@ -95,7 +106,7 @@
         <div class="spacer"></div>
     </nav>
 
-    <main>
+    <main id="main-content">
         @yield('content')
     </main>
 </div>

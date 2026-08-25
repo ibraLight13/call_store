@@ -29,7 +29,7 @@
                         <span class="dot" style="width:30px;height:30px">{{ mb_substr($group->seller->name, 0, 1) }}</span>
                         <b>{{ $group->seller->name }}</b>
                         @if ($group->shipped_at)
-                            <span class="badge badge-primary" style="margin-inline-start:auto">🚚 {{ __('social.notif_view') ?? '' }}{{ __('commerce.shipped_at') }} {{ $group->shipped_at->translatedFormat('d M') }}</span>
+                            <span class="badge badge-primary" style="margin-inline-start:auto">🚚 {{ __('commerce.shipped_at') }} {{ $group->shipped_at->translatedFormat('d M') }}</span>
                         @else
                             <span class="badge badge-soft" style="margin-inline-start:auto">{{ __('commerce.transfer_status') }}: {{ __('commerce.state_paid') }}</span>
                         @endif

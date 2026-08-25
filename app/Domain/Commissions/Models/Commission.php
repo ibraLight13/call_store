@@ -5,10 +5,12 @@ namespace App\Domain\Commissions\Models;
 use App\Domain\Catalog\Models\Medium;
 use App\Domain\Catalog\Models\Script;
 use App\Domain\Commissions\States\CommissionState;
+use App\Domain\Social\Models\Review;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 use Spatie\ModelStates\HasStates;
 
@@ -107,5 +109,11 @@ final class Commission extends Model
     public function messages()
     {
         return $this->hasMany(CommissionMessage::class)->oldest();
+    }
+
+    /** @return HasOne<Review, $this> */
+    public function review()
+    {
+        return $this->hasOne(Review::class);
     }
 }
