@@ -39,6 +39,7 @@ it('registers a new seller with the seller role', function () {
 
     $response = $this->post('/register', [
         'name' => 'خطّاط جديد',
+        'username' => 'new-seller',
         'email' => 'new@khatt.test',
         'password' => 'password',
         'password_confirmation' => 'password',
@@ -50,6 +51,7 @@ it('registers a new seller with the seller role', function () {
     $user = User::whereEmail('new@khatt.test')->first();
     expect($user)->not->toBeNull();
     expect($user->hasRole('seller'))->toBeTrue();
+    expect($user->username)->toBe('new-seller');
 });
 
 it('lets admins open the admin panel', function () {

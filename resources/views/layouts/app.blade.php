@@ -38,7 +38,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
         </button>
         @auth
-            <a class="avatar" href="{{ route('profile') }}" title="{{ __('shell.account') }}">{{ mb_substr(auth()->user()->name, 0, 1) }}</a>
+            <a class="avatar" href="{{ auth()->user()->profileUrl() }}" title="{{ __('shell.account') }}">{{ mb_substr(auth()->user()->name, 0, 1) }}</a>
         @endauth
         @guest
             <a class="btn btn-dark btn-sm" href="{{ route('login') }}">{{ __('shell.login') }}</a>
@@ -79,7 +79,7 @@
         @endauth
         <div class="spacer"></div>
         @auth
-        <a class="rail-item {{ request()->routeIs('profile') ? 'active' : '' }}" href="{{ route('profile') }}">
+        <a class="rail-item {{ request()->routeIs('profile.show') || request()->routeIs('settings.profile.*') ? 'active' : '' }}" href="{{ auth()->user()->profileUrl() }}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>{{ __('shell.nav_profile') }}</span>
         </a>
         @endauth

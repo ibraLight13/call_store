@@ -13,22 +13,32 @@ final class DatabaseSeeder extends Seeder
 
         User::query()->updateOrCreate(
             ['email' => 'admin@khatt.test'],
-            ['name' => 'مشرف المنصّة', 'password' => 'password'],
+            ['name' => 'مشرف المنصّة', 'username' => 'admin', 'password' => 'password'],
         )->assignRole('admin');
 
         User::query()->updateOrCreate(
             ['email' => 'anas@khatt.test'],
-            ['name' => 'أستاذ أنس الخطّاط', 'password' => 'password'],
+            [
+                'name' => 'أستاذ أنس الخطّاط',
+                'username' => 'anas',
+                'bio' => 'خطّاط سوري، إجازة في خطّي الثلث والديواني. أكتب الآيات والأسماء بأعلى معايير الخط العربي الأصيل.',
+                'password' => 'password',
+            ],
         )->assignRole('seller');
 
         User::query()->updateOrCreate(
             ['email' => 'salma@khatt.test'],
-            ['name' => 'سلمى للخط والزخرفة', 'password' => 'password'],
+            [
+                'name' => 'سلمى للخط والزخرفة',
+                'username' => 'salma',
+                'bio' => 'فنّانة زخرفة وخط ديواني وجلي، أعمل على قطع الزفاف والهدايا الفاخرة.',
+                'password' => 'password',
+            ],
         )->assignRole('seller');
 
         User::query()->updateOrCreate(
             ['email' => 'abeer@khatt.test'],
-            ['name' => 'عبير م.', 'password' => 'password'],
+            ['name' => 'عبير م.', 'username' => 'abeer', 'password' => 'password'],
         )->assignRole('buyer');
     }
 }

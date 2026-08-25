@@ -19,6 +19,11 @@
                 @error('name')<div class="err">{{ $message }}</div>@enderror
             </div>
             <div class="field">
+                <label for="username">{{ __('shell.username') }} <span class="muted" dir="ltr">{{ url('/@') }}</span></label>
+                <input id="username" name="username" type="text" class="input" dir="ltr" value="{{ old('username') }}" required>
+                @error('username')<div class="err">{{ $message }}</div>@enderror
+            </div>
+            <div class="field">
                 <label for="email">{{ __('shell.email') }}</label>
                 <input id="email" name="email" type="email" class="input" value="{{ old('email') }}" required>
                 @error('email')<div class="err">{{ $message }}</div>@enderror
