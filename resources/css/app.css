@@ -116,6 +116,21 @@ html[dir="ltr"] .h1{font-family:var(--f-lat);font-weight:700}
 .chip:hover{color:var(--ink)}
 .chip.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
 
+/* ---------- Filter bar (explore) ---------- */
+.filterbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:13px 15px;margin-bottom:14px}
+.filterbar .fl{font-size:12px;font-weight:700;color:var(--ink-faint);margin-inline-end:2px}
+.pill{padding:7px 13px;border-radius:20px;border:1.5px solid var(--line-strong);font-size:13px;font-weight:600;color:var(--ink-soft);transition:.15s var(--ease)}
+.pill:hover{color:var(--ink)}
+.pill.on{border-color:var(--primary);background:var(--primary-wash);color:var(--primary-ink)}
+.swatch{width:26px;height:26px;border-radius:50%;border:2px solid var(--surface);box-shadow:0 0 0 1.5px var(--line-strong);display:inline-block}
+
+/* ---------- Key/value rows ---------- */
+.kv{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.kv:last-child{border-bottom:none}
+.kv .k{color:var(--ink-soft)}
+.kv .v{font-weight:600;text-align:end}
+.divider{height:1px;background:var(--line);margin:22px 0}
+
 /* ---------- Masonry pins ---------- */
 .pin-grid{columns:5;column-gap:16px}
 @media(max-width:1400px){.pin-grid{columns:4}}

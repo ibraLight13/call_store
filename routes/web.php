@@ -2,12 +2,17 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Catalog\PieceController;
+use App\Http\Controllers\Catalog\PiecesController;
+use App\Http\Controllers\Discovery\ExploreController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Settings\ProfileController as ProfileSettingsController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+Route::get('/explore', ExploreController::class)->name('explore');
+Route::get('/pieces/{piece}', [PiecesController::class, 'show'])->name('pieces.show');
 
 Route::get('/explore', fn () => view('pages.placeholder', ['title' => __('shell.nav_explore')]))->name('explore');
 
