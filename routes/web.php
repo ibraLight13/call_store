@@ -25,6 +25,7 @@ use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\Social\BoardsController;
 use App\Http\Controllers\Social\CommentController;
 use App\Http\Controllers\Social\NotificationsController;
+use App\Http\Controllers\StatusController;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Support\Facades\Route;
 
@@ -36,6 +37,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('/robots.txt', fn () => response(view('robots'))->header('Content-Type', 'text/plain'));
+Route::get('/status', StatusController::class)->name('status');
 
 Route::get('/explore', ExploreController::class)->name('explore');
 Route::get('/pieces/{piece}', [PiecesController::class, 'show'])->name('pieces.show');

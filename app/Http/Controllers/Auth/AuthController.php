@@ -9,11 +9,14 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 final class AuthController extends Controller
 {
+    private const MAX_LOGIN_ATTEMPTS = 5;
+
     public function showLogin(): View
     {
         return view('auth.login');
@@ -21,11 +24,25 @@ final class AuthController extends Controller
 
     public function login(LoginRequest $request): RedirectResponse
     {
+        $key = 'login:'.mb_strtolower($request->str('email')->toString()).'|'.$request->ip();
+
+        if (RateLimiter::tooManyAttempts($key, self::MAX_LOGIN_ATTEMPTS)) {
+            $seconds = RateLimiter::availableIn($key);
+
+            throw ValidationException::withMessages([
+                'email' => __('auth.throttle', ['seconds' => $seconds]),
+            ]);
+        }
+
         if (! Auth::attempt($request->credentials(), $request->boolean('remember'))) {
+            RateLimiter::hit($key, 60);
+
             throw ValidationException::withMessages([
                 'email' => __('auth.failed'),
             ]);
         }
+
+        RateLimiter::clear($key);
 
         $request->session()->regenerate();
 
