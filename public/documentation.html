@@ -232,6 +232,11 @@ footer{padding:40px 48px;color:var(--ink3);font-size:12.5px;border-top:1px solid
   <div class="navgroup">Working on it</div>
   <div class="navitem" data-goto="review"><span class="dot"></span>Code Review Guide</div>
   <div class="navitem" data-goto="ops"><span class="dot"></span>Ops &amp; Deployment</div>
+
+  <div class="navgroup">Learn</div>
+  <div class="navitem" data-goto="tutorial"><span class="dot"></span>Tutorial — How It Was Built</div>
+  <div class="navitem" data-goto="patterns"><span class="dot"></span>Pattern Reference</div>
+  <div class="navitem" data-goto="replicate"><span class="dot"></span>Replication Playbook</div>
 </aside>
 
 <!-- ======================= MAIN ======================= -->
@@ -892,6 +897,255 @@ tests/Feature/SocialTest.php                      'likes idempotently and keeps 
     <div class="pstage hot">Restore drill ✓</div><div class="parrow"></div>
     <div class="pstage">Launch 🚀</div>
   </div>
+</section>
+
+<!-- ============ TUTORIAL: ARCHITECTURE CHOICE ============ -->
+<section class="block" id="tutorial">
+  <div class="kicker">Tutorial · part 1 of 3</div>
+  <h2 class="title">How we chose the architecture — and how you can too</h2>
+  <p class="sub">This is the reasoning process, not just the result. Read it as a decision framework you can apply to your next project before writing a single line.</p>
+
+  <h3 class="head">Step 1 — Answer five questions honestly</h3>
+  <p>Architecture is not a fashion choice; it's a response to constraints. Before picking anything, write down answers to these:</p>
+
+  <table class="doc">
+    <tr><th>#</th><th>Question</th><th>If answer is small…</th><th>If answer is big…</th></tr>
+    <tr><td>1</td><td>How many people will work on this?</td><td>1–3 → keep one codebase</td><td>5+ teams → consider service boundaries per team</td></tr>
+    <tr><td>2</td><td>Do different parts scale differently?</td><td>No — traffic is uniform → monolith fine</td><td>e.g. image processing ×100 vs CRUD → extract that piece only</td></tr>
+    <tr><td>3</td><td>Is money involved?</td><td>—</td><td>Yes (either size) → state machines + idempotency are mandatory, whatever architecture</td></tr>
+    <tr><td>4</td><td>What's the deployment budget?</td><td>Shared hosting / single VPS → modular monolith</td><td>Kubernetes cluster + on-call → microservices viable</td></tr>
+    <tr><td>5</td><td>Will parts be reused elsewhere?</td><td>No → internal modules suffice</td><td>Yes → extract libraries, then services later</td></tr>
+  </table>
+
+  <div class="callout tip"><b>The Khatt answers were:</b> tiny team · uniform read-heavy traffic · money involved · Laragon/shared-hosting pilot budget · no reuse. Score that up and a <b>modular monolith</b> is the only honest choice. Microservices would have spent the runway on infrastructure instead of features; a flat (un-modular) monolith would rot into mud once Payments needed to talk to Commissions.</div>
+
+  <h3 class="head">Step 2 — Draw the module seams before the database</h3>
+  <p>List your product's nouns and group them by who "owns" them. For Khatt that produced exactly eight groups:</p>
+  <div class="chiprow">
+    <span class="chip t">Identity — who you are</span>
+    <span class="chip t">Catalog — what you sell</span>
+    <span class="chip t">Discovery — finding it</span>
+    <span class="chip t">Social — reacting to it</span>
+    <span class="chip g">Orders — buying ready-made</span>
+    <span class="chip g">Commissions — ordering custom</span>
+    <span class="chip r">Payments — money movement</span>
+    <span class="chip r">Moderation — trust &amp; safety</span>
+  </div>
+  <p style="margin-top:14px">Two tests prove a seam is real:</p>
+  <ol style="color:var(--ink2);padding-inline-start:20px">
+    <li><b>The pronoun test:</b> can you describe the module without saying "and also…"? If Identity's description needs to mention payments, the seam is wrong.</li>
+    <li><b>The extraction test:</b> could this module become its own service one day with only its Actions as the API? If yes, the boundary is drawn correctly.</li>
+  </ol>
+
+  <h3 class="head">Step 3 — Write the dependency rule down and enforce it</h3>
+  <pre class="codeblock"><span class="cmt">// The one rule that keeps a modular monolith from rotting:</span>
+<span class="cmt">// Modules talk through ACTIONS and EVENTS — never by reaching into another module's models.</span>
+
+<span class="k">use</span> App\Domain\Identity\Actions\FollowUser;        <span class="cmt">// ✓ calling another module's Action</span>
+<span class="k">use</span> App\Domain\Identity\Events\UserFollowed;       <span class="cmt">// ✓ subscribing to its event</span>
+<span class="k">use</span> App\Domain\Identity\Models\User;               <span class="cmt">// ⚠ allowed: shared root model</span>
+<span class="cmt">// ✗ App\Domain\Catalog\Models\Piece::where(...)     ← NEVER from another module</span></pre>
+
+  <p>Enforce it socially at first (code review), then mechanically (Deptrac) when the team grows. The escape hatch is deliberate: if one module ever outgrows the monolith, its Actions already form the API contract for extraction.</p>
+
+  <h3 class="head">Step 4 — Plan phases as vertical slices, not layers</h3>
+  <p>The biggest planning mistake is building "all models, then all controllers, then all views". Instead, each phase should deliver something a user can actually do:</p>
+
+  <table class="doc">
+    <tr><th>Anti-pattern (layer phases)</th><th>What Khatt did (vertical slices)</th></tr>
+    <tr><td>Week 1–2: build every table</td><td>Phase 0–1: shell + auth + profiles — a person can sign up and exist</td></tr>
+    <tr><td>Week 3: build every controller</td><td>Phase 2: create piece → moderate → appears in feed (whole vertical)</td></tr>
+    <tr><td>Week 4: build every view</td><td>Phase 5: cart → pay → order (money flows end-to-end, tested)</td></tr>
+    <tr><td>Result: nothing works until week 8</td><td>Result: something demonstrable after every phase, each with its own DoD</td></tr>
+  </table>
+
+  <div class="callout warn"><b>Rule of thumb:</b> if a phase has no Definition of Done a non-programmer could verify ("a seller creates a piece → admin approves → it's public"), it's too abstract. Split it.</div>
+</section>
+
+<!-- ============ TUTORIAL: PATTERNS ============ -->
+<section class="block" id="patterns">
+  <div class="kicker">Tutorial · part 2 of 3</div>
+  <h2 class="title">Implementation strategy — six patterns that carried this whole build</h2>
+  <p class="sub">These are the load-bearing patterns. Each has a real example from the codebase, why it exists, and the trap it prevents.</p>
+
+  <!-- Pattern 1 -->
+  <div class="panel" style="margin-bottom:18px">
+    <h3 class="head" style="margin-top:0">① The Action pattern — one business operation = one class</h3>
+    <p>Controllers parse input and delegate. Filament panels delegate. Livewire components delegate. The rule lives <b>once</b>, in an invokable class with a single <code class="inline">handle()</code>:</p>
+    <pre class="codeblock"><span class="k">final class</span> <span class="m">LikePiece</span>
+{
+    <span class="k">public function</span> handle(<span class="m">User</span> $actor, <span class="m">Piece</span> $piece): <span class="m">bool</span>
+    {
+        $like = Like::query()->firstOrCreate([...]);
+
+        <span class="k">if</span> ($like->wasRecentlyCreated) {
+            PieceLiked::dispatch($piece);   <span class="cmt">// side effect via event, never inline</span>
+        }
+
+        <span class="k">return</span> $like->wasRecentlyCreated;
+    }
+}</pre>
+    <p><b>Why it matters:</b> the like rule was written once and consumed by three surfaces — the Livewire button, future mobile API, and tests. When the counter logic changed, one file changed. The trap it prevents: copy-pasted rules drifting apart per endpoint.</p>
+    <p><b>When NOT to use it:</b> trivial reads belong in queries or controllers directly. An Action for "fetch one row" is ceremony, not clarity. Khatt uses <code class="inline">CartQuery</code>/<code class="inline">FeedQuery</code> classes only because those reads encode real rules.</p>
+  </div>
+
+  <!-- Pattern 2 -->
+  <div class="panel" style="margin-bottom:18px">
+    <h3 class="head" style="margin-top:0">② State machines for anything with a lifecycle</h3>
+    <p>Any entity where "what's allowed next" depends on "where it is now" gets spatie/model-states. Three machines cover Khatt: Piece (4 states), Order (6), Commission (12).</p>
+    <pre class="codeblock"><span class="cmt">// Registration IS the documentation:</span>
+CommissionState::<span class="m">config</span>()
+    ->default(Requested::<span class="k">class</span>)
+    ->allowTransition(Requested::<span class="k">class</span>, Quoted::<span class="k">class</span>)
+    ->allowTransition(Quoted::<span class="k">class</span>, DepositPaid::<span class="k">class</span>)   <span class="cmt">// money gate #1</span>
+    ->allowTransition(ProofSubmitted::<span class="k">class</span>, Approved::<span class="k">class</span>)
+    ->allowTransition(Approved::<span class="k">class</span>, BalancePaid::<span class="k">class</span>); <span class="cmt">// money gate #2</span>
+
+<span class="cmt">// Usage — illegal transitions simply don't exist:</span>
+$commission->state->transitionTo(DepositPaid::<span class="k">class</span>);      <span class="cmt">// ✓ from quoted</span>
+$commission->state->transitionTo(Completed::<span class="k">class</span>);        <span class="cmt">// 💥 TransitionNotFound</span></pre>
+    <p><b>The trap prevented:</b> hand-rolled status columns grow <code class="inline">if ($status === 'x' && $other !== 'y')</code> weeds until someone ships before payment. With a machine, <code class="inline">TransitionNotFound</code> fires the first time a developer tries an unregistered hop — the bug dies in CI, not in production bank statements.</p>
+    <p><b>Placement tip:</b> put the money gates so the machine itself enforces the business promise. In Khatt, <i>"the artist is paid only after buyer approval"</i> isn't a check somewhere — it's structurally impossible to violate because balance_paid only transitions from approved.</p>
+  </div>
+
+  <!-- Pattern 3 -->
+  <div class="panel" style="margin-bottom:18px">
+    <h3 class="head" style="margin-top:0">③ Contracts at vendor boundaries</h3>
+    <p>Anywhere a third-party SDK would leak into domain code, define an interface named after the <i>capability</i>, not the vendor:</p>
+    <pre class="codeblock"><span class="k">interface</span> <span class="m">PaymentGateway</span>
+{
+    <span class="k">public function</span> createCheckoutSession(Order $order): <span class="m">string</span>;
+    <span class="k">public function</span> createTransfer(OrderSeller $group): <span class="m">string</span>;
+    <span class="k">public function</span> reverseTransfer(OrderSeller $group): <span class="m">void</span>;
+}
+
+<span class="cmt">// Container binding — the ONLY file that knows Stripe exists:</span>
+$this->app->bind(PaymentGateway::<span class="k">class</span>, fn () =>
+    config('commerce.gateway') === 'stripe'
+        ? <span class="k">new</span> StripeGateway(config('services.stripe.secret'), ...)
+        : <span class="k">new</span> FakeGateway
+);</pre>
+    <p><b>Why it mattered here:</b> the entire Phase 5 build ran on FakeGateway with zero Stripe keys. Tests exercised real splits, refunds and replays. Going live later means pasting keys into .env — the same 46 tests keep passing unchanged.</p>
+    <p><b>Bonus:</b> the fake implementation documents expected behaviour better than any comment — it's executable spec.</p>
+  </div>
+
+  <!-- Pattern 4 -->
+  <div class="panel" style="margin-bottom:18px">
+    <h3 class="head" style="margin-top:0">④ Events for side effects — keep Actions pure-ish</h3>
+    <p>An Action should do the core write and <i>announce</i> consequences, not perform them inline:</p>
+    <pre class="codeblock"><span class="cmt">// ApprovePiece::handle() ends with:</span>
+PieceApproved::dispatch($piece);
+
+<span class="cmt">// Listeners registered centrally in AppServiceProvider:</span>
+Event::listen(PieceApproved::<span class="k">class</span>, FlushDiscoveryCache::<span class="k">class</span>);
+<span class="cmt">// later: notification listener, search-indexing listener — zero edits to the Action</span></pre>
+    <p><b>Why:</b> when Phase 8 added cache invalidation and Phase 9 might add webhooks, no Action changed. New behaviour = new subscriber. The trap prevented: Action methods growing to 200 lines as each feature bolts another side effect onto them.</p>
+    <p><b>Cross-module rule:</b> events are also how modules communicate without importing each other's internals — Identity emits <code class="inline">UserFollowed</code>; Social's listener sends the notification.</p>
+  </div>
+
+  <!-- Pattern 5 -->
+  <div class="panel" style="margin-bottom:18px">
+    <h3 class="head" style="margin-top:0">⑤ Idempotency for anything touching money or counters</h3>
+    <p>Webhooks replay. Users double-click. Networks retry. Any non-idempotent write <i>will</i> run twice:</p>
+    <pre class="codeblock"><span class="cmt">// MarkOrderPaid — claim first, settle second:</span>
+$claimed = DB::table('processed_webhooks')->insertOrIgnore([
+    'gateway' => $gateway, 'event_id' => $eventId, ...
+]);
+
+<span class="k">if</span> ($claimed === 0) {
+    <span class="k">return</span> Order::where('checkout_ref', $checkoutRef)->first(); <span class="cmt">// replay = no-op</span>
+}
+
+<span class="k">return</span> DB::transaction(fn () => <span class="cmt">/* lockForUpdate + transition */</span>);</pre>
+    <p><b>The test proves it:</b> calling handle twice with the same event id returns the same order, sends notifications exactly once, and leaves one ledger row. Counters use the sibling trick — atomic <code class="inline">UPDATE x = x ± 1</code> plus unique constraints, so double-clicks can't skew counts.</p>
+  </div>
+
+  <!-- Pattern 6 -->
+  <div class="panel" style="margin-bottom:18px">
+    <h3 class="head" style="margin-top:0">⑥ Form Requests as typed boundaries</h3>
+    <p>Raw request arrays never reach domain code. Each Form Request validates, then hands over a shaped payload:</p>
+    <pre class="codeblock"><span class="k">final class</span> <span class="m">CreatePieceRequest</span> <span class="k">extends</span> <span class="m">FormRequest</span>
+{
+    <span class="k">public function</span> actor(): <span class="m">User</span>          <span class="cmt">// narrowed auth user, throws if guest</span>
+    {
+        $user = parent::user();
+        <span class="k">if</span> (! $user instanceof User) { <span class="k">throw new</span> AuthenticationException; }
+        <span class="k">return</span> $user;
+    }
+
+    <span class="k">public function</span> pieceData(): <span class="m">PieceData</span>  <span class="cmt">// typed DTO → the Action</span>
+    {
+        <span class="k">return new</span> PieceData(
+            text: $this->str('text')->toString(),
+            scriptId: $this->filled('script_id') ? $this->integer('script_id') : null,
+            photos: array_values(array_filter((array) $this->file('photos', []),
+                fn ($f) => $f instanceof UploadedFile)),
+            ...
+        );
+    }
+}</pre>
+    <p><b>Why:</b> the Action signature becomes self-documenting (<code class="inline">PieceData</code>, <code class="inline">ProfileData</code>) and phpstan-at-max-level can verify the whole chain. It also gives one home for validation messages in both locales.</p>
+  </div>
+</section>
+
+<!-- ============ TUTORIAL: CLEAN CODE + REPLICATE ============ -->
+<section class="block" id="replicate">
+  <div class="kicker">Tutorial · part 3 of 3</div>
+  <h2 class="title">Clean-code rules that actually held up — and the replication playbook</h2>
+  <p class="sub">Not aspirational slogans: these survived 10 phases, 64 tests, and several production-shaped bugs. Each rule lists the concrete failure that proved it.</p>
+
+  <h3 class="head">The rules, each with the scar that earned it</h3>
+  <table class="doc">
+    <tr><th>Rule</th><th>The bug that proved it</th></tr>
+    <tr><td>Type everything; run PHPStan at max from day one</td><td>Unimported symbols turned <code class="inline">OrderState::class</code> into silent strings — policies silently never registered, caught only because max-level analysis flagged the bogus FQCNs</td></tr>
+    <tr><td>Every fillable column is written explicitly; mass-assignment gaps fail tests</td><td><code class="inline">transfer_ref</code> missing from <code class="inline">$fillable</code> made transfers "work" but persist null refs — Pest's split assertions caught it within minutes</td></tr>
+    <tr><td>Name DB columns for what they mean, mind irregular plurals</td><td><code class="inline">medium_id</code> auto-constrained to a nonexistent <code class="inline">media</code> table — explicit <code class="inline">constrained('mediums')</code> fixed it</td></tr>
+    <tr><td>Never pipe non-ASCII through shell writes</td><td>PowerShell <code class="inline">Set-Content -Encoding UTF8</code> re-encoded Arabic files as mojibake twice — restored via clean writes; i18n parity test now guards regressions</td></tr>
+    <tr><td>Tests read as specification, one Feature test per DoD</td><td>Every phase's DoD sentence maps 1:1 to a test name; refactors stayed safe across 9 phases because intent was pinned</td></tr>
+    <tr><td>Prefer DB-level guarantees over app-level checks for invariants</td><td>follows table CHECK constraint kills self-follows even if app code regresses; unique(user,piece) makes double-like counting impossible</td></tr>
+  </table>
+
+  <h3 class="head">The replication playbook — starting your next project</h3>
+
+  <div class="guide">
+    <ol>
+      <li><b>Write the five constraint answers</b> (team size, scaling shape, money?, deploy budget, reuse). Pick modular monolith / services / flat accordingly — document the answers in the repo so future-you remembers why.</li>
+      <li><b>Draw module seams</b> using the pronoun + extraction tests. Create <code class="inline">app/Domain/&lt;Module&gt;/{Models,Actions,Policies,Events}</code> skeletons with .gitkeep files before any feature code.</li>
+      <li><b>Scaffold quality gates first, features second.</b> Pint + PHPStan(max) + Pest + CI pipeline on an empty-but-structured app. Green gates on day one make every later phase cheaper — retrofitting types onto 50 files is misery.</li>
+      <li><b>Build vertical slice #1 end-to-end.</b> Smallest thing a user does (sign up → profile). Controller → Request → Action → Model → View → Test. This establishes every pattern the rest of the project copies.</li>
+      <li><b>Add machines the moment a lifecycle appears.</b> Any column named <code class="inline">status/state</code> with more than two values deserves model-states. Register transitions as business rules, not as an afterthought.</li>
+      <li><b>Put contracts around third parties immediately.</b> Even if v1 wraps a stub. PaymentGateway/PieceSearcher patterns cost ~30 minutes each and repaid themselves within one phase.</li>
+      <li><b>Wire events for side effects as they appear</b> — counters, cache flushes, notifications. Keep Actions announcing, listeners performing.</li>
+      <li><b>Give money flows idempotency rows + locks before the second payment path exists,</b> not after the first double-charge.</li>
+      <li><b>Ship each phase behind its DoD, commit per phase,</b> and keep a running doc like this one — the writing forces clarity and onboards the next developer in hours instead of days.</li>
+    </ol>
+  </div>
+
+  <h3 class="head">What I'd deliberately skip at this scale</h3>
+  <div class="grid2">
+    <div class="panel">
+      <span class="lbl">Skipped — and why that was right</span>
+      <ul style="list-style:none;padding:0;margin:8px 0;color:var(--ink2);font-size:13.5px">
+        <li style="padding:5px 0">✗ Repository interfaces over Eloquent — Eloquent already IS the abstraction; wrapping it doubles surface area for zero gain</li>
+        <li style="padding:5px 0">✗ Microservices — network hops for a 1-team product</li>
+        <li style="padding:5px 0">✗ Full hexagonal ports/adapters everywhere — contracts only at true vendor edges</li>
+        <li style="padding:5px 0">✗ GraphQL/API-first — consumer app consumes server-rendered HTML + Livewire</li>
+        <li style="padding:5px 0">✗ Redis/Horizon/Octane at pilot tier — DB queue + sync paths degrade gracefully; swap documented in DEPLOYMENT.md</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <span class="lbl">Kept — cheap insurance that paid off</span>
+      <ul style="list-style:none;padding:0;margin:8px 0;color:var(--ink2);font-size:13.5px">
+        <li style="padding:5px 0">✓ preventLazyLoading(!production) — N+1s die in tests</li>
+        <li style="padding:5px 0">✓ strict_types + declare everywhere — whole bug classes gone</li>
+        <li style="padding:5px 0">✓ JSON address snapshots — orders immutable when addresses change</li>
+        <li style="padding:5px 0">✓ Bilingual lang parity enforced by a test — no half-translated merges</li>
+        <li style="padding:5px 0">✓ One design-token CSS layer — RTL/LTR and dark/light share tokens</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout tip"><b>The meta-lesson:</b> architecture is a series of small reversible decisions, not one grand irreversible one. Every pattern above cost less than a day to introduce and none requires a rewrite to remove. That's the real test of clean architecture — cheap to change, cheap to delete.</div>
 </section>
 
 <footer>
