@@ -137,6 +137,17 @@ final class DemoPiecesSeeder extends Seeder
             app(CreateReview::class)->handle(
                 $buyer, $commission, 5, 'عمل استثنائي! الخط متوازن والتنفيذ أنيق جدًا.',
             );
+
+            // A pending commission awaiting the artist's quote.
+            Commission::query()->create([
+                'number' => 'CM-2051',
+                'buyer_id' => $buyer->id,
+                'seller_id' => $anas->id,
+                'text' => 'توكلتُ على الحيّ الذي لا يموت',
+                'budget_minor' => 120_000,
+                'deadline' => now()->addDays(21)->toDateString(),
+                'message' => 'أرغب بتنفيذها على خشب بمقاس كبير لإدخال المجلس.',
+            ]);
         }
     }
 

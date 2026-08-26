@@ -43,9 +43,9 @@ function placeTwoSellerOrder(): array
     onboard($anas);
     onboard($salma);
 
-    $pieceA = buyablePiece($anas, ['price_minor' => 145_000]);
+    $pieceA = buyablePiece($anas, ['price_minor' => 145_000, 'text' => 'نورٌ على الدرب', 'normalized_text' => 'نور على الدرب']);
     $pieceB = buyablePiece($salma, ['listing_type' => 'commission', 'price_minor' => null]);
-    $pieceB2 = buyablePiece($salma, ['text' => 'ما شاء الله', 'normalized_text' => 'ما شاء الله', 'price_minor' => 62_000]);
+    $pieceB2 = buyablePiece($salma, ['text' => 'قلمٌ لا ينقطع', 'normalized_text' => 'قلم لا ينقطع', 'price_minor' => 62_000]);
 
     $buyer = User::factory()->create();
 
@@ -118,13 +118,13 @@ it('runs the full two-seller purchase with one payment and correct split', funct
     $anasView = $this->actingAs($anas)->get(route('seller.orders.index'))
         ->assertOk()
         ->assertSee((string) $order->id)
-        ->assertSee('الحَمدُ لِلَّه')
-        ->assertDontSee('ما شاء الله');
+        ->assertSee('نورٌ على الدرب')
+        ->assertDontSee('قلمٌ لا ينقطع');
 
     $salmaView = $this->actingAs($salma)->get(route('seller.orders.index'))
         ->assertOk()
-        ->assertSee('ما شاء الله')
-        ->assertDontSee('الحَمدُ لِلَّه');
+        ->assertSee('قلمٌ لا ينقطع')
+        ->assertDontSee('نورٌ على الدرب');
 
     // Seller ships their group.
     $this->actingAs($salma)

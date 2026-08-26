@@ -4,13 +4,15 @@
             <a href="{{ $pin['url'] }}" class="pcard-media" aria-label="{{ $pin['text'] }}">
                 @if ($pin['img'])
                     <img src="{{ $pin['img'] }}" alt="{{ $pin['text'] }}" loading="lazy"
-                         width="480" height="360" style="object-fit:cover;width:100%;height:100%;display:block">
+                         width="480" height="360">
                 @else
-                    <span class="pcard-art" style="background:{{ $pin['bg'] }};color:{{ $pin['ink'] }};font-family:{{ $pin['font'] }};font-weight:{{ $pin['weight'] }};font-size:{{ $pin['size'] }}px">{{ $pin['text'] }}</span>
-                    <span class="paper-edge"></span>
+                    <span class="pcard-art" style="background:{{ $pin['bg'] }};color:{{ $pin['ink'] }};font-family:{{ $pin['font'] }};font-weight:{{ $pin['weight'] }}">
+                        {{ $pin['text'] }}
+                        <span class="pcard-frame" aria-hidden="true"></span>
+                    </span>
                 @endif
                 @if ($pin['scriptName'])
-                    <span class="scr-chip">{{ $pin['scriptName'] }}</span>
+                    <span class="scr-seal">{{ $pin['scriptName'] }}</span>
                 @endif
                 @if ($pin['sold'])
                     <span class="badge badge-gold pcard-sold">{{ __('commerce.sold') }}</span>
@@ -21,15 +23,12 @@
                 <a href="{{ $pin['url'] }}" class="pcard-title">{{ $pin['text'] }}</a>
 
                 <div class="pcard-meta">
-                    <a href="{{ $pin['sellerUrl'] }}" class="pcard-seller" title="{{ $pin['sellerName'] }}">
-                        <span class="dot" style="width:22px;height:22px;font-size:10px">{{ $pin['sellerInitial'] }}</span>
-                        <span class="nm">{{ $pin['sellerName'] }}</span>
-                    </a>
+                    <a href="{{ $pin['sellerUrl'] }}" class="pcard-seller">{{ $pin['sellerName'] }}</a>
 
                     @if ($pin['isReady'])
                         <span class="pcard-price">{{ $pin['price'] }} <small>SAR</small></span>
                     @else
-                        <span class="badge badge-primary" style="font-size:10.5px">{{ __('shell.t_commission') }}</span>
+                        <span class="badge badge-primary">{{ __('shell.t_commission') }}</span>
                     @endif
                 </div>
             </div>
