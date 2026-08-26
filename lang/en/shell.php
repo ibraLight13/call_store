@@ -49,6 +49,7 @@ return [
     'cannot_follow_self' => 'You cannot follow yourself.',
     't_commission' => 'Commissionable',
     's_following' => 'following',
+    's_pieces' => 'pieces',
     'tab_pieces' => 'Pieces',
     'tab_boards' => 'Boards',
     'tab_about' => 'About',

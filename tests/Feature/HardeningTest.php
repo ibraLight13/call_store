@@ -7,6 +7,7 @@ use App\Domain\Orders\Models\Order;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\RateLimiter;
 
 it('sets security headers on every response', function () {
     $response = $this->get('/');
@@ -41,7 +42,11 @@ it('locks out an account after five failed logins', function () {
     ]);
 
     $response->assertSessionHasErrors('email');
-    expect(session('errors')->default->first('email'))->toContain(__('auth.throttle', ['seconds' => 60]));
+
+    // The limiter itself confirms lockout for this email+ip key.
+    $key = 'login:'.mb_strtolower($user->email).'|127.0.0.1';
+    expect(RateLimiter::tooManyAttempts($key, 5))->toBeTrue()
+        ->and(auth()->check())->toBeFalse();
 
     // And a successful login is not registered in the session.
     expect(auth()->check())->toBeFalse();

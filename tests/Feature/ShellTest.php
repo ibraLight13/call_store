@@ -8,9 +8,11 @@ it('renders the themed bilingual shell', function () {
     $response = $this->get('/');
 
     $response->assertOk();
-    $response->assertSee('خَطّ');
-    $response->assertSee(__('shell.home_title'));
-    $response->assertSee('dir="rtl"', false);
+    // Literal Arabic on purpose: if the lang file ever gets double-encoded
+    // (mojibake), reading the key back would "match" itself. A literal pins it.
+    $response->assertSee('لوحاتٌ من نور الحرف');
+    $response->assertSee('<html lang="ar" dir="rtl"', false);
+    $response->assertDontSee('Ù„ÙˆØ­'); // mojibake marker must never appear
 });
 
 it('switches locale to english on request', function () {
