@@ -20,9 +20,12 @@ final class SecurityHeaders
 
         // Always revalidate HTML so browser-cached pages can never go stale
         // (stale cached markup was serving pre-fix mojibake + old CSS links).
-        $contentType = $response->headers->get('Content-Type', '');
+        $contentType = (string) $response->headers->get('Content-Type', '');
 
-        if (str_contains($contentType, 'text/html')) {
+        if (str_contains($contentType, 'text/html') && is_string($content = $response->getContent())) {
+            // Strip any UTF-8 BOM that leaked from source files — a BOM before
+            // <!DOCTYPE makes some browsers fall back to legacy encoding sniffing.
+            $response->setContent(preg_replace('/^\xEF\xBB\xBF/', '', $content));
             $response->headers->set('Cache-Control', 'no-cache, private');
         }
 

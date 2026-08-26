@@ -148,7 +148,7 @@ it('lets sellers submit through the http form with photos', function () {
 
     expect($piece)->not->toBeNull();
     expect($piece->price_minor)->toBe(96_000);
-    expect(Storage::disk('local')->allFiles('pieces'))->toHaveCount(2);
+    expect(Storage::disk('local')->allFiles('pieces/'.$piece->id))->toHaveCount(2);
     expect($piece->media()->count())->toBe(2);
     expect($piece->state::getMorphClass())->toBe('pending_review');
 });

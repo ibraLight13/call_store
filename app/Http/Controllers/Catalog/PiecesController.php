@@ -24,7 +24,7 @@ final class PiecesController extends Controller
 
         $related = Piece::query()
             ->approved()
-            ->with(['seller:id,name,username', 'script', 'color'])
+            ->with(['seller:id,name,username', 'script', 'color', 'media'])
             ->whereKeyNot($piece->getKey())
             ->when(
                 $piece->theme_id !== null,

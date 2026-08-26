@@ -75,14 +75,17 @@ it('lets the buyer review a completed commission once, verified on profile', fun
 
     [$buyer, $seller] = completedCommission();
 
-    $response = $this->actingAs($buyer)->post(route('reviews.store', $commission = Commission::first()), [
+    // Target the commission this test created, not a seeded demo one.
+    $commission = $buyer->commissions()->firstOrFail();
+
+    $response = $this->actingAs($buyer)->post(route('reviews.store', $commission), [
         'rating' => 5,
         'body' => 'تحفة فنية، تنفيذ متقن!',
     ]);
 
     $response->assertRedirect();
 
-    $review = Review::query()->first();
+    $review = Review::query()->where('commission_id', $commission->id)->first();
     expect($review)->not->toBeNull()
         ->and($review->rating)->toBe(5)
         ->and($review->seller_id)->toBe($seller->id);
@@ -91,7 +94,7 @@ it('lets the buyer review a completed commission once, verified on profile', fun
     $this->actingAs($buyer)->post(route('reviews.store', $commission), ['rating' => 4])
         ->assertSessionHasErrors();
 
-    expect(Review::count())->toBe(1);
+    expect(Review::query()->where('commission_id', $commission->id)->count())->toBe(1);
 
     Notification::assertSentTo($seller, ReviewReceived::class);
 

@@ -51,7 +51,7 @@ final class FeedQuery
     {
         return Piece::query()
             ->approved()
-            ->with(['seller:id,name,username', 'script', 'color'])
+            ->with(['seller:id,name,username', 'script', 'color', 'media'])
             ->orderByDesc('published_at')
             ->orderByDesc('id');
     }

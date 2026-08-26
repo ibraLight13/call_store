@@ -131,11 +131,33 @@ html[dir="ltr"] .h1{font-family:var(--f-lat);font-weight:700}
 .kv .v{font-weight:600;text-align:end}
 .divider{height:1px;background:var(--line);margin:22px 0}
 
-/* ---------- Masonry pins ---------- */
-.pin-grid{columns:5;column-gap:16px}
-@media(max-width:1400px){.pin-grid{columns:4}}
-@media(max-width:1080px){.pin-grid{columns:3}}
-@media(max-width:760px){.pin-grid{columns:2}}
+/* ---------- Piece cards (calligraphy style) ---------- */
+.pin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px}
+@media(max-width:1400px){.pin-grid{grid-template-columns:repeat(auto-fill,minmax(225px,1fr))}}
+@media(max-width:1080px){.pin-grid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}}
+@media(max-width:760px){.pin-grid{grid-template-columns:repeat(2,1fr);gap:12px}}
+
+.pcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:.22s var(--ease);display:flex;flex-direction:column}
+.pcard:hover{border-color:var(--gold2);box-shadow:var(--shadow-2);transform:translateY(-3px)}
+.pcard-media{position:relative;display:block;height:190px;background:var(--surface-3);overflow:hidden}
+.pcard-art{
+    width:100%;height:100%;display:grid;place-items:center;text-align:center;
+    padding:18px;font-size:26px;line-height:1.5;font-weight:700;word-break:break-word;
+}
+.pcard-sold{position:absolute;top:10px;inset-inline-start:10px}
+.pcard-body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px;flex:1}
+.pcard-title{
+    font-family:var(--f-disp);font-size:17.5px;font-weight:700;color:var(--ink);
+    line-height:1.45;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.pcard-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto}
+.pcard-seller{display:flex;align-items:center;gap:6px;min-width:0;color:var(--ink-soft)}
+.pcard-seller .nm{font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pcard-price{font-family:var(--f-lat);font-weight:700;color:var(--primary-ink);font-size:14px;white-space:nowrap}
+.pcard-price small{font-size:10px;color:var(--ink-faint)}
+.pcard .scr-chip{position:absolute;top:10px;inset-inline-end:10px;z-index:2}
+
 .canvas{
     border-radius:var(--radius);overflow:hidden;position:relative;
     display:grid;place-items:center;text-align:center;padding:26px 20px;min-height:120px;

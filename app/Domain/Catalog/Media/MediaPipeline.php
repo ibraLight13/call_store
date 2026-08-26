@@ -51,8 +51,16 @@ final class MediaPipeline
 
     private function cleanJpeg(UploadedFile $photo): string
     {
+        $contents = $photo->getRealPath() !== false
+            ? file_get_contents($photo->getRealPath())
+            : false;
+
+        if ($contents === false || $contents === '') {
+            throw new \RuntimeException('Could not read uploaded image.');
+        }
+
         return (string) $this->images
-            ->decode($photo->getRealPath())
+            ->decode($contents)
             ->orient()
             ->scaleDown(width: 2048, height: 2048)
             ->encodeUsingFormat(Format::JPEG, quality: 90)

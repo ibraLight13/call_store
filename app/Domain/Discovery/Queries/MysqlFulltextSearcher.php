@@ -18,7 +18,7 @@ final class MysqlFulltextSearcher implements PieceSearcher
 
         return Piece::query()
             ->approved()
-            ->with(['seller:id,name,username', 'script', 'color'])
+            ->with(['seller:id,name,username', 'script', 'color', 'media'])
             ->when($normalized !== '', function (Builder $q) use ($normalized): void {
                 if (DB::connection()->getDriverName() === 'mysql') {
                     $q->whereRaw('MATCH (normalized_text) AGAINST (? IN NATURAL LANGUAGE MODE)', [$normalized]);

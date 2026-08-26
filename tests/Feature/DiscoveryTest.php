@@ -181,8 +181,9 @@ it('keeps feed query count flat and eager loaded', function () {
         $piece->seller->name;
         $piece->script?->slug;
         $piece->color?->hex;
+        $piece->media->count();
     }
 
-    expect(DB::getQueryLog())->toHaveCount(4); // id list + batch fetch + 3 eager-load batches
+    expect(DB::getQueryLog())->toHaveCount(5); // id list + batch fetch + 4 eager-load batches
     expect($pieces)->not->toBeEmpty();
 });

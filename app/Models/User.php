@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Domain\Commissions\Models\Commission;
 use App\Domain\Identity\Models\Follow;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
@@ -65,6 +66,12 @@ class User extends Authenticatable implements FilamentUser
     public function addresses(): HasMany
     {
         return $this->hasMany(Address::class);
+    }
+
+    /** @return HasMany<Commission, $this> */
+    public function commissions(): HasMany
+    {
+        return $this->hasMany(Commission::class, 'buyer_id');
     }
 
     public function isFollowing(User $user): bool

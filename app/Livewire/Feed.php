@@ -13,7 +13,7 @@ use Livewire\Component;
 
 final class Feed extends Component
 {
-    /** @var array<int, array<string, string|bool|int>> */
+    /** @var list<array<string, string|bool|int|null>> */
     public array $pins = [];
 
     #[Locked]
@@ -50,7 +50,7 @@ final class Feed extends Component
      * Render-time data only; models never cross the Livewire payload.
      *
      * @param  iterable<int, Piece>  $pieces
-     * @return array<int, array<string, string|bool|int>>
+     * @return list<array<string, string|bool|int|null>>
      */
     private function toPins(iterable $pieces): array
     {
@@ -67,12 +67,16 @@ final class Feed extends Component
                 $scriptName = is_string($localized) ? $localized : '';
             }
 
+            $cover = $piece->coverMedia();
+            $imgUrl = $cover?->derivativeUrl(480);
+
             $isReady = $piece->isReady() && $piece->price_minor !== null;
 
-            $rendered[] = [
+            $pin = [
                 'id' => $piece->id,
                 'url' => route('pieces.show', $piece),
                 'text' => $piece->text,
+                'img' => $imgUrl,
                 'bg' => $bg,
                 'ink' => $ink,
                 'font' => Palette::font($scriptSlug),
@@ -83,8 +87,12 @@ final class Feed extends Component
                 'sellerInitial' => mb_substr($piece->seller->name, 0, 1),
                 'sellerName' => $piece->seller->name,
                 'isReady' => $isReady,
+                'sold' => $piece->sold_at !== null,
                 'price' => Money::format($piece->price_minor),
             ];
+
+            ksort($pin);
+            $rendered[] = $pin;
         }
 
         return $rendered;
