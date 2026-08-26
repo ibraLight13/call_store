@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>خَطّ Khatt — Engineering Documentation</title>
+<style>
+:root{
+  --bg:#12110f; --bg2:#1a1916; --panel:#201e1a; --panel2:#28251f;
+  --line:#37332b; --line2:#4a453a;
+  --ink:#efe9dd; --ink2:#b5ac9c; --ink3:#847c6c;
+  --teal:#3fb39f; --teal2:#0f7b6c; --tealwash:#12312b;
+  --gold:#d6a94f; --gold2:#b8893a; --goldwash:#2c2413;
+  --red:#e06a5c; --redwash:#38201c;
+  --sky:#7db8e8; --purple:#b49ce8;
+  --radius:14px; --mono:'Consolas','Cascadia Code',ui-monospace,monospace;
+  --ease:cubic-bezier(.22,.75,.35,1);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Segoe UI',system-ui,sans-serif;font-size:15px;line-height:1.65}
+::selection{background:var(--teal);color:#fff}
+a{color:var(--teal);text-decoration:none}
+h1,h2,h3,h4{font-family:'Amiri','Georgia',serif;line-height:1.25;margin:0}
+
+/* ---------- layout ---------- */
+.layout{display:flex;min-height:100vh}
+aside{
+  width:262px;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto;
+  background:var(--bg2);border-inline-end:1px solid var(--line);padding:22px 0 40px;
+}
+aside::-webkit-scrollbar{width:8px}
+aside::-webkit-scrollbar-thumb{background:var(--line2);border-radius:8px}
+.brand{padding:0 22px 18px;border-bottom:1px solid var(--line);margin-bottom:14px}
+.brand .mark{width:44px;height:44px;border-radius:13px;background:linear-gradient(150deg,var(--teal),var(--teal2));display:grid;place-items:center;color:#fff;font-family:'Amiri',serif;font-size:24px;margin-bottom:10px}
+.brand b{font-size:20px;display:block;color:var(--ink)}
+.brand span{font-size:11.5px;color:var(--ink3);letter-spacing:.04em;text-transform:uppercase}
+.navgroup{padding:12px 22px 4px;font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+.navitem{display:flex;align-items:center;gap:9px;padding:8px 22px;color:var(--ink2);cursor:pointer;border-inline-start:3px solid transparent;transition:.18s var(--ease);font-size:13.5px}
+.navitem .dot{width:7px;height:7px;border-radius:50%;background:var(--line2);flex-shrink:0;transition:.18s}
+.navitem:hover{color:var(--ink);background:rgba(255,255,255,.03)}
+.navitem.active{color:var(--teal);border-inline-start-color:var(--teal);background:var(--tealwash)}
+.navitem.active .dot{background:var(--teal);box-shadow:0 0 8px var(--teal)}
+main{flex:1;min-width:0;padding:0 48px 120px;max-width:1080px}
+
+/* ---------- sections ---------- */
+section.block{padding:64px 0 20px;border-bottom:1px solid var(--line);opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+section.block.revealed{opacity:1;transform:none}
+.kicker{font-size:11.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+h2.title{font-size:34px;margin-bottom:6px}
+p.sub{color:var(--ink2);margin:4px 0 26px;font-size:15.5px;max-width:720px}
+h3.head{font-size:20px;color:var(--teal);margin:34px 0 12px;font-family:'Segoe UI',system-ui,sans-serif;font-weight:600}
+p{margin:.5em 0}
+code.inline{font-family:var(--mono);font-size:.86em;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--gold)}
+
+/* ---------- hero ---------- */
+.hero{padding:70px 0 46px;border-bottom:1px solid var(--line)}
+.hero h1{font-size:52px;margin:10px 0 6px;background:linear-gradient(90deg,var(--teal),var(--gold));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero p.tag{font-size:17px;color:var(--ink2);max-width:680px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-top:36px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;position:relative;overflow:hidden}
+.stat::after{content:'';position:absolute;top:0;inset-inline-start:0;width:3px;height:100%;background:var(--teal)}
+.stat.gold::after{background:var(--gold)}
+.stat b{display:block;font-size:30px;font-weight:800;font-family:var(--mono)}
+.stat span{font-size:12px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em}
+
+/* ---------- generic panels ---------- */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:1100px){.grid2,.grid3{grid-template-columns:1fr}}
+
+.chiprow{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{font-family:var(--mono);font-size:12px;padding:4px 12px;border-radius:20px;border:1px solid var(--line2);color:var(--ink2)}
+.chip.t{border-color:var(--teal);color:var(--teal);background:var(--tealwash)}
+.chip.g{border-color:var(--gold2);color:var(--gold);background:var(--goldwash)}
+.chip.r{border-color:var(--red);color:var(--red);background:var(--redwash)}
+
+/* ---------- architecture diagram ---------- */
+.archwrap{display:flex;gap:26px;align-items:stretch;margin:22px 0}
+.archbox{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+.archbox h4{font-family:'Segoe UI',sans-serif;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+.modrow{display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:10px;background:var(--panel2);border:1px solid var(--line);margin-bottom:8px;font-family:var(--mono);font-size:13px;transition:.2s var(--ease)}
+.modrow:hover{border-color:var(--teal);transform:translateX(-4px)}
+.modrow em{font-style:normal;color:var(--ink3);font-size:11px;margin-inline-start:auto}
+.arrowcol{display:flex;flex-direction:column;justify-content:center;gap:6px;width:60px;flex-shrink:0}
+.flowline{height:2px;background:repeating-linear-gradient(90deg,var(--teal) 0 8px,transparent 8px 14px);animation:dashmove 1.2s linear infinite;position:relative}
+@keyframes dashmove{to{background-position:14px 0}}
+.pulse-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);align-self:center;animation:pul 1.6s ease-in-out infinite}
+@keyframes pul{0%,100%{transform:scale(.7);opacity:.4}50%{transform:scale(1.3);opacity:1}}
+
+/* pipeline */
+.pipeline{display:flex;align-items:center;gap:0;flex-wrap:wrap;margin:18px 0;overflow-x:auto;padding-bottom:8px}
+.pstage{background:var(--panel2);border:1px solid var(--line2);border-radius:11px;padding:11px 17px;font-family:var(--mono);font-size:12.5px;white-space:nowrap;flex-shrink:0}
+.pstage.hot{border-color:var(--gold);color:var(--gold)}
+.parrow{width:34px;height:2px;flex-shrink:0;background:repeating-linear-gradient(90deg,var(--teal) 0 6px,transparent 6px 12px);animation:dashmove 1s linear infinite;margin:0 2px}
+
+/* ---------- module cards ---------- */
+.modcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px}
+.mcard{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;position:relative;transition:.25s var(--ease);cursor:default}
+.mcard:hover{border-color:var(--teal);box-shadow:0 6px 30px rgba(63,179,159,.09);transform:translateY(-3px)}
+.mcard h4{font-size:17px;color:var(--teal);margin-bottom:2px}
+.mcard .path{font-family:var(--mono);font-size:11px;color:var(--ink3);margin-bottom:10px}
+.mcard ul{list-style:none;padding:0;margin:8px 0 0}
+.mcard li{font-family:var(--mono);font-size:12px;color:var(--ink2);padding:3px 0;border-bottom:1px dashed var(--line)}
+.mcard li:last-child{border:none}
+.mcard li b{color:var(--ink);font-weight:600}
+.lbl{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);display:block;margin-top:10px}
+
+/* ---------- ER / relations ---------- */
+.er-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.entity{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.entity header{background:var(--panel2);padding:9px 16px;font-family:var(--mono);font-weight:700;font-size:13.5px;color:var(--gold);border-bottom:1px solid var(--line)}
+.entity ul{list-style:none;margin:0;padding:8px 16px 12px}
+.entity li{font-family:var(--mono);font-size:12px;padding:4px 0;color:var(--ink2);display:flex;justify-content:space-between;gap:10px}
+.entity li .rel{color:var(--teal)}
+.reltag{font-size:10px;padding:1px 8px;border-radius:10px;background:var(--tealwash);color:var(--teal);font-family:'Segoe UI',sans-serif}
+
+/* ---------- state machines ---------- */
+.sm-wrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:26px;margin-bottom:26px;position:relative}
+.sm-title{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:20px}
+.sm-title h4{font-size:17px;color:var(--teal);font-family:'Segoe UI',sans-serif}
+.sm-path{font-family:var(--mono);font-size:11px;color:var(--ink3)}
+.playbtn{background:var(--tealwash);border:1px solid var(--teal);color:var(--teal);border-radius:20px;padding:6px 18px;font-weight:700;cursor:pointer;font-size:12.5px;transition:.2s}
+.playbtn:hover{background:var(--teal);color:#fff}
+.statenodes{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+.snode{padding:8px 15px;border-radius:22px;border:2px solid var(--line2);font-family:var(--mono);font-size:12.5px;color:var(--ink2);transition:.35s var(--ease);cursor:pointer;position:relative}
+.snode:hover{border-color:var(--ink2)}
+.snode.lit{border-color:var(--teal);color:var(--teal);background:var(--tealwash);box-shadow:0 0 14px rgba(63,179,159,.25);transform:translateY(-2px)}
+.snode.done{border-color:var(--gold2);color:var(--gold)}
+.sarrow{width:26px;height:2px;background:var(--line2);position:relative;flex-shrink:0}
+.sarrow::after{content:'';position:absolute;inset-inline-end:-1px;top:-3px;border:4px solid transparent;border-inline-start-color:var(--line2)}
+.sarrow.on{background:var(--teal);animation:dashmove .8s linear infinite}
+.sarrow.on::after{border-inline-start-color:var(--teal)}
+.branchnote{margin-top:14px;font-size:12.5px;color:var(--ink3);font-family:var(--mono)}
+.branchnote b{color:var(--red)}
+.legendline{display:flex;gap:18px;margin-top:14px;font-size:12px;color:var(--ink3)}
+.legendline i{font-style:normal;display:flex;align-items:center;gap:6px}
+.legendline .sq{width:12px;height:12px;border-radius:4px;display:inline-block}
+
+/* ---------- flows ---------- */
+.seqflow{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-bottom:22px}
+.seqhead{display:flex;align-items:center;gap:12px;margin-bottom:16px;cursor:pointer;user-select:none}
+.seqhead .num{width:30px;height:30px;border-radius:9px;background:var(--tealwash);color:var(--teal);display:grid;place-items:center;font-family:var(--mono);font-weight:700;font-size:14px;flex-shrink:0}
+.seqhead h4{font-family:'Segoe UI',sans-serif;font-size:16px;color:var(--ink)}
+.seqhead .toggle{margin-inline-start:auto;color:var(--ink3);transition:.25s}
+.seqflow.open .seqhead .toggle{transform:rotate(90deg)}
+.seqsteps{max-height:0;overflow:hidden;transition:max-height .45s var(--ease)}
+.seqflow.open .seqsteps{max-height:2000px}
+.step{display:flex;gap:14px;padding:9px 0;border-inline-start:2px solid var(--line);margin-inline-start:14px;padding-inline-start:20px;position:relative;opacity:0;transform:translateX(-10px);transition:.4s var(--ease)}
+.seqflow.open .step{opacity:1;transform:none}
+.seqflow.open .step:nth-child(1){transition-delay:.05s}.seqflow.open .step:nth-child(2){transition-delay:.12s}
+.seqflow.open .step:nth-child(3){transition-delay:.19s}.seqflow.open .step:nth-child(4){transition-delay:.26s}
+.seqflow.open .step:nth-child(5){transition-delay:.33s}.seqflow.open .step:nth-child(6){transition-delay:.4s}
+.seqflow.open .step:nth-child(7){transition-delay:.47s}.seqflow.open .step:nth-child(8){transition-delay:.54s}
+.seqflow.open .step:nth-child(9){transition-delay:.61s}.seqflow.open .step:nth-child(10){transition-delay:.68s}
+.step::before{content:'';position:absolute;inset-inline-start:-6px;top:16px;width:10px;height:10px;border-radius:50%;background:var(--panel);border:2px solid var(--teal)}
+.step code.act{color:var(--gold)}
+.step .who{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);min-width:74px;flex-shrink:0;padding-top:2px}
+.step .desc{flex:1;font-size:13.5px;color:var(--ink2)}
+.step .desc b{color:var(--ink)}
+
+/* ---------- navigation map ---------- */
+.navmap{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
+.zone{border-radius:var(--radius);border:1px solid var(--line);overflow:hidden}
+.zone header{padding:10px 16px;font-weight:700;font-size:13px;display:flex;align-items:center;gap:8px}
+.zone.zpub header{background:var(--tealwash);color:var(--teal)}
+.zone.zbuy header{background:var(--goldwash);color:var(--gold)}
+.zone.zsel header{background:rgba(125,184,232,.12);color:var(--sky)}
+.zone.zadm header{background:var(--redwash);color:var(--red)}
+.zone ul{list-style:none;margin:0;padding:6px 0;background:var(--panel)}
+.zone li{padding:6px 16px;font-family:var(--mono);font-size:12px;color:var(--ink2);display:flex;justify-content:space-between}
+.zone li small{color:var(--ink3)}
+.journey{margin-top:22px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+.journey h4{font-family:'Segoe UI',sans-serif;color:var(--gold);margin-bottom:14px;font-size:14px}
+
+/* ---------- review guide ---------- */
+.guide ol{counter-reset:g;list-style:none;padding:0;margin:14px 0}
+.guide ol li{counter-increment:g;position:relative;padding:10px 0 10px 52px;border-bottom:1px dashed var(--line);font-size:14px;color:var(--ink2)}
+.guide ol li::before{content:counter(g);position:absolute;left:0;top:10px;width:30px;height:30px;border-radius:9px;background:var(--tealwash);color:var(--teal);display:grid;place-items:center;font-family:var(--mono);font-weight:700;font-size:14px}
+.guide ol li b{color:var(--ink)}
+.filetree{font-family:var(--mono);font-size:12.5px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px;line-height:1.95;color:var(--ink2)}
+.filetree .d{color:var(--gold);font-weight:700}
+.filetree .c{color:var(--ink3)}
+pre.codeblock{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:16px 20px;font-family:var(--mono);font-size:12.5px;line-height:1.75;overflow-x:auto;color:var(--ink2);margin:12px 0}
+pre.codeblock .k{color:var(--teal)} pre.codeblock .m{color:var(--gold)} pre.codeblock .cmt{color:var(--ink3)}
+.cmd{display:flex;align-items:center;justify-content:space-between;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:10px 16px;font-family:var(--mono);font-size:12.5px;margin:8px 0}
+.cmd button{background:var(--panel2);border:1px solid var(--line2);color:var(--ink2);border-radius:7px;padding:4px 12px;cursor:pointer;font-size:11px;transition:.2s}
+.cmd button:hover{color:var(--teal);border-color:var(--teal)}
+
+table.doc{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0}
+table.doc th{text-align:start;padding:9px 12px;color:var(--gold);border-bottom:2px solid var(--line2);font-size:11px;text-transform:uppercase;letter-spacing:.07em}
+table.doc td{padding:9px 12px;border-bottom:1px solid var(--line);color:var(--ink2)}
+table.doc td:first-child{font-family:var(--mono);color:var(--ink)}
+
+.callout{border-radius:var(--radius);padding:14px 20px;font-size:13.5px;margin:16px 0;border:1px solid var(--line)}
+.callout.tip{background:var(--tealwash);border-color:var(--teal);color:var(--teal)}
+.callout.warn{background:var(--goldwash);border-color:var(--gold2);color:var(--gold)}
+
+footer{padding:40px 48px;color:var(--ink3);font-size:12.5px;border-top:1px solid var(--line);text-align:center}
+@media(max-width:900px){
+  aside{display:none}
+  main{padding:0 20px 80px}
+  .archwrap{flex-direction:column}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- ======================= SIDEBAR ======================= -->
+<aside>
+  <div class="brand">
+    <div class="mark">خ</div>
+    <b>خَطّ · Khatt</b>
+    <span>Engineering Docs</span>
+  </div>
+
+  <div class="navgroup">Getting started</div>
+  <div class="navitem active" data-goto="overview"><span class="dot"></span>Overview</div>
+  <div class="navitem" data-goto="architecture"><span class="dot"></span>Architecture</div>
+
+  <div class="navgroup">The system</div>
+  <div class="navitem" data-goto="modules"><span class="dot"></span>Modules</div>
+  <div class="navitem" data-goto="database"><span class="dot"></span>Data &amp; Relations</div>
+  <div class="navitem" data-goto="machines"><span class="dot"></span>State Machines</div>
+
+  <div class="navgroup">Behaviour</div>
+  <div class="navitem" data-goto="flows"><span class="dot"></span>Function-Level Flows</div>
+  <div class="navitem" data-goto="navigation"><span class="dot"></span>Navigation Map</div>
+
+  <div class="navgroup">Working on it</div>
+  <div class="navitem" data-goto="review"><span class="dot"></span>Code Review Guide</div>
+  <div class="navitem" data-goto="ops"><span class="dot"></span>Ops &amp; Deployment</div>
+</aside>
+
+<!-- ======================= MAIN ======================= -->
+<main>
+
+<!-- ============ OVERVIEW ============ -->
+<section class="hero block revealed" id="overview">
+  <div class="kicker">خَطّ · Khatt — handmade Arabic calligraphy marketplace</div>
+  <h1>Engineering Documentation</h1>
+  <p class="tag">A complete reference of how the platform is built: every feature, every model relation, every guarded transition, and how to navigate the codebase like its author.</p>
+
+  <div class="stats">
+    <div class="stat"><b data-count="10">0</b><span>Phases shipped</span></div>
+    <div class="stat gold"><b data-count="8">0</b><span>Bounded modules</span></div>
+    <div class="stat"><b data-count="63">0</b><span>Routes</span></div>
+    <div class="stat gold"><b data-count="64">0</b><span>Pest tests</span></div>
+    <div class="stat"><b data-count="345">0</b><span>+ assertions</span></div>
+    <div class="stat gold"><b data-count="3">0</b><span>State machines</span></div>
+  </div>
+
+  <h3 class="head" style="margin-top:44px">The stack, and why each piece earned its place</h3>
+  <table class="doc">
+    <tr><th>Layer</th><th>Choice</th><th>Why</th></tr>
+    <tr><td>Framework</td><td>Laravel 13 · PHP 8.4</td><td>Current major; typed everything, yearly cadence keeps upgrades small</td></tr>
+    <tr><td>Admin/dashboards</td><td>Filament 4.12 (multi-panel)</td><td>Schema-driven CRUD for /admin and /studio; hand-rolling those wastes time</td></tr>
+    <tr><td>Interactivity</td><td>Livewire 3.8</td><td>Feed component, follow/save buttons — Filament 4 pins Livewire ^3</td></tr>
+    <tr><td>CSS</td><td>Tailwind 4 via Vite + design-token layer</td><td>One RTL-first build serves ar/en from the prototype's tokens</td></tr>
+    <tr><td>Database</td><td>MySQL 8</td><td>FULLTEXT for Arabic search, JSON columns, window functions</td></tr>
+    <tr><td>Search</td><td>Custom FULLTEXT behind <code class="inline">PieceSearcher</code></td><td>Natural-language MATCH over normalized Arabic; engine swap = one binding</td></tr>
+    <tr><td>Images</td><td>Intervention Image v4 (GD)</td><td>Private originals → watermarked responsive derivatives</td></tr>
+    <tr><td>Payments</td><td><code class="inline">PaymentGateway</code>: FakeGateway | StripeGateway</td><td>The domain never names Stripe; swap = config line</td></tr>
+  </table>
+
+  <div class="callout tip">Every business rule lives in an <b>Action class</b>. Controllers parse &amp; authorize, then delegate. Filament panels, Livewire components and HTTP endpoints are all thin skins over the same domain API.</div>
+</section>
+
+<!-- ============ ARCHITECTURE ============ -->
+<section class="block" id="architecture">
+  <div class="kicker">Architecture</div>
+  <h2 class="title">A modular monolith, deliberately</h2>
+  <p class="sub">One deployable Laravel app, split internally into eight bounded modules that talk to each other only through Actions and domain events. Microservices were rejected: coordinating “charge the buyer, pay the seller, advance the commission” across a network is a correctness nightmare for zero benefit at this scale.</p>
+
+  <h3 class="head">The three surfaces</h3>
+  <div class="archwrap">
+    <div class="archbox">
+      <h4>Consumer app (Blade + Livewire)</h4>
+      <div class="modrow">Home feed / Explore <em>Livewire Feed</em></div>
+      <div class="modrow">Piece detail / Profile <em>Controllers</em></div>
+      <div class="modrow">Cart → Checkout → Orders <em>Commerce</em></div>
+      <div class="modrow">Commission workspace <em>Commissions</em></div>
+      <div class="modrow">Boards / Notifications / Settings <em>Social + Identity</em></div>
+    </div>
+    <div class="arrowcol"><div class="pulse-dot"></div><div class="flowline"></div><div class="pulse-dot"></div></div>
+    <div class="archbox">
+      <h4>Domain core — Actions &amp; Events</h4>
+      <div class="modrow">Actions <em>one operation = one class</em></div>
+      <div class="modrow">State machines <em>spatie/model-states ×3</em></div>
+      <div class="modrow">Domain events <em>queued side effects</em></div>
+      <div class="modrow">Policies <em>data-layer authorization</em></div>
+      <div class="modrow">Contracts <em>PaymentGateway · PieceSearcher</em></div>
+    </div>
+    <div class="arrowcol"><div class="pulse-dot"></div><div class="flowline"></div><div class="pulse-dot"></div></div>
+    <div class="archbox">
+      <h4>Dashboards (Filament)</h4>
+      <div class="modrow">/admin — moderation, users, reports <em>admin role</em></div>
+      <div class="modrow">/studio — pieces, commissions, orders <em>seller role</em></div>
+      <div class="modrow">Earnings widget <em>SellerEarningsWidget</em></div>
+      <div class="modrow">Same Actions as consumer app <em>zero duplication</em></div>
+    </div>
+  </div>
+
+  <h3 class="head">Request lifecycle — what happens when a request arrives</h3>
+  <div class="pipeline">
+    <div class="pstage">HTTP</div><div class="parrow"></div>
+    <div class="pstage">SecurityHeaders</div><div class="parrow"></div>
+    <div class="pstage">StartSession</div><div class="parrow"></div>
+    <div class="pstage hot">SetLocale (ar/en)</div><div class="parrow"></div>
+    <div class="pstage">Authenticate / role</div><div class="parrow"></div>
+    <div class="pstage hot">Controller (thin)</div><div class="parrow"></div>
+    <div class="pstage hot">Action → Policy</div><div class="parrow"></div>
+    <div class="pstage">Model / DB</div><div class="parrow"></div>
+    <div class="pstage">Event → listeners</div><div class="parrow"></div>
+    <div class="pstage">Response</div>
+  </div>
+
+  <h3 class="head">Module dependency rule</h3>
+  <div class="grid2">
+    <div class="panel">
+      <p style="margin-top:0">Modules may call another module's <b>Actions</b> or subscribe to its <b>events</b> — never reach into another module's models directly. Example real edges:</p>
+      <div class="chiprow">
+        <span class="chip t">Identity FollowUser → emits UserFollowed</span>
+        <span class="chip t">Social listens → notifies followed user</span>
+        <span class="chip g">Catalog PieceApproved → Discovery flushes cache</span>
+        <span class="chip g">Social LikePiece → counter listener (+1 atomic)</span>
+        <span class="chip r">Moderation ResolveReport → Catalog takedown</span>
+      </div>
+    </div>
+    <div class="panel">
+      <p style="margin-top:0"><b>Cross-cutting seams</b> (interfaces) keep vendors swappable:</p>
+      <div class="chiprow">
+        <span class="chip g">PaymentGateway → FakeGateway | StripeGateway</span>
+        <span class="chip g">PieceSearcher → MysqlFulltextSearcher | Meilisearch later</span>
+        <span class="chip t">Clock → SystemClock</span>
+      </div>
+      <p style="margin-bottom:0">Swapping any of these is a container binding change — no domain edits.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MODULES ============ -->
+<section class="block" id="modules">
+  <div class="kicker">Modules</div>
+  <h2 class="title">Eight bounded contexts under <code class="inline">app/Domain</code></h2>
+  <p class="sub">Each module owns its Models, Actions, Policies, Events, States and Data objects. Below: exactly what ships inside each one.</p>
+
+  <div class="modcards">
+
+    <div class="mcard">
+      <h4>Identity</h4>
+      <div class="path">app/Domain/Identity</div>
+      <span class="lbl">Actions</span>
+      <ul><li><b>UpdateProfile</b> — name/username/bio/avatar/cover</li><li><b>FollowUser</b> · <b>UnfollowUser</b> — emits UserFollowed</li><li><b>UpdateLocale</b> — persists ar/en preference</li><li><b>StartConnectOnboarding</b> → Stripe Express</li></ul>
+      <span class="lbl">Models</span>
+      <ul><li>User (root) · Follow pivot</li></ul>
+    </div>
+
+    <div class="mcard">
+      <h4>Catalog</h4>
+      <div class="path">app/Domain/Catalog</div>
+      <span class="lbl">Actions</span>
+      <ul><li><b>CreatePiece</b> — tx + media pipeline</li><li><b>PublishPiece</b> → pending_review</li><li><b>ApprovePiece</b> / <b>RejectPiece</b> — moderator</li></ul>
+      <span class="lbl">Models</span>
+      <ul><li>Piece · PieceMedium · Script · Medium · Theme · Color · Tag</li></ul>
+      <span class="lbl">Also</span>
+      <ul><li>MediaPipeline (watermarks) · ArabicNormalizer · TaxonomyRepository</li><li>States: Draft→PendingReview→Approved/Rejected</li></ul>
+    </div>
+
+    <div class="mcard">
+      <h4>Discovery</h4>
+      <div class="path">app/Domain/Discovery</div>
+      <span class="lbl">Queries / Contracts</span>
+      <ul><li><b>MysqlFulltextSearcher</b> — MATCH…AGAINST + facets</li><li><b>FeedQuery</b> — cached first page + cursor pages</li></ul>
+      <span class="lbl">Cache</span>
+      <ul><li>FeedCache — first-page ID list, taxonomy cache</li><li>FlushDiscoveryCache listener on approve/reject</li></ul>
+    </div>
+
+    <div class="mcard">
+      <h4>Social</h4>
+      <div class="path">app/Domain/Social</div>
+      <span class="lbl">Actions</span>
+      <ul><li><b>CreateBoard</b> · <b>SaveToBoard</b> · <b>UnsaveFromBoard</b></li><li><b>LikePiece</b> · <b>UnlikePiece</b></li><li><b>AddComment</b> · <b>DeleteComment</b> — one reply level</li><li><b>CreateReview</b> — completed-commission verified reviews</li></ul>
+      <span class="lbl">Models</span>
+      <ul><li>Board · Comment · Like · Review</li></ul>
+    </div>
+
+    <div class="mcard">
+      <h4>Orders</h4>
+      <div class="path">app/Domain/Orders</div>
+      <span class="lbl">Actions</span>
+      <ul><li><b>AddToCart</b> · <b>RemoveFromCart</b> · <b>CartQuery</b></li><li><b>StartCheckout</b> — snapshot prices + address</li><li><b>ShipSellerGroup</b></li><li>OrderState: pending_payment→paid→completed/refunded/cancelled</li></ul>
+      <span class="lbl">Models</span>
+      <ul><li>Order · OrderSeller · OrderItem</li></ul>
+    </div>
+
+    <div class="mcard">
+      <h4>Commissions</h4>
+      <div class="path">app/Domain/Commissions</div>
+      <span class="lbl">Actions (the differentiator)</span>
+      <ul><li><b>RequestCommission</b> · <b>QuoteCommission</b> · <b>DeclineCommission</b></li><li><b>PayCommissionCapture</b> — deposit/balance, replay-proof</li><li><b>SubmitCommissionProof</b> ⇄ <b>RequestCommissionRevision</b> · <b>ApproveCommissionProof</b></li><li><b>ShipCommission</b> · <b>CompleteCommission</b> · <b>CancelCommission</b></li><li><b>PostCommissionMessage</b> · <b>NotifyCounterparty</b></li></ul>
+      <span class="lbl">Models</span>
+      <ul><li>Commission · CommissionProof · CommissionMessage</li></ul>
+    </div>
+
+    <div class="mcard">
+      <h4>Payments</h4>
+      <div class="path">app/Domain/Payments</div>
+      <span class="lbl">Contract + Gateways</span>
+      <ul><li><b>PaymentGateway</b> interface → FakeGateway | StripeGateway</li></ul>
+      <span class="lbl">Actions</span>
+      <ul><li><b>MarkOrderPaid</b> — idempotent settlement</li><li><b>FulfillTransfers</b> — fan-out per seller</li><li><b>RefundOrder</b> — reverse transfers + re-list pieces</li></ul>
+      <span class="lbl">Models</span>
+      <ul><li>ProcessedWebhook (event_id unique)</li></ul>
+    </div>
+
+    <div class="mcard">
+      <h4>Moderation</h4>
+      <div class="path">app/Domain/Moderation</div>
+      <span class="lbl">Actions</span>
+      <ul><li><b>SubmitReport</b> — morph to Piece/User</li><li><b>ResolveReport</b> — admin triage; resolving a piece report takes it down (approved → rejected)</li></ul>
+      <span class="lbl">Models</span>
+      <ul><li>Report (pending/resolved/dismissed)</li></ul>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ DATABASE ============ -->
+<section class="block" id="database">
+  <div class="kicker">Data &amp; relations</div>
+  <h2 class="title">How the models talk to each other</h2>
+  <p class="sub">Every foreign key below is a real constraint in MySQL. Read it as: <span class="reltag">belongsTo</span> = arrow points at parent, <span class="reltag">hasMany</span>/<span class="reltag">belongsToMany</span> = parent owns children. Counters (<code class="inline">likes_count</code>, <code class="inline">saves_count</code>) live denormalized on <code class="inline">pieces</code> and move by atomic UPDATE events — lists never run COUNT().</p>
+
+  <div class="er-grid">
+    <div class="entity">
+      <header>User</header>
+      <ul>
+        <li>pieces <span class="reltag">hasMany</span></li>
+        <li>orders (as buyer) <span class="reltag">hasMany</span></li>
+        <li>followers / following <span class="reltag">belongsToMany via follows</span></li>
+        <li>boards · addresses <span class="reltag">hasMany</span></li>
+        <li>roles <span class="reltag">spatie permission</span></li>
+        <li>stripe_account_id · stripe_charges_enabled <span class="reltag">connect</span></li>
+        <li>locale · avatar_path · cover_path · bio</li>
+      </ul>
+    </div>
+
+    <div class="entity">
+      <header>Piece</header>
+      <ul>
+        <li>seller <span class="reltag">belongsTo User</span></li>
+        <li>script / medium / theme / color <span class="reltag">belongsTo taxonomy</span></li>
+        <li>tags <span class="reltag">belongsToMany</span></li>
+        <li>media → PieceMedium <span class="reltag">hasMany</span></li>
+        <li>state machine <span class="reltag">draft|pending|approved|rejected</span></li>
+        <li>sold_at · likes_count · saves_count · views_count</li>
+        <li>normalized_text <span class="reltag">FULLTEXT index</span></li>
+      </ul>
+    </div>
+
+    <div class="entity">
+      <header>Order</header>
+      <ul>
+        <li>buyer <span class="reltag">belongsTo User</span></li>
+        <li>sellers → OrderSeller <span class="reltag">hasMany</span></li>
+        <li>items → OrderItem <span class="reltag">hasMany</span></li>
+        <li>address JSON snapshot <span class="reltag">immutable</span></li>
+        <li>checkout_ref · payment_ref <span class="reltag">idempotency keys</span></li>
+        <li>state machine <span class="reltag">pending_payment|paid|…</span></li>
+      </ul>
+    </div>
+
+    <div class="entity">
+      <header>OrderSeller (per-seller group)</header>
+      <ul>
+        <li>order / seller <span class="reltag">belongsTo</span></li>
+        <li>items() composite query <span class="reltag">order_id + seller_id</span></li>
+        <li>transfer_status · transfer_ref <span class="reltag">payout ledger</span></li>
+        <li>shipped_at · tracking_number</li>
+      </ul>
+    </div>
+
+    <div class="entity">
+      <header>Commission</header>
+      <ul>
+        <li>buyer / seller <span class="reltag">belongsTo User</span></li>
+        <li>proofs → CommissionProof <span class="reltag">hasMany versioned</span></li>
+        <li>messages → CommissionMessage <span class="reltag">hasMany chat</span></li>
+        <li>review <span class="reltag">hasOne — verified source</span></li>
+        <li>quote_minor · deposit_minor(30%) · deadline</li>
+        <li>deposit/balance_payment_ref · transfer_ref</li>
+        <li>number CM-#### <span class="reltag">unique human ref</span></li>
+      </ul>
+    </div>
+
+    <div class="entity">
+      <header>Board / Social</header>
+      <ul>
+        <li>Board.user <span class="reltag">belongsTo</span>; pieces <span class="reltag">belongsToMany board_piece</span></li>
+        <li>piece_saves <span class="reltag">unique user+piece → saves_count</span></li>
+        <li>Like (piece_likes) <span class="reltag">unique user+piece → likes_count</span></li>
+        <li>Comment.user/piece + parent_id <span class="reltag">one reply level</span></li>
+        <li>Review.commission <span class="reltag">hasOne — unique</span></li>
+      </ul>
+    </div>
+
+    <div class="entity">
+      <header>Taxonomy (shared)</header>
+      <ul>
+        <li>Script · Medium · Theme <span class="reltag">slug + name_ar/name_en + sort</span></li>
+        <li>Color <span class="reltag">slug + hex + names</span></li>
+        <li>Tag <span class="reltag">belongsToMany pieces</span></li>
+        <li>Cached forever via TaxonomyRepository <span class="reltag">flushed on save/delete</span></li>
+      </ul>
+    </div>
+
+    <div class="entity">
+      <header>Moderation</header>
+      <ul>
+        <li>Report.reporter <span class="reltag">belongsTo User</span></li>
+        <li>reportable <span class="reltag">morphTo Piece|User</span></li>
+        <li>status pending|resolved|dismissed</li>
+        <li>resolve on piece → approved ⇒ rejected</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 class="head">Counters &amp; cache invalidation wiring</h3>
+  <div class="pipeline">
+    <div class="pstage hot">LikePiece / SaveToBoard</div><div class="parrow"></div>
+    <div class="pstage">Event</div><div class="parrow"></div>
+    <div class="pstage hot">UpdatePieceCounters</div><div class="parrow"></div>
+    <div class="pstage">UPDATE pieces SET x = x ± 1</div>
+  </div>
+  <div class="pipeline">
+    <div class="pstage hot">ApprovePiece / RejectPiece / Piece::saved</div><div class="parrow"></div>
+    <div class="pstage">Event</div><div class="parrow"></div>
+    <div class="pstage hot">FlushDiscoveryCache</div><div class="parrow"></div>
+    <div class="pstage">feed:first:* forgotten</div>
+  </div>
+</section>
+
+<!-- ============ STATE MACHINES ============ -->
+<section class="block" id="machines">
+  <div class="kicker">Guarded lifecycles</div>
+  <h2 class="title">Three state machines make illegal flows impossible</h2>
+  <p class="sub">Built on spatie/laravel-model-states. A transition that isn't registered simply doesn't exist — you cannot ship before the balance clears or approve before a proof arrives. Press ▶ on any machine to watch a legal play-through animate; click any node to see what it allows.</p>
+
+  <!-- Commission -->
+  <div class="sm-wrap" data-sm="commission">
+    <div class="sm-title">
+      <div>
+        <h4>CommissionState — the money-critical differentiator</h4>
+        <div class="sm-path">app/Domain/Commissions/States · column: commissions.state</div>
+      </div>
+      <button class="playbtn" data-play="commission">▶ Play legal path</button>
+    </div>
+    <div class="statenodes">
+      <div class="snode" data-s="requested">requested</div><div class="sarrow"></div>
+      <div class="snode" data-s="quoted">quoted</div><div class="sarrow"></div>
+      <div class="snode" data-s="deposit_paid">deposit_paid 💰</div><div class="sarrow"></div>
+      <div class="snode" data-s="in_progress">in_progress</div><div class="sarrow"></div>
+      <div class="snode" data-s="proof_submitted">proof_submitted</div><div class="sarrow"></div>
+      <div class="snode" data-s="approved">approved ✔</div><div class="sarrow"></div>
+      <div class="snode" data-s="balance_paid">balance_paid 💰</div><div class="sarrow"></div>
+      <div class="snode" data-s="shipped">shipped</div><div class="sarrow"></div>
+      <div class="snode" data-s="completed">completed</div>
+    </div>
+    <div class="branchnote">
+      Side exits: <b>requested/quoted → declined</b> (artist declines) · <b>quoted → cancelled</b> (buyer walks) ·
+      <b>proof_submitted ⇄ revision_requested</b> (correction loop, revision_count++) ·
+      💰 marks the only two capture points — deposit unlocks work, balance releases the transfer.
+    </div>
+    <div class="legendline">
+      <i><span class="sq" style="background:var(--teal)"></span> current animation position</i>
+      <i><span class="sq" style="background:var(--gold2)"></span> already visited</i>
+      <i style="color:var(--red)">unregistered transition = TransitionNotFound exception, guaranteed</i>
+    </div>
+  </div>
+
+  <!-- Order -->
+  <div class="sm-wrap" data-sm="order">
+    <div class="sm-title">
+      <div>
+        <h4>OrderState — ready-made purchases</h4>
+        <div class="sm-path">app/Domain/Orders/States · column: orders.state</div>
+      </div>
+      <button class="playbtn" data-play="order">▶ Play happy path</button>
+    </div>
+    <div class="statenodes">
+      <div class="snode" data-os="pending_payment">pending_payment</div><div class="sarrow"></div>
+      <div class="snode" data-os="paid">paid 💰</div><div class="sarrow"></div>
+      <div class="snode" data-os="completed">completed</div>
+    </div>
+    <div class="branchnote">Side exits: <b>pending_payment → cancelled</b> · <b>paid → refunded</b> (reverses transfers, un-sells pieces). MarkOrderPaid settles through processed_webhooks — replays return the same order untouched.</div>
+  </div>
+
+  <!-- Piece -->
+  <div class="sm-wrap" data-sm="piece">
+    <div class="sm-title">
+      <div>
+        <h4>PieceState — catalogue moderation</h4>
+        <div class="sm-path">app/Domain/Catalog/States · column: pieces.state</div>
+      </div>
+      <button class="playbtn" data-play="piece">▶ Play submit → approve</button>
+    </div>
+    <div class="statenodes">
+      <div class="snode" data-ps="draft">draft</div><div class="sarrow"></div>
+      <div class="snode" data-ps="pending_review">pending_review</div><div class="sarrow"></div>
+      <div class="snode" data-ps="approved">approved</div>
+      <div class="snode" data-ps="rejected" style="margin-inline-start:18px">rejected</div><div class="sarrow"></div>
+      <div class="snode" data-ps="draft2">back to draft</div>
+    </div>
+    <div class="branchnote"><b>approved → rejected</b> exists for report takedowns (Phase 8) so moderators can pull published pieces offline.</div>
+  </div>
+</section>
+
+<!-- ============ FLOWS ============ -->
+<section class="block" id="flows">
+  <div class="kicker">Function-level behaviour</div>
+  <h2 class="title">Key flows, step by step</h2>
+  <p class="sub">Each card opens to the exact call chain — who calls what, in order, with the guard rails called out. Click a header to expand.</p>
+
+  <!-- Flow 1 -->
+  <div class="seqflow open" id="flow-checkout">
+    <div class="seqhead"><span class="num">1</span><h4>🛒 Ready-made purchase — two sellers, one payment, correct split</h4><span class="toggle">›</span></div>
+    <div class="seqsteps">
+      <div class="step"><span class="who">Browser</span><div class="desc"><b>POST /cart/{piece}</b> → <code class="act">CartController@add</code> → <code class="act">AddToCart</code> — rejects own/sold/unapproved/commission-only pieces, <code class="act">insertOrIgnore</code> into cart_items.</div></div>
+      <div class="step"><span class="who">Buyer</span><div class="desc"><b>GET /checkout</b> → <code class="act">CartQuery::for()</code> groups cart by seller, adds flat shipping per group, computes totals.</div></div>
+      <div class="step"><span class="who">Buyer</span><div class="desc"><b>POST /checkout</b> → <code class="act">CheckoutController@store</code> validates address (saved or new), <code class="act">StartCheckout::handle()</code>: verifies every seller <code class="act">stripe_charges_enabled</code>, creates Order + OrderSeller groups + OrderItem snapshots inside a transaction, generates <code class="act">checkout_ref</code>.</div></div>
+      <div class="step"><span class="who">Gateway</span><div class="desc"><code class="act">PaymentGateway::createCheckoutSession($order)</code> → redirect away (Stripe hosted / fake-pay route locally).</div></div>
+      <div class="step"><span class="who">Settlement</span><div class="desc"><b>POST /webhooks/stripe</b> (or fake-pay) → <code class="act">MarkOrderPaid::handle(gateway, eventId, …)</code>: insertOrIgnore into <b>processed_webhooks</b> — a replay returns the same order untouched; row lock guards double-settlement.</div></div>
+      <div class="step"><span class="who">Effects</span><div class="desc">Inside the same transaction: state → <b>paid</b>, <code class="act">sold_at</code> stamped on every item's piece, cart cleared, then <code class="act">FulfillTransfers</code> fans out per seller group (distinct transfer refs).</div></div>
+      <div class="step"><span class="who">Notify</span><div class="desc"><code class="act">OrderPaid</code> notification → buyer ×1, each seller ×1 (database + mail).</div></div>
+      <div class="step"><span class="who">Fulfil</span><div class="desc">Each seller sees only their group at <b>/studio-orders</b> → <code class="act">ShipSellerGroup</code> records shipped_at + tracking.</div></div>
+      <div class="step"><span class="who">Refund</span><div class="desc">Admin-only <code class="act">RefundOrder</code>: reverses transfers first, state → refunded, <code class="act">sold_at = null</code> re-lists every piece, parties notified.</div></div>
+    </div>
+  </div>
+
+  <!-- Flow 2 -->
+  <div class="seqflow" id="flow-commission">
+    <div class="seqhead"><span class="num">2</span><h4>🎨 Custom commission — request → quote → proof loop → completion</h4><span class="toggle">›</span></div>
+    <div class="seqsteps">
+      <div class="step"><span class="who">Buyer</span><div class="desc"><b>POST /commissions/request/{seller}</b> → <code class="act">RequestCommission</code>: rejects self-request, creates CM-#### in <b>requested</b>, seller notified.</div></div>
+      <div class="step"><span class="who">Seller</span><div class="desc"><code class="act">QuoteCommission</code> (policy manageAsSeller): quote_minor stored, <b>deposit_minor = round(30%)</b>, state → quoted, buyer notified. Or <code class="act">DeclineCommission</code> with reason → thread message.</div></div>
+      <div class="step"><span class="who">Buyer</span><div class="desc"><code class="act">PayCommissionCapture(deposit)</code>: processed_webhooks claim → state must be <b>quoted</b> else rollback of the claim row → deposit_paid, seller notified. Replay = same commission back, zero effects.</div></div>
+      <div class="step"><span class="who">Seller</span><div class="desc"><code class="act">StartCommissionWork</code> → in_progress. Then <code class="act">SubmitCommissionProof(image, note)</code>: private-disk write <code class="act">commissions/{id}/{uuid}.jpg</code>, versioned CommissionProof, state → <b>proof_submitted</b>, buyer notified.</div></div>
+      <div class="step"><span class="who">Buyer</span><div class="desc"><code class="act">RequestCommissionRevision(note)</code> → revision_requested + thread message (one correction hop), or <code class="act">ApproveCommissionProof</code> → <b>approved</b>, seller told “balance pending”.</div></div>
+      <div class="step"><span class="who">Money</span><div class="desc"><code class="act">PayCommissionCapture(balance)</code>: refuses unless <b>approved</b> — then <code class="act">createCommissionTransfer</code> moves the payout. <b>This is the only point money reaches the seller.</b></div></div>
+      <div class="step"><span class="who">Close</span><div class="desc"><code class="act">ShipCommission(tracking)</code> → shipped; <code class="act">CompleteCommission(buyer confirms)</code> → completed. Buyer can now post the verified Review (below).</div></div>
+      <div class="step"><span class="who">Chat</span><div class="desc">Any party: <code class="act">PostCommissionMessage</code> → CommissionMessage row + counterparty notified. Proofs stream through <code class="act">CommissionProofController@show</code> — Gate:view + private disk, never public URLs.</div></div>
+    </div>
+  </div>
+
+  <!-- Flow 3 -->
+  <div class="seqflow" id="flow-publish">
+    <div class="seqhead"><span class="num">3</span><h4>🖼️ Publish → moderate → appear in feed (or get taken down)</h4><span class="toggle">›</span></div>
+    <div class="seqsteps">
+      <div class="step"><span class="who">Seller</span><div class="desc"><b>/create</b> or studio panel → <code class="act">CreatePiece</code>: transaction wraps the row + <code class="act">MediaPipeline.attach()</code> — originals private, GD watermarked 480/960 derivatives public. Lands in <b>draft</b>.</div></div>
+      <div class="step"><span class="who">Seller</span><div class="desc"><code class="act">PublishPiece</code> → pending_review (Draft/PendingReview transition only).</div></div>
+      <div class="step"><span class="who">Admin</span><div class="desc">Filament queue <b>/admin/pieces</b>: <code class="act">ApprovePiece</code> (sets reviewed_by/at, published_at, dispatches PieceApproved) or <code class="act">RejectPiece(reason)</code>.</div></div>
+      <div class="step"><span class="who">Events</span><div class="desc"><code class="act">FlushDiscoveryCache</code> forgets the cached first-page ID list — next anonymous home request rebuilds it fresh.</div></div>
+      <div class="step"><span class="who">Takedown</span><div class="desc">Report resolved on an approved piece → <code class="act">ResolveReport</code> flips approved → rejected with reason; discovery cache flushed again.</div></div>
+    </div>
+  </div>
+
+  <!-- Flow 4 -->
+  <div class="seqflow" id="flow-social">
+    <div class="seqhead"><span class="num">4</span><h4>❤️ Social interactions — likes, saves, follows, comments</h4><span class="toggle">›</span></div>
+    <div class="seqsteps">
+      <div class="step"><span class="who">Livewire</span><div class="desc"><code class="act">LikeButton::toggle()</code> → <code class="act">LikePiece</code> uses firstOrCreate + wasRecentlyCreated — a double click can never double count. Emits <b>PieceLiked</b>.</div></div>
+      <div class="step"><span class="who">Listener</span><div class="desc"><code class="act">UpdatePieceCounters</code> maps event → column and runs a single <code class="act">UPDATE … SET likes_count = likes_count ± 1</code> — atomic under concurrency.</div></div>
+      <div class="step"><span class="who">Save</span><div class="desc"><code class="act">SaveToBoard</code>: syncWithoutDetaching onto the board; a piece counts saved <b>once per user</b> across boards — UnsaveFromBoard decrements only after the last holding board lets go.</div></div>
+      <div class="step"><span class="who">Comments</span><div class="desc"><code class="act">AddComment</code> enforces one reply level (parent.parent_id ≠ null rejected), notifies artist and/or parent author, skips self-notifications.</div></div>
+      <div class="step"><span class="who">Follow</span><div class="desc"><code class="act">FollowUser</code> emits <b>UserFollowed</b>; Identity's own listener sends NewFollower to the followed user.</div></div>
+    </div>
+  </div>
+
+  <!-- Flow 5 -->
+  <div class="seqflow" id="flow-review">
+    <div class="seqhead"><span class="num">5</span><h4>⭐ Verified review + abuse triage</h4><span class="toggle">›</span></div>
+    <div class="seqsteps">
+      <div class="step"><span class="who">Gate</span><div class="desc"><code class="act">CreateReview</code> requires actor == commission.buyer AND state == <b>completed</b>; rating 1..5; firstOrCreate keyed on unique commission_id — second review throws already_reviewed.</div></div>
+      <div class="step"><span class="who">Display</span><div class="desc">Profile aggregates AVG/COUNT from reviews; every entry carries the <b>verified-buyer badge</b> because existence implies a completed, paid commission.</div></div>
+      <div class="step"><span class="who">Report</span><div class="desc"><code class="act">SubmitReport</code> morphs onto Piece/User with whitelisted reasons, RateLimiter 5/hour/user; lands pending in <b>/admin/reports</b>.</div></div>
+      <div class="step"><span class="who">Admin</span><div class="desc"><code class="act">ResolveReport(resolved|dismissed)</code> — resolution takes reported pieces down; dismissal just closes it. Both stamp reviewed_by/at.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ NAVIGATION MAP ============ -->
+<section class="block" id="navigation">
+  <div class="kicker">Navigation map</div>
+  <h2 class="title">Pages, roles and journeys</h2>
+  <p class="sub">63 routes across four role zones. The rail adapts per role; Filament panels are separate surfaces linked from the rail.</p>
+
+  <div class="navmap">
+    <div class="zone zpub">
+      <header>🌐 Public — guests</header>
+      <ul>
+        <li>/ <small>home feed</small></li>
+        <li>/explore <small>search + filters</small></li>
+        <li>/pieces/{id} <small>detail + related</small></li>
+        <li>/@{username} <small>public profile + reviews</small></li>
+        <li>/login · /register <small>auth</small></li>
+        <li>/sitemap.xml · /robots.txt <small>SEO</small></li>
+        <li>/status · /up <small>health</small></li>
+      </ul>
+    </div>
+    <div class="zone zbuy">
+      <header>🛍️ Buyer (auth)</header>
+      <ul>
+        <li>/cart <small>grouped by seller</small></li>
+        <li>/checkout <small>address + summary</small></li>
+        <li>/orders · /orders/{id} <small>purchases</small></li>
+        <li>/boards · /boards/{id} <small>saves</small></li>
+        <li>/commissions <small>requests index</small></li>
+        <li>/commissions/{cm} <small>shared workspace</small></li>
+        <li>/notifications <small>bell unread badge</small></li>
+        <li>/settings/profile <small>edit profile</small></li>
+      </ul>
+    </div>
+    <div class="zone zsel">
+      <header>🎨 Seller</header>
+      <ul>
+        <li>/create <small>new piece form</small></li>
+        <li>/studio <small>Filament dashboard</small></li>
+        <li>/studio/shop-pieces <small>CRUD + publish</small></li>
+        <li>/studio/seller-commissions <small>quote/proof/ship</small></li>
+        <li>/studio/seller-orders <small>fulfilment</small></li>
+        <li>/studio-orders <small>consumer-side fulfilment</small></li>
+        <li>Stripe Express onboarding <small>connect</small></li>
+      </ul>
+    </div>
+    <div class="zone zadm">
+      <header>🛡️ Admin</header>
+      <ul>
+        <li>/admin/pieces <small>moderation queue</small></li>
+        <li>/admin/users <small>management + roles</small></li>
+        <li>/admin/reports <small>abuse triage</small></li>
+        <li>POST /orders/{id}/refund <small>money reversal</small></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="journey">
+    <h4>Typical journeys (arrows = navigation between pages)</h4>
+    <div class="pipeline">
+      <div class="pstage">Home feed</div><div class="parrow"></div>
+      <div class="pstage">Explore filters</div><div class="parrow"></div>
+      <div class="pstage">Piece detail</div><div class="parrow"></div>
+      <div class="pstage hot">Add to cart</div><div class="parrow"></div>
+      <div class="pstage">Cart</div><div class="parrow"></div>
+      <div class="pstage hot">Checkout</div><div class="parrow"></div>
+      <div class="pstage">Pay</div><div class="parrow"></div>
+      <div class="pstage">Order ✓</div>
+    </div>
+    <div class="pipeline">
+      <div class="pstage">Artist profile</div><div class="parrow"></div>
+      <div class="pstage hot">Request commission</div><div class="parrow"></div>
+      <div class="pstage">Workspace</div><div class="parrow"></div>
+      <div class="pstage">Quote → Deposit</div><div class="parrow"></div>
+      <div class="pstage">Proof ⇄ Revision</div><div class="parrow"></div>
+      <div class="pstage">Approve → Balance</div><div class="parrow"></div>
+      <div class="pstage hot">Review ★</div>
+    </div>
+    <div class="pipeline">
+      <div class="pstage">Seller studio</div><div class="parrow"></div>
+      <div class="pstage hot">Create piece</div><div class="parrow"></div>
+      <div class="pstage">Publish</div><div class="parrow"></div>
+      <div class="pstage">Admin approves</div><div class="parrow"></div>
+      <div class="pstage hot">Live in feed</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REVIEW GUIDE ============ -->
+<section class="block guide" id="review">
+  <div class="kicker">Code review guide</div>
+  <h2 class="title">How to read this codebase like its author</h2>
+  <p class="sub">A repeatable pass for reviewing any feature — plus the conventions every file follows.</p>
+
+  <h3 class="head">The six-step review pass</h3>
+  <ol>
+    <li><b>Find the Action.</b> Start from the route in <code class="inline">routes/web.php</code>, jump to the controller, and confirm it delegates to exactly one Action in <code class="inline">app/Domain/&lt;Module&gt;/Actions</code>. If business logic lives in the controller, that's a finding.</li>
+    <li><b>Check authorization at the data layer.</b> The Action should call <code class="inline">Gate::forUser($actor)->authorize(...)</code> or the controller should use a Form Request's <code class="inline">actor()</code>. UI hiding is not security — verify the policy exists in <code class="inline">AppServiceProvider::boot</code>.</li>
+    <li><b>Verify the state boundary.</b> If the flow touches a machine (Piece/Order/Commission), confirm every transition used is registered in the base state class <code class="inline">config()</code> and illegal paths throw <code class="inline">TransitionNotFound</code>.</li>
+    <li><b>Follow the events.</b> What fires after success? Check listeners exist and are wired in <code class="inline">AppServiceProvider</code> (counters, cache flushes, notifications). Money-critical writes must claim their idempotency row first (<code class="inline">processed_webhooks</code>).</li>
+    <li><b>Check the tests tell the story.</b> Each phase has a Feature test named after the DoD. The test should read as the specification — if you can't understand the feature from the test alone, the test is the finding.</li>
+    <li><b>Run the gates.</b> All four must pass before merge (commands below). Larastan runs at max level — new mixed-typed shortcuts will fail it by design.</li>
+  </ol>
+
+  <h3 class="head">Conventions you'll see everywhere</h3>
+  <div class="grid2">
+    <div>
+      <span class="lbl">Naming</span>
+      <div class="chiprow">
+        <span class="chip t">Actions = verb phrases</span>
+        <span class="chip t">Requests = *Request + actor()/data()</span>
+        <span class="chip t">States = past/participle nouns</span>
+        <span class="chip g">lang files mirror modules</span>
+      </div>
+    </div>
+    <div>
+      <span class="lbl">Boundaries</span>
+      <div class="chiprow">
+        <span class="chip g">Controllers: parse → delegate → redirect</span>
+        <span class="chip g">No raw request arrays in Actions</span>
+        <span class="chip r">Never cross modules via models directly</span>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="head">Where everything lives</h3>
+  <div class="filetree">
+<span class="d">app/</span><br>
+├─ <span class="d">Domain/</span> <span class="c">← all business logic, 8 modules</span><br>
+│&nbsp;&nbsp;├─ <span class="d">Identity/</span> Actions·Models·Policies·Events·Notifications·Data<br>
+│&nbsp;&nbsp;├─ <span class="d">Catalog/</span> + Media/(MediaPipeline) + Support/(ArabicNormalizer)<br>
+│&nbsp;&nbsp;├─ <span class="d">Discovery/</span> Queries·Contracts(PieceSearcher)·Cache·Listeners<br>
+│&nbsp;&nbsp;├─ <span class="d">Social/</span> Boards·Likes·Comments·Reviews + counter listener<br>
+│&nbsp;&nbsp;├─ <span class="d">Orders/</span> Cart·Checkout·Ship + OrderState<br>
+│&nbsp;&nbsp;├─ <span class="d">Commissions/</span> 13 actions + CommissionState + proofs/messages<br>
+│&nbsp;&nbsp;├─ <span class="d">Payments/</span> Contract·Fake·Stripe·MarkOrderPaid·Refund<br>
+│&nbsp;&nbsp;└─ <span class="d">Moderation/</span> SubmitReport·ResolveReport·Report<br>
+├─ <span class="d">Http/</span> Controllers(thin)·Middleware(SetLocale,SecurityHeaders)·Requests<br>
+├─ <span class="d">Livewire/</span> Feed·FollowButton·SaveToBoardButton<br>
+├─ <span class="d">Filament/</span> Admin/(Users,Pieces,Reports) Seller/(ShopPieces,SellerCommissions,SellerOrders)<br>
+└─ <span class="d">Support/</span> Clock·Money·ArabicNormalizer·Palette<br>
+<br>
+<span class="d">resources/views/pages/</span> <span class="c">home·explore·piece·profile·cart·checkout·order·orders·commission*·boards*·notifications·settings-profile·errors/</span><br>
+<span class="d">tests/Feature/</span> <span class="c">Shell·Identity·Catalog·Discovery·Social·Commerce·Commission·SellerPanel·Trust·Hardening·TranslationParity</span>
+  </div>
+
+  <h3 class="head">Trace example — “what happens when I press ❤”</h3>
+  <pre class="codeblock"><span class="cmt">// 1. The button is a Livewire component:</span>
+resources/views/livewire/like-button.blade.php   <span class="cmt">wire:click="toggle"</span>
+
+<span class="cmt">// 2. Component delegates (no logic):</span>
+app/Livewire/LikeButton.php                      toggle() → app(LikePiece::class)->handle(...)
+
+<span class="cmt">// 3. The Action owns the rule:</span>
+app/Domain/Social/Actions/LikePiece.php          firstOrCreate + wasRecentlyCreated → dispatch PieceLiked
+
+<span class="cmt">// 4. Event → listener → atomic SQL:</span>
+AppServiceProvider                                Event::listen(PieceLiked, UpdatePieceCounters)
+app/Domain/Social/Listeners/UpdatePieceCounters   DB::table('pieces')->increment('likes_count')
+
+<span class="cmt">// 5. Proof it works under concurrency:</span>
+tests/Feature/SocialTest.php                      'likes idempotently and keeps the counter exact'</pre>
+
+  <h3 class="head">Quality gates (all four must pass)</h3>
+  <div class="cmd"><span>vendor/bin/pint</span><button data-copy="vendor/bin/pint">copy</button></div>
+  <div class="cmd"><span>vendor/bin/phpstan analyse --memory-limit=1G <span class="cmt"># level: max</span></span><button data-copy="vendor\bin\phpstan analyse --no-progress --memory-limit=1G">copy</button></div>
+  <div class="cmd"><span>vendor/bin/pest <span class="cmt"># 64 tests · 345 assertions</span></span><button data-copy="vendor/bin/pest">copy</button></div>
+  <div class="cmd"><span>php artisan migrate --force <span class="cmt"># schema is source of truth</span></span><button data-copy="php artisan migrate --force">copy</button></div>
+
+  <div class="callout warn"><b>Known traps for reviewers:</b> PowerShell <code class="inline">Set-Content -Encoding UTF8</code> corrupts Arabic (never pipe non-ASCII through it); irregular plurals need explicit FK targets (<code class="inline">constrained('mediums')</code> not <code class="inline">constrained()</code>); unimported symbols turn <code class="inline">::class</code> into silent strings — always let phpstan catch these before merge.</div>
+</section>
+
+<!-- ============ OPS ============ -->
+<section class="block" id="ops">
+  <div class="kicker">Ops &amp; deployment</div>
+  <h2 class="title">Running it for real</h2>
+  <p class="sub">Full checklist lives in <code class="inline">DEPLOYMENT.md</code>; performance evidence in <code class="inline">LOADTEST.md</code>. Summary:</p>
+
+  <div class="grid3">
+    <div class="panel">
+      <span class="lbl">Health</span>
+      <p style="font-size:13.5px"><code class="inline">GET /status</code> → JSON {ok, database, storage}; <code class="inline">GET /up</code> built-in. Wire uptime monitors here.</p>
+    </div>
+    <div class="panel">
+      <span class="lbl">Backups</span>
+      <p style="font-size:13.5px"><code class="inline">php artisan app:backup-db --keep=14</code> nightly 03:00 → gzipped dumps in <code class="inline">storage/backups</code>. Restore drill documented.</p>
+    </div>
+    <div class="panel">
+      <span class="lbl">Load budget</span>
+      <p style="font-size:13.5px">Feed 222 ms · explore 19 ms · detail 12 ms @ concurrency 25, zero failures (Tier-0 local, see LOADTEST.md).</p>
+    </div>
+  </div>
+
+  <h3 class="head">Going live — the short version</h3>
+  <div class="pipeline">
+    <div class="pstage">APP_DEBUG=false</div><div class="parrow"></div>
+    <div class="pstage hot">COMMERCE_GATEWAY=stripe + keys</div><div class="parrow"></div>
+    <div class="pstage">Register webhook URL</div><div class="parrow"></div>
+    <div class="pstage">Real SMTP</div><div class="parrow"></div>
+    <div class="pstage">config:cache · route:cache</div><div class="parrow"></div>
+    <div class="pstage hot">Restore drill ✓</div><div class="parrow"></div>
+    <div class="pstage">Launch 🚀</div>
+  </div>
+</section>
+
+<footer>
+  خَطّ · Khatt — engineering documentation · generated from the Phase 0–9 build · gates: Pint / Larastan max / Pest 64×345
+</footer>
+
+</main>
+</div>
+
+<script>
+// ---------- scrollspy ----------
+const sections=[...document.querySelectorAll('section.block, .hero')];
+const items=[...document.querySelectorAll('.navitem')];
+const spy=new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(e.isIntersecting){
+      items.forEach(i=>i.classList.toggle('active',i.dataset.goto===e.target.id));
+    }
+  });
+},{rootMargin:'-20% 0px -70% 0px'});
+sections.forEach(s=>spy.observe(s));
+
+items.forEach(i=>i.addEventListener('click',()=>{
+  document.getElementById(i.dataset.goto)?.scrollIntoView({behavior:'smooth',block:'start'});
+}));
+
+// ---------- reveal on scroll ----------
+const reveal=new IntersectionObserver(es=>{
+  es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('revealed'); reveal.unobserve(e.target);} });
+},{threshold:.06});
+document.querySelectorAll('section.block').forEach(s=>reveal.observe(s));
+
+// ---------- animated counters ----------
+const cObs=new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(!e.isIntersecting) return;
+    const el=e.target,target=+el.dataset.count,dur=1100,t0=performance.now();
+    const tick=t=>{
+      const p=Math.min(1,(t-t0)/dur);
+      el.textContent=Math.round(target*(1-Math.pow(1-p,3))).toLocaleString();
+      if(p<1)requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+    cObs.unobserve(el);
+  });
+},{threshold:.5});
+document.querySelectorAll('[data-count]').forEach(el=>cObs.observe(el));
+
+// ---------- sequence flow toggles ----------
+document.querySelectorAll('.seqhead').forEach(h=>h.addEventListener('click',()=>{
+  h.parentElement.classList.toggle('open');
+}));
+
+// ---------- state machine players ----------
+const paths={
+  commission:['requested','quoted','deposit_paid','in_progress','proof_submitted','approved','balance_paid','shipped','completed'],
+  order:['pending_payment','paid','completed'],
+  piece:['draft','pending_review','approved']
+};
+let playing=null;
+
+function resetSM(wrap,prefix){
+  wrap.querySelectorAll('.snode,.sarrow').forEach(n=>n.classList.remove('lit','done','on'));
+}
+function lightNode(wrap,key){
+  const n=wrap.querySelector(`[data-s="${key}"],[data-os="${key}"],[data-ps="${key}"]`);
+  if(!n)return null;
+  n.classList.add('lit');
+  return n;
+}
+
+document.querySelectorAll('[data-play]').forEach(btn=>btn.addEventListener('click',()=>{
+  const key=btn.dataset.play;
+  if(playing){clearInterval(playing);playing=null;}
+  document.querySelectorAll('[data-play]').forEach(b=>{if(b!==btn)b.textContent='▶ Play';});
+  btn.textContent='⏸ Playing…';
+
+  const wrap=btn.closest('.sm-wrap');
+  resetSM(wrap);
+
+  // special case: piece has extra rejected/back-to-draft display nodes
+  const seq=[...(paths[key]||[])];
+
+  if(key==='piece'){
+    // show draft -> pending -> approved, then flash rejected branch
+    let i=0;
+    const nodes=['draft','pending_review','approved'];
+    const arrows=wrap.querySelectorAll('.sarrow');
+    playing=setInterval(()=>{
+      wrap.querySelectorAll('.snode').forEach(n=>n.classList.remove('lit'));
+      if(i<nodes.length){
+        const n=wrap.querySelector(`[data-ps="${nodes[i]}"]`);
+        if(n)n.classList.add('lit');
+        if(i<arrows.length)arrows[i].classList.add('on');
+        i++;
+      }else{
+        clearInterval(playing);playing=null;
+        btn.textContent='▶ Replay';
+        wrap.querySelectorAll('.snode').forEach((n,idx)=>{
+          if(idx>=3)n.classList.add('done'); // highlight rejected branch nodes subtly
+        });
+      }
+    },750);
+    return;
+  }
+
+  const arrows=wrap.querySelectorAll('.sarrow');
+  let i=0;
+  playing=setInterval(()=>{
+    wrap.querySelectorAll('.snode').forEach(n=>n.classList.remove('lit'));
+    if(i<seq.length){
+      lightNode(wrap,seq[i]);
+      if(i<arrows.length)arrows[i].classList.add('on');
+      i++;
+    }else{
+      clearInterval(playing);playing=null;
+      btn.textContent='▶ Replay';
+      seq.forEach(k=>lightNode(wrap,k)?.classList.add('done'));
+    }
+  },650);
+}));
+
+// ---------- node click info ----------
+const info={
+  requested:'Buyer submitted the brief. Waiting for the artist to price it or decline.',
+  quoted:'Artist set quote_minor; deposit_minor = 30%. Buyer notified — deposit is now payable.',
+  deposit_paid:'Deposit captured via idempotent PayCommissionCapture. Artist may start work.',
+  in_progress:'Artist working. Next: upload a versioned proof.',
+  proof_submitted:'Buyer must approve or request revision. Proofs stream from private disk.',
+  revision_requested:'Correction loop. Next legal proof bumps revision_count.',
+  approved:'Buyer satisfied. Balance becomes payable — nothing released yet.',
+  balance_paid:'Transfer executed — money reaches the artist only here. Awaiting shipment.',
+  shipped:'In transit. Tracking number recorded.',
+  completed:'Closed. Buyer may now leave the one verified review.'
+};
+document.querySelectorAll('.snode').forEach(n=>n.addEventListener('click',()=>{
+  const k=n.dataset.s||n.dataset.os||n.dataset.ps;
+  const text=info[k]||'Terminal / side state.';
+  let tip=n.querySelector('.tipbubble');
+  if(tip){tip.remove();return;}
+  document.querySelectorAll('.tipbubble').forEach(t=>t.remove());
+  tip=document.createElement('div');
+  tip.className='tipbubble';
+  tip.style.cssText='position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);background:var(--goldwash);border:1px solid var(--gold2);color:var(--ink);font-size:11.5px;padding:8px 12px;border-radius:8px;width:230px;z-index:5;font-family:Segoe UI,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.4)';
+  tip.textContent=text;
+  n.appendChild(tip);
+  setTimeout(()=>tip.remove(),3500);
+}));
+
+// ---------- copy buttons ----------
+document.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',()=>{
+  navigator.clipboard.writeText(b.dataset.copy).then(()=>{
+    const old=b.textContent;b.textContent='✓ copied';
+    setTimeout(()=>b.textContent=old,1400);
+  });
+}));
+</script>
+</body>
+</html>
