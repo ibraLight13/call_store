@@ -18,6 +18,14 @@ final class SecurityHeaders
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
         $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
 
+        // Always revalidate HTML so browser-cached pages can never go stale
+        // (stale cached markup was serving pre-fix mojibake + old CSS links).
+        $contentType = $response->headers->get('Content-Type', '');
+
+        if (str_contains($contentType, 'text/html')) {
+            $response->headers->set('Cache-Control', 'no-cache, private');
+        }
+
         return $response;
     }
 }
