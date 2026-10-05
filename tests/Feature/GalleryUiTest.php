@@ -192,3 +192,9 @@ it('hides follow and request-similar from the seller on their own piece', functi
         ->assertDontSee(route('commissions.create', $piece->seller), false)
         ->assertDontSee(__('shell.follow'));
 });
+
+it('keeps the skip link readable in both themes', function () {
+    // White on the dark theme's light teal measured 2.24:1; on-primary flips with the theme.
+    expect(file_get_contents(resource_path('css/app.css')))
+        ->toMatch('/\.skip-link\{[^}]*background:var\(--primary\);color:var\(--on-primary\)/');
+});
