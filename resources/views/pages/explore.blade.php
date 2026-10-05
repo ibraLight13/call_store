@@ -64,7 +64,7 @@
 
     <div class="pin-grid">
         @forelse ($paginator as $piece)
-            @include('partials.pin-card', ['piece' => $piece, 'index' => $loop->index])
+            @include('partials.pin-card', ['pin' => \App\Support\PinPresenter::present($piece, $loop->index)])
         @empty
             <div class="empty-state">
                 <div class="art">…</div>

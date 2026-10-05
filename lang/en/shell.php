@@ -20,6 +20,7 @@ return [
     'nav_main' => 'Main navigation',
     'search' => 'Search',
     'language' => 'Language',
+    'list_sep' => ', ',
 
     'home_eyebrow' => 'Picked for you',
     'home_title' => 'Art from the light of letters',

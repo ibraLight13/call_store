@@ -151,62 +151,37 @@ main{display:block;min-height:calc(100vh - var(--top-h))}
 .kv .v{font-weight:600;text-align:end}
 .divider{height:1px;background:var(--line);margin:22px 0}
 
-/* ---------- Piece cards — manuscript folio / gallery plaque ---------- */
-.pin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:22px}
-@media(max-width:1400px){.pin-grid{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}}
-@media(max-width:1080px){.pin-grid{grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:16px}}
-@media(max-width:760px){.pin-grid{grid-template-columns:repeat(2,1fr);gap:12px}}
-
-.pcard{
-    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
-    overflow:hidden;transition:.25s var(--ease);display:flex;flex-direction:column;
+/* ---------- Gallery wall: masonry of framed works ---------- */
+/* ponytail: CSS columns flow top-to-bottom, so "load more" items land at each column's foot — accepted for discovery. */
+.pin-grid{columns:4 240px;column-gap:clamp(20px,2.6vw,40px)}
+.work{display:block;break-inside:avoid;margin:0 0 clamp(24px,3vw,40px)}
+.frame{
+    display:block;background:var(--surface);padding:clamp(8px,1.2vw,16px);box-shadow:var(--shadow-hang);
+    transition:transform .25s var(--ease),box-shadow .25s var(--ease);
 }
-.pcard:hover{border-color:var(--gold2);box-shadow:var(--shadow-2);transform:translateY(-3px)}
-
-/* Folio window — the artwork */
-.pcard-media{position:relative;display:block;aspect-ratio:4/3;background:var(--surface-3);overflow:hidden}
-.pcard-media img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s var(--ease)}
-.pcard:hover .pcard-media img{transform:scale(1.035)}
-.pcard-art{
-    width:100%;height:100%;position:relative;display:grid;place-items:center;
-    padding:26px 30px;font-size:27px;line-height:1.6;font-weight:700;word-break:break-word;
+.work:hover .frame,.frame:focus-visible{transform:translateY(-3px);box-shadow:var(--shadow-2)}
+.frame-art{display:block;position:relative;overflow:hidden;background:var(--surface-2);container-type:inline-size}
+.frame-art img{display:block;width:100%;height:100%;object-fit:cover}
+.typeset{
+    position:absolute;inset:0;display:grid;place-items:center;text-align:center;
+    padding:12%;line-height:1.5;word-break:break-word;
 }
-/* Signature element: double manuscript rule frame around the folio window. */
-.pcard-frame{
-    position:absolute;inset:12px;border:1px solid currentColor;opacity:.55;pointer-events:none;
+.frame-art img[hidden],.typeset[hidden]{display:none}
+.wall-label{
+    display:grid;gap:1px;margin-top:12px;padding-inline-start:10px;
+    border-inline-start:2px solid var(--ink);font-size:var(--t-sm);line-height:1.5;
 }
-.pcard-frame::after{
-    content:'';position:absolute;inset:4px;border:1px solid currentColor;opacity:.5;
+.wl-title{font-family:var(--f-disp);font-size:16px;font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wl-meta{font-size:var(--t-xs);color:var(--ink-faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wl-meta:hover{color:var(--ink)}
+.wl-price{font-weight:600;color:var(--ink)}
+.wl-price.is-commission{color:var(--primary)}
+.wl-price.is-sold{color:var(--gold)}
+@media(max-width:859px){
+    .pin-grid{columns:2;column-gap:14px}
+    .work{margin-bottom:18px}
+    .frame{padding:6px}
 }
-
-/* Gold seal — script name chip on the folio window. */
-.scr-seal{
-    position:absolute;top:10px;inset-inline-end:10px;z-index:2;
-    background:var(--gold-wash);border:1px solid var(--gold2);color:var(--gold);
-    font-family:var(--f-disp);font-size:12.5px;padding:2px 10px;border-radius:20px;
-}
-
-.pcard-sold{
-    position:absolute;top:10px;inset-inline-start:10px;z-index:2;
-}
-
-/* Gallery plaque — data below the folio window, separated by a gold hairline. */
-.pcard-body{
-    padding:13px 16px 15px;display:flex;flex-direction:column;gap:7px;flex:1;
-    border-top:1px solid var(--gold-wash);
-}
-.pcard-title{
-    font-family:var(--f-disp);font-size:19px;font-weight:700;color:var(--ink);line-height:1.5;
-    display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;
-}
-.pcard-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto}
-.pcard-seller{
-    font-size:12.5px;font-weight:600;color:var(--ink-soft);
-    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-}
-.pcard:hover .pcard-seller{color:var(--teal)}
-.pcard-price{font-family:var(--f-lat);font-weight:700;color:var(--primary-ink);font-size:14.5px;white-space:nowrap}
-.pcard-price small{font-size:10px;color:var(--ink-faint);font-weight:600}
 
 .canvas{
     border-radius:var(--radius);overflow:hidden;position:relative;

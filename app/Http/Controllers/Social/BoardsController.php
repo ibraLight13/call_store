@@ -30,7 +30,7 @@ final class BoardsController extends Controller
 
         $pieces = $board->pieces()
             ->approved()
-            ->with(['seller:id,name,username', 'script', 'color'])
+            ->with(['seller:id,name,username', 'script', 'color', 'media'])
             ->get();
 
         return view('pages.board', [

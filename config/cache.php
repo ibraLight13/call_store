@@ -131,6 +131,13 @@ return [
     |
     */
 
-    'serializable_classes' => false,
+    // Allow-list only what TaxonomyRepository caches (Eloquent collections of catalog facets).
+    'serializable_classes' => [
+        Illuminate\Database\Eloquent\Collection::class,
+        App\Domain\Catalog\Models\Script::class,
+        App\Domain\Catalog\Models\Medium::class,
+        App\Domain\Catalog\Models\Theme::class,
+        App\Domain\Catalog\Models\Color::class,
+    ],
 
 ];

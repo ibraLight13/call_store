@@ -1,44 +1,27 @@
-@php
-    $cover = $piece->coverMedia();
-    $imgUrl = $cover?->derivativeUrl(480);
-    $scriptSlug = $piece->script?->slug ?? 'naskh';
-    $font = config('catalog.script_fonts')[$scriptSlug] ?? "'Amiri', serif";
-    $weight = config('catalog.script_weights')[$scriptSlug] ?? 400;
-    $tints = config('catalog.paper_tints');
-    [$bg, $ink] = $tints[$index % count($tints)];
-@endphp
-<article class="pcard">
-    <a href="{{ route('pieces.show', $piece) }}" class="pcard-media" aria-label="{{ $piece->text }}">
-        @if ($imgUrl)
-            <img src="{{ $imgUrl }}" alt="{{ $piece->text }}" loading="lazy"
-                 width="480" height="360">
-        @else
-            <span class="pcard-art" style="background:{{ $bg }};color:{{ $ink }};font-family:{{ $font }};font-weight:{{ $weight }}">
-                {{ $piece->text }}
-                <span class="pcard-frame" aria-hidden="true"></span>
-            </span>
-        @endif
-        @if ($piece->script)
-            <span class="scr-seal">{{ $piece->script->{'name_'.app()->getLocale()} }}</span>
-        @endif
-        @if ($piece->sold_at)
-            <span class="badge badge-gold pcard-sold">{{ __('commerce.sold') }}</span>
-        @endif
+{{-- Gallery-wall card: framed artwork + museum wall label. Takes $pin from App\Support\PinPresenter. --}}
+<article class="work" wire:key="pin-{{ $pin['id'] }}">
+    <a href="{{ $pin['url'] }}" class="frame" aria-label="{{ $pin['text'] }}">
+        <span class="frame-art" style="aspect-ratio:{{ $pin['aspect'] }}">
+            @if ($pin['img'])
+                <img src="{{ $pin['img'] }}" alt="{{ $pin['text'] }}" loading="lazy" width="480" height="360"
+                     onerror="this.hidden=true;this.nextElementSibling.hidden=false">
+            @endif
+            <span class="typeset" @if ($pin['img']) hidden @endif
+                  style="background:{{ $pin['bg'] }};color:{{ $pin['ink'] }};font-family:{{ $pin['font'] }};font-weight:{{ $pin['weight'] }};font-size:min({{ $pin['size'] }}px, 14cqi)">{{ $pin['text'] }}</span>
+        </span>
     </a>
 
-    <div class="pcard-body">
-        <a href="{{ route('pieces.show', $piece) }}" class="pcard-title">{{ $piece->text }}</a>
-
-        <div class="pcard-meta">
-            <a href="{{ $piece->seller->profileUrl() }}" class="pcard-seller" title="{{ $piece->seller->name }}">
-                {{ $piece->seller->name }}
-            </a>
-
-            @if ($piece->isReady() && $piece->price_minor !== null && ! $piece->sold_at)
-                <span class="pcard-price">{{ \App\Support\Money::format($piece->price_minor) }} <small>SAR</small></span>
-            @elseif (! $piece->isReady())
-                <span class="badge badge-primary">{{ __('shell.t_commission') }}</span>
-            @endif
-        </div>
+    <div class="wall-label">
+        @if ($pin['img'])
+            <a href="{{ $pin['url'] }}" class="wl-title">{{ $pin['text'] }}</a>
+        @endif
+        <a href="{{ $pin['sellerUrl'] }}" class="wl-meta">{{ $pin['sellerName'] }}@if ($pin['scriptName'] !== ''){{ __('shell.list_sep') }}{{ $pin['scriptName'] }}@endif</a>
+        @if ($pin['sold'])
+            <span class="wl-price is-sold">{{ __('commerce.sold') }}</span>
+        @elseif ($pin['isReady'])
+            <span class="wl-price">{{ $pin['price'] }} {{ config('catalog.currency') }}</span>
+        @else
+            <span class="wl-price is-commission">{{ __('shell.t_commission') }}</span>
+        @endif
     </div>
 </article>

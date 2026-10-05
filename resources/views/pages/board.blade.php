@@ -14,7 +14,7 @@
 
     <div class="pin-grid" style="margin-top:18px">
         @forelse ($pieces as $index => $piece)
-            @include('partials.pin-card', ['piece' => $piece, 'index' => $loop->index])
+            @include('partials.pin-card', ['pin' => \App\Support\PinPresenter::present($piece, $loop->index)])
         @empty
             <div class="empty-state" style="grid-column:1/-1">
                 <div class="art">🔖</div>

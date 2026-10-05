@@ -20,6 +20,7 @@ return [
     'nav_main' => 'التنقل الرئيسي',
     'search' => 'بحث',
     'language' => 'اللغة',
+    'list_sep' => '، ',
 
     'home_eyebrow' => 'مختارات لك',
     'home_title' => 'لوحاتٌ من نور الحرف',

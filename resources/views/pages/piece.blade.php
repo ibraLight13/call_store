@@ -146,7 +146,7 @@
     <div class="sec-title"><h3>{{ __('shell.related') }}</h3></div>
     <div class="pin-grid">
         @foreach ($related as $index => $relatedPiece)
-            @include('partials.pin-card', ['piece' => $relatedPiece, 'index' => $loop->index])
+            @include('partials.pin-card', ['pin' => \App\Support\PinPresenter::present($relatedPiece, $loop->index)])
         @endforeach
     </div>
 </section>
