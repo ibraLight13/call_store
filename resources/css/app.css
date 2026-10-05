@@ -147,7 +147,7 @@ main{display:block;min-height:calc(100dvh - var(--top-h))}
 .work{display:block;break-inside:avoid;margin:0 0 clamp(24px,3vw,40px)}
 .frame{
     display:block;background:var(--surface);padding:clamp(8px,1.2vw,16px);box-shadow:var(--shadow-hang);
-    transition:transform .2s var(--ease),box-shadow .2s var(--ease);
+    transition:transform .2s var(--ease);
 }
 .work:hover .frame,.frame:focus-visible{transform:translateY(-3px);box-shadow:var(--shadow-2)}
 .frame-art{display:block;position:relative;overflow:hidden;background:var(--surface-2);container-type:inline-size}
