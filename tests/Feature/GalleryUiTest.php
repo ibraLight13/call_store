@@ -159,3 +159,34 @@ it('renders the home page with no featured piece when the catalog is empty', fun
         ->assertSee('لوحاتٌ من نور الحرف')
         ->assertDontSee('class="hero-feature"', false);
 });
+
+it('offers add-to-cart as the primary action and a similar commission as secondary', function () {
+    $piece = galleryPiece();
+
+    $this->get(route('pieces.show', $piece))
+        ->assertOk()
+        ->assertSee(__('commerce.add_to_cart'))
+        ->assertSee(route('commissions.create', $piece->seller), false)
+        ->assertSee('class="frame"', false);
+});
+
+it('makes a similar commission the primary action once a piece is sold', function () {
+    $piece = galleryPiece();
+    $piece->forceFill(['sold_at' => now()])->save();
+
+    $this->get(route('pieces.show', $piece))
+        ->assertOk()
+        ->assertSee(__('commerce.sold'))
+        ->assertDontSee(route('cart.add', $piece), false)
+        ->assertSee('btn btn-block btn-primary" href="'.route('commissions.create', $piece->seller), false);
+});
+
+it('hides follow and request-similar from the seller on their own piece', function () {
+    $piece = galleryPiece();
+
+    $this->actingAs($piece->seller)
+        ->get(route('pieces.show', $piece))
+        ->assertOk()
+        ->assertDontSee(route('commissions.create', $piece->seller), false)
+        ->assertDontSee(__('shell.follow'));
+});

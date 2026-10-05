@@ -21,6 +21,8 @@ return [
     'search' => 'Search',
     'language' => 'Language',
     'list_sep' => ', ',
+    'request_similar' => 'Request a similar piece',
+    'cm' => 'cm',
 
     'home_eyebrow' => 'Picked for you',
     'home_title' => 'Art from the light of letters',

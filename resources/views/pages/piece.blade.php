@@ -3,96 +3,97 @@
 @section('title', $piece->text)
 
 @section('content')
+@php
+    $locale = app()->getLocale();
+    $pin = \App\Support\PinPresenter::present($piece, 0);
+    $large = $piece->coverMedia()?->derivativeUrl(960) ?? $pin['img'];
+    $sold = $piece->sold_at !== null;
+    $buyable = $piece->isReady() && $piece->price_minor !== null && ! $sold;
+    $isOwner = auth()->check() && (int) auth()->id() === (int) $piece->seller_id;
+@endphp
 <section class="page">
-    <a class="btn btn-ghost btn-sm" href="{{ url()->previous() ?: route('home') }}" style="margin-bottom:16px">← {{ __('shell.back') }}</a>
-
-    <div class="grid2">
+    <div class="piece">
         <div>
-            <div class="canvas" style="background:#fdf6e9;min-height:440px;border-radius:var(--radius-lg)">
-                <div class="art" style="color:#7a2f1e;font-size:52px">{{ $piece->text }}</div>
-                <div class="paper-edge"></div>
+            <div class="frame">
+                <span class="frame-art" style="aspect-ratio:4 / 3">
+                    @if ($large)
+                        <img src="{{ $large }}" alt="{{ $piece->text }}" width="960" height="720"
+                             onerror="this.hidden=true;this.nextElementSibling.hidden=false">
+                    @endif
+                    <span class="typeset" @if ($large) hidden @endif
+                          style="background:{{ $pin['bg'] }};color:{{ $pin['ink'] }};font-family:{{ $pin['font'] }};font-weight:{{ $pin['weight'] }};font-size:min({{ $pin['size'] * 2 }}px, 12cqi)">{{ $piece->text }}</span>
+                </span>
             </div>
 
-            @php($media = $piece->media)
-            @if ($media->isNotEmpty())
-                <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
-                    @foreach ($media as $medium)
-                        <img src="{{ $medium->derivativeUrl(480) ?? '' }}" alt=""
-                             style="width:110px;height:82px;object-fit:cover;border-radius:var(--radius-sm);box-shadow:var(--shadow-1)"
-                             loading="lazy" width="480" height="360">
+            @if ($piece->media->count() > 1)
+                <div class="thumbs">
+                    @foreach ($piece->media as $medium)
+                        <img src="{{ $medium->derivativeUrl(480) ?? '' }}" alt="" loading="lazy" width="480" height="360">
                     @endforeach
                 </div>
             @endif
         </div>
 
-        <div>
-            <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
-                @if ($piece->script)
-                    <span class="badge badge-primary">{{ __('shell.f_script') }}: {{ $piece->script->{'name_'.app()->getLocale()} }}</span>
-                @endif
-                @if ($piece->theme)
-                    <span class="badge badge-gold">{{ $piece->theme->{'name_'.app()->getLocale()} }}</span>
-                @endif
-                <span class="badge badge-soft">{{ __('shell.handmade') }}</span>
+        <div class="piece-info">
+            <h1>{{ $piece->text }}</h1>
+
+            <div class="artist">
+                <a href="{{ $piece->seller->profileUrl() }}" class="dot" aria-hidden="true" tabindex="-1">{{ mb_substr($piece->seller->name, 0, 1) }}</a>
+                <a href="{{ $piece->seller->profileUrl() }}">
+                    <span class="n">{{ $piece->seller->name }}</span><br>
+                    <span class="u">{{ '@'.$piece->seller->username }}</span>
+                </a>
+                @unless ($isOwner)
+                    @livewire(\App\Livewire\FollowButton::class, ['profile' => $piece->seller], key('follow-'.$piece->seller_id))
+                @endunless
             </div>
 
-            <h1 class="h1" style="font-size:26px">{{ $piece->text }}</h1>
-
-            <a href="{{ $piece->seller->profileUrl() }}" style="display:flex;align-items:center;gap:10px;margin:12px 0 18px">
-                <span class="dot" style="width:46px;height:46px;font-size:20px">{{ mb_substr($piece->seller->name, 0, 1) }}</span>
-                <span><b>{{ $piece->seller->name }}</b><br><span class="muted" style="font-size:13px">{{ '@'.$piece->seller->username }}</span></span>
-            </a>
-
-            <div class="panel" style="margin-bottom:16px">
-                <div class="kv"><span class="k">{{ __('catalog.text') }}</span><span class="v" style="font-family:var(--f-disp);font-size:17px">{{ $piece->text }}</span></div>
-                @if ($piece->transliteration)
-                    <div class="kv"><span class="k">{{ __('catalog.transliteration') }}</span><span class="v" dir="ltr">{{ $piece->transliteration }}</span></div>
-                @endif
-                @if ($piece->medium)
-                    <div class="kv"><span class="k">{{ __('catalog.medium') }}</span><span class="v">{{ $piece->medium->{'name_'.app()->getLocale()} }}</span></div>
-                @endif
-                @if ($piece->width_cm)
-                    <div class="kv"><span class="k">{{ __('catalog.width') }} / {{ __('catalog.height') }}</span><span class="v">{{ $piece->width_cm }} × {{ $piece->height_cm }} سم</span></div>
-                @endif
-                <div class="kv">
-                    <span class="k">{{ __('shell.d_avail') }}</span>
-                    <span class="v">
-            @if ($piece->description)
-                <p class="muted" style="white-space:pre-line;margin-bottom:16px">{{ $piece->description }}</p>
+            @if ($buyable)
+                <div class="price">{{ \App\Support\Money::format($piece->price_minor) }} <small>{{ config('catalog.currency') }}</small></div>
+            @elseif ($sold)
+                <span class="badge badge-gold">{{ __('commerce.sold') }}</span>
             @endif
 
-            @if ($piece->isReady())
-                            {{ __('shell.t_ready') }}
-                        @else
-                            {{ __('shell.t_commission') }}
-                        @endif
-                    </span>
-                </div>
-            </div>
-
-            @php($sold = $piece->sold_at !== null)
-
-            @if ($piece->isReady() && ! $sold)
-                <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:14px">
-                    <span style="font-family:var(--f-lat);font-size:32px;font-weight:700">{{ \App\Support\Money::format($piece->price_minor) }}</span>
-                    <span class="muted">SAR</span>
-                </div>
-
-                <div class="row" style="margin-bottom:10px">
+            <div class="actions">
+                @if ($buyable)
                     @auth
-                        <form method="POST" action="{{ route('cart.add', $piece) }}" style="flex:1">
+                        <form method="POST" action="{{ route('cart.add', $piece) }}">
                             @csrf
-                            <button type="submit" class="btn btn-primary btn-block">{{ __('commerce.add_to_cart') }}</button>
+                            <button type="submit" class="btn btn-block btn-primary">{{ __('commerce.add_to_cart') }}</button>
                         </form>
                     @else
-                        <a href="{{ route('login') }}" class="btn btn-primary btn-block">{{ __('commerce.add_to_cart') }}</a>
+                        <a href="{{ route('login') }}" class="btn btn-block btn-primary">{{ __('commerce.add_to_cart') }}</a>
                     @endauth
-                </div>
-            @elseif ($sold)
-                <div class="badge badge-gold" style="font-size:14px;padding:8px 16px;margin-bottom:14px">✔ {{ __('commerce.sold') }}</div>
+                @endif
+                @unless ($isOwner)
+                    <a class="btn btn-block {{ $buyable ? 'btn-outline' : 'btn-primary' }}" href="{{ route('commissions.create', $piece->seller) }}">{{ __('shell.request_similar') }}</a>
+                @endunless
+            </div>
+
+            <dl class="specs">
+                @if ($piece->script)
+                    <dt>{{ __('shell.f_script') }}</dt><dd>{{ $piece->script->{'name_'.$locale} }}</dd>
+                @endif
+                @if ($piece->medium)
+                    <dt>{{ __('catalog.medium') }}</dt><dd>{{ $piece->medium->{'name_'.$locale} }}</dd>
+                @endif
+                @if ($piece->width_cm)
+                    <dt>{{ __('catalog.width') }} / {{ __('catalog.height') }}</dt><dd>{{ $piece->width_cm }} × {{ $piece->height_cm }} {{ __('shell.cm') }}</dd>
+                @endif
+                @if ($piece->theme)
+                    <dt>{{ __('shell.f_theme') }}</dt><dd>{{ $piece->theme->{'name_'.$locale} }}</dd>
+                @endif
+                @if ($piece->transliteration)
+                    <dt>{{ __('catalog.transliteration') }}</dt><dd dir="ltr">{{ $piece->transliteration }}</dd>
+                @endif
+                <dt>{{ __('shell.d_avail') }}</dt><dd>{{ $piece->isReady() ? __('shell.t_ready') : __('shell.t_commission') }}</dd>
+            </dl>
+
+            @if ($piece->description)
+                <p class="muted" style="white-space:pre-line;margin:18px 0 0">{{ $piece->description }}</p>
             @endif
 
-            <div class="row">
+            <div class="social-row">
                 @livewire(\App\Livewire\LikeButton::class, ['piece' => $piece], key('like-'.$piece->id))
                 @livewire(\App\Livewire\SaveToBoardButton::class, ['piece' => $piece], key('save-'.$piece->id))
             </div>
@@ -104,7 +105,7 @@
         <span class="badge badge-soft">{{ $topLevel->count() + $repliesByParent->sum(fn ($replies) => $replies->count()) }}</span>
         @auth
             <details style="margin-inline-start:auto">
-                <summary class="muted" style="cursor:pointer;font-size:12.5px">🚩 {{ __('reviews.report') }}</summary>
+                <summary class="muted" style="cursor:pointer;font-size:var(--t-xs)">{{ __('reviews.report') }}</summary>
                 <form method="POST" action="{{ route('reports.store') }}" style="margin-top:10px;max-width:420px" onsubmit="this.querySelector('button').disabled=true">
                     @csrf
                     <input type="hidden" name="reportable_type" value="piece">
@@ -130,7 +131,7 @@
         @auth
             <form method="POST" action="{{ route('comments.store', $piece) }}" style="margin-top:16px">
                 @csrf
-                <textarea name="body" required minlength="2" maxlength="2000" placeholder="{{ __('social.add_comment') }}"></textarea>
+                <textarea name="body" required minlength="2" maxlength="2000" placeholder="{{ __('social.add_comment') }}" aria-label="{{ __('social.add_comment') }}"></textarea>
                 @error('body')<div class="err">{{ $message }}</div>@enderror
                 <div style="text-align:end;margin-top:10px">
                     <button type="submit" class="btn btn-dark btn-sm">{{ __('shell.send') }}</button>
@@ -144,10 +145,14 @@
     </div>
 
     <div class="sec-title"><h3>{{ __('shell.related') }}</h3></div>
-    <div class="pin-grid">
-        @foreach ($related as $index => $relatedPiece)
-            @include('partials.pin-card', ['pin' => \App\Support\PinPresenter::present($relatedPiece, $loop->index)])
-        @endforeach
-    </div>
+    @if ($related->isNotEmpty())
+        <div class="pin-grid">
+            @foreach ($related as $relatedPiece)
+                @include('partials.pin-card', ['pin' => \App\Support\PinPresenter::present($relatedPiece, $loop->index)])
+            @endforeach
+        </div>
+    @else
+        <div class="empty-state"><p style="margin:0">{{ __('shell.no_results') }}</p></div>
+    @endif
 </section>
 @endsection
