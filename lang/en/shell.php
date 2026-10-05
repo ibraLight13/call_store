@@ -2,7 +2,7 @@
 
 return [
     'tagline' => 'Handmade Arabic calligraphy art market',
-    'search_ph' => 'Search a name, verse, script style, or artistâ€¦',
+    'search_ph' => 'Search a name, verse, script style, or artist…',
     'theme' => 'Dark mode',
     'login' => 'Log in',
     'register' => 'Sign up',
@@ -37,8 +37,8 @@ return [
     'password' => 'Password',
     'password_confirmation' => 'Confirm password',
     'account_type' => 'Account type',
-    'buyer' => 'Buyer â€” I browse and purchase',
-    'seller' => 'Calligrapher â€” I showcase my work',
+    'buyer' => 'Buyer — I browse and purchase',
+    'seller' => 'Calligrapher — I showcase my work',
     'enter' => 'Enter',
     'create_account' => 'Create account',
     'no_account' => "Don't have an account?",
@@ -61,7 +61,7 @@ return [
     'edit_profile_sub' => 'Update your name, bio, and public images.',
     'profile_updated' => 'Your profile has been updated.',
     'bio' => 'Bio',
-    'bio_ph' => 'Introduce yourself and your calligraphy styleâ€¦',
+    'bio_ph' => 'Introduce yourself and your calligraphy style…',
     'pref_lang' => 'Preferred interface language',
     'lang_auto' => 'Match my current visit',
     'avatar' => 'Avatar',

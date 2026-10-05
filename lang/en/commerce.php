@@ -2,7 +2,7 @@
 
 return [
     'cart' => 'Shopping cart',
-    'cart_sub' => 'Ready pieces from different artists â€” paid once and split automatically.',
+    'cart_sub' => 'Ready pieces from different artists — paid once and split automatically.',
     'added_to_cart' => 'The piece was added to your cart.',
     'already_in_cart' => 'That piece is already in your cart.',
     'removed_from_cart' => 'The piece was removed from your cart.',
@@ -50,10 +50,10 @@ return [
     'refund_confirm' => 'The amount will be refunded and pieces re-listed. Continue?',
     'refunded_note' => 'This order has been refunded.',
 
-    'notif_paid_subject' => 'Your payment is confirmed â€” Khatt',
+    'notif_paid_subject' => 'Your payment is confirmed — Khatt',
     'notif_paid_line_buyer' => 'We received your payment for :number (:total). The artists are preparing your pieces.',
-    'notif_paid_line_seller' => 'New claim :number (:total) â€” prepare the piece for shipping!',
-    'notif_refund_subject' => 'Order refunded â€” Khatt',
+    'notif_paid_line_seller' => 'New claim :number (:total) — prepare the piece for shipping!',
+    'notif_refund_subject' => 'Order refunded — Khatt',
     'notif_refund_line' => 'Order :number (:total) has been refunded.',
 
     'state_pending_payment' => 'Awaiting payment',

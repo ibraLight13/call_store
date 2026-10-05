@@ -27,3 +27,20 @@ it('has identical translation keys across ar and en for every file', function ()
         expect($missingInAr)->toBe([], "Keys missing in ar/{$name}: ".implode(', ', $missingInAr));
     }
 });
+
+it('has no BOM or double-encoded (mojibake) text in any lang file', function () {
+    // "â€" is how ’ “ ” … — look after a UTF-8 → cp1252 → UTF-8 round trip;
+    // "Ø" / "Ù" are the lead characters of double-encoded Arabic.
+    $markers = ["\u{00E2}\u{20AC}", "\u{00C3}", "\u{00D8}", "\u{00D9}"];
+
+    foreach (File::allFiles(lang_path()) as $file) {
+        $raw = file_get_contents($file->getPathname());
+        $name = $file->getRelativePathname();
+
+        expect(str_starts_with($raw, "\xEF\xBB\xBF"))->toBeFalse("BOM in {$name}");
+
+        foreach ($markers as $marker) {
+            expect(str_contains($raw, $marker))->toBeFalse("Mojibake in {$name}");
+        }
+    }
+});
