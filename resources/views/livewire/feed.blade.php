@@ -1,6 +1,6 @@
 <div wire:key="feed-{{ app()->getLocale() }}">
     @if ($pins === [])
-        <div class="empty-state">
+        <div class="empty-state">@include('partials.ink-pattern')
             <div class="art">خَطّ</div>
             <h2 class="h1" style="font-size:var(--t-lg)">{{ __('shell.empty_feed_title') }}</h2>
             <p class="sub">{{ __('shell.empty_feed_sub') }}</p>

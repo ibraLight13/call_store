@@ -41,7 +41,7 @@
             </form>
         </div>
     @empty
-        <div class="empty-state"><div class="art">📦</div><div>{{ __('commerce.no_orders') }}</div></div>
+        <div class="empty-state">@include('partials.ink-pattern')<div class="art">📦</div><div>{{ __('commerce.no_orders') }}</div></div>
     @endforelse
 
     {{ $groups->links() }}

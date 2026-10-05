@@ -21,6 +21,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Aref+Ruqaa:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    {{-- Nasta'liq for the ink pattern only, subset to its letters (ن س ق): ~50 KB instead of ~960 KB. --}}
+    <link href="https://fonts.googleapis.com/css2?family=Gulzar&text=%D9%86%D8%B3%D9%82&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
@@ -139,6 +141,13 @@ document.addEventListener('keydown', function (e) {
     var menu = document.querySelector('details.menu[open]');
     if (menu && e.key === 'Escape') { menu.open = false; menu.querySelector('summary').focus(); }
 });
+// Ink patterns animate forever; pause the ones scrolled out of view.
+if ('IntersectionObserver' in window) {
+    var inkObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { en.target.classList.toggle('is-paused', !en.isIntersecting); });
+    });
+    document.querySelectorAll('.ink-pattern').forEach(function (el) { inkObserver.observe(el); });
+}
 document.addEventListener('click', function (e) {
     var menu = document.querySelector('details.menu[open]');
     if (menu && !menu.contains(e.target)) menu.open = false;

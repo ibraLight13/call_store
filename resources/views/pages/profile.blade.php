@@ -46,7 +46,7 @@
     </div>
 
     <div class="pin-grid" style="columns:1;margin-bottom:34px">
-        <div class="empty-state">
+        <div class="empty-state">@include('partials.ink-pattern')
             <div class="art">✦</div>
             <div>{{ __('shell.no_pieces_yet') }}</div>
         </div>

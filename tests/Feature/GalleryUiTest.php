@@ -250,3 +250,55 @@ it('shows the unread count on the account menu so mobile users see it too', func
         ->assertOk()
         ->assertSee('<span class="avatar">'.mb_substr($user->name, 0, 1).'<span class="count">1</span></span>', false);
 });
+
+it('writes calligraphy letters behind the home hero, hidden from assistive tech', function () {
+    galleryPiece();
+    FeedCache::flush();
+
+    $html = $this->get('/')->assertOk()->getContent();
+
+    expect($html)->toMatch('/<div class="hero">\s*<svg class="ink-pattern" aria-hidden="true"/');
+});
+
+it('puts the letter pattern on empty states and error pages', function () {
+    FeedCache::flush();
+
+    $this->get('/')->assertSee('<div class="empty-state">', false)->assertSee('class="ink-pattern"', false);
+    $this->get('/no-such-page')->assertNotFound()->assertSee('class="ink-pattern"', false);
+});
+
+it('keeps piece pages to paper grain only when there is art to show', function () {
+    $piece = galleryPiece();
+    galleryPiece(['seller' => $piece->seller]);
+
+    $this->get(route('pieces.show', $piece))->assertOk()->assertDontSee('class="ink-pattern"', false);
+});
+
+it('draws the pattern letters in every calligraphy style we can serve: naskh, ruqah, kufic, nastaliq', function () {
+    $svg = view('partials.ink-pattern')->render();
+
+    foreach (['Amiri', 'Aref Ruqaa', 'Reem Kufi', 'Gulzar'] as $face) {
+        expect($svg)->toContain("font-family:'{$face}'");
+    }
+});
+
+it('loads the nastaliq face subset to the pattern letters only', function () {
+    $this->get('/')->assertSee('family=Gulzar&text=', false);
+});
+
+it('draws tashkeel as standalone marks beside bare letters', function () {
+    $svg = view('partials.ink-pattern')->render();
+
+    preg_match_all('/<text[^>]*>([^<]+)<\/text>/u', $svg, $letters);
+    foreach ($letters[1] as $letter) {
+        expect(preg_match('/[\x{064B}-\x{0652}]/u', $letter))->toBe(0, "harakah attached to {$letter}");
+    }
+
+    foreach (['fatha', 'kasra', 'damma', 'shadda', 'sukun', 'tanween'] as $mark) {
+        expect($svg)->toContain("class=\"haraka haraka-{$mark}\"");
+    }
+});
+
+it('keeps the nastaliq subset to the bare pattern letters', function () {
+    $this->get('/')->assertSee('family=Gulzar&text=%D9%86%D8%B3%D9%82&display=swap', false);
+});

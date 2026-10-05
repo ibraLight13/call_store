@@ -44,7 +44,7 @@
                     @endforeach
                 </div>
             @empty
-                <div class="empty-state">
+                <div class="empty-state">@include('partials.ink-pattern')
                     <div class="art">🛒</div>
                     <div style="font-weight:700;font-size:16px;margin-bottom:4px">{{ __('commerce.empty_cart') }}</div>
                     <a href="{{ route('explore') }}" class="btn btn-dark btn-sm" style="margin-top:10px">{{ __('shell.nav_explore') }}</a>

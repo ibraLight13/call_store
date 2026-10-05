@@ -5,6 +5,7 @@
 @section('content')
 <section class="page">
     <div class="hero">
+        @include('partials.ink-pattern')
         <div>
             <h1>{{ __('shell.home_title') }}</h1>
             <p>{{ __('shell.home_sub') }}</p>

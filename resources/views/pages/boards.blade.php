@@ -17,7 +17,7 @@
                 </div>
             </a>
         @empty
-            <div class="empty-state" style="grid-column:1/-1">
+            <div class="empty-state" style="grid-column:1/-1">@include('partials.ink-pattern')
                 <div class="art">🔖</div>
                 <div>{{ __('social.no_boards_yet') }}</div>
             </div>

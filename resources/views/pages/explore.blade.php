@@ -66,7 +66,7 @@
         @forelse ($paginator as $piece)
             @include('partials.pin-card', ['pin' => \App\Support\PinPresenter::present($piece, $loop->index)])
         @empty
-            <div class="empty-state">
+            <div class="empty-state">@include('partials.ink-pattern')
                 <div class="art">…</div>
                 <div style="font-weight:700;font-size:16px;margin-bottom:4px">{{ __('shell.no_results') }}</div>
                 <div>{{ __('shell.try_other_filters') }}</div>

@@ -10,27 +10,29 @@
    ponytail: light-dark() needs Chrome 123 / Safari 17.5 / Firefox 120 — older browsers get unstyled colors. */
 :root{
     color-scheme:light dark;
-    --bg:light-dark(#e9e8e4,#1b1a18);
-    --surface:light-dark(#fbfaf7,#262420);
-    --surface-2:light-dark(#dedcd6,#302d28);
-    --surface-3:light-dark(#d3d0c9,#3a3631);
-    --ink:light-dark(#1a1816,#efeae0);
-    --ink-soft:light-dark(#5b5650,#b3ab9e);
-    --ink-faint:light-dark(#67615a,#9a9286);
-    --line:light-dark(#cfccc5,#3a3631);
-    --line-strong:light-dark(#b9b5ad,#4a453e);
+    /* Qalam Atelier palette: kraft paper, warm ink, teal for actions, sepia for "sold". */
+    --bg:light-dark(#e6dccb,#1d1813);
+    --surface:light-dark(#f6f1e7,#28211a);
+    --surface-2:light-dark(#d9ccb5,#332a21);
+    --surface-3:light-dark(#cfc0a6,#3d3328);
+    --ink:light-dark(#2a1f17,#efe6d6);
+    --ink-soft:light-dark(#5e4f40,#c4b5a0);
+    --ink-faint:light-dark(#5f503f,#a69682);
+    --line:light-dark(#d2c4ab,#3d3328);
+    --line-strong:light-dark(#b8a68a,#52463a);
     --primary:light-dark(#0f6b5e,#4fbfaa);
     --primary-ink:light-dark(#0b5148,#7fd3c2);
-    --primary-wash:light-dark(#dcebe7,#1b3330);
+    --primary-wash:light-dark(#d5e3da,#1b3330);
     --on-primary:light-dark(#ffffff,#0f1f1c);
-    --gold:light-dark(#7d5c1e,#d6b06a);
-    --gold2:light-dark(#b8893a,#a88545);
-    --gold-wash:light-dark(#f1e7d2,#2e2616);
+    --gold:light-dark(#7d4e22,#d9a06a);
+    --gold2:light-dark(#b07a45,#a9774a);
+    --gold-wash:light-dark(#efe0c8,#36281b);
     --danger:light-dark(#b23b2f,#e0796e);
     --teal:var(--primary);
-    --shadow-1:0 1px 2px light-dark(rgb(20 18 15 / .06),rgb(0 0 0 / .35));
-    --shadow-2:0 2px 6px light-dark(rgb(20 18 15 / .06),rgb(0 0 0 / .35)),0 12px 30px light-dark(rgb(20 18 15 / .08),rgb(0 0 0 / .45));
-    --shadow-hang:0 1px 0 var(--line),0 22px 40px -28px light-dark(rgb(26 24 22 / .45),rgb(0 0 0 / .7));
+    --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .27 0 0 0 0 .18 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    --shadow-1:0 1px 2px light-dark(rgb(42 31 23 / .08),rgb(0 0 0 / .35));
+    --shadow-2:0 2px 6px light-dark(rgb(42 31 23 / .08),rgb(0 0 0 / .35)),0 12px 30px light-dark(rgb(42 31 23 / .1),rgb(0 0 0 / .45));
+    --shadow-hang:0 1px 0 var(--line),0 22px 40px -28px light-dark(rgb(42 31 23 / .5),rgb(0 0 0 / .7));
     --radius:16px; --radius-sm:11px; --radius-lg:22px;
     --top-h:64px; --tab-h:64px;
     --t-xs:12px; --t-sm:13.5px; --t-base:15px;
@@ -45,7 +47,7 @@
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{
-    background:var(--bg); color:var(--ink);
+    background:var(--grain) var(--bg); color:var(--ink);
     font-family:var(--f-ar); font-size:15px; line-height:1.65;
     -webkit-font-smoothing:antialiased;
 }
@@ -187,6 +189,38 @@ main{display:block;min-height:calc(100dvh - var(--top-h))}
 .ribbon a[aria-current]{background:var(--ink);color:var(--surface)}
 .ribbon .ribbon-all{font-size:var(--t-base);font-weight:600;display:grid;place-items:center}
 @media(max-width:859px){.hero{grid-template-columns:1fr}}
+
+/* ---------- Ink pattern: calligraphy letters that write themselves (hero, empty states, errors) ---------- */
+/* ponytail: stroke-dashoffset/fill-opacity are paint props — acceptable only because the layer is small glyphs
+   at low opacity; base state is the finished letter, so reduced-motion (global animation:none) shows it static. */
+.hero,.empty-state,.ink-host{position:relative;isolation:isolate;overflow:hidden}
+.hero{overflow:visible}
+.ink-pattern{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;color:var(--ink);opacity:.1}
+.hero > .ink-pattern{inset:-40px calc(-1 * clamp(16px,4vw,56px)) -20px;width:auto;height:auto;opacity:.12}
+.ink-pattern text{
+    fill:currentColor;stroke:currentColor;stroke-width:1.2;stroke-dasharray:1200;
+    animation:ink-write 13s var(--ease) infinite both;
+}
+/* Standalone tashkeel marks: one pen stroke each, normalised to pathLength=1 so the write-in is exact. */
+.ink-pattern .haraka{
+    fill:none;stroke:currentColor;stroke-width:11;stroke-linecap:round;stroke-linejoin:round;
+    vector-effect:non-scaling-stroke;stroke-dasharray:1;
+    animation:mark-write 13s var(--ease) infinite both;
+}
+.ink-pattern.is-paused text,.ink-pattern.is-paused .haraka{animation-play-state:paused}
+@keyframes mark-write{
+    0%{stroke-dashoffset:1;opacity:1}
+    20%{stroke-dashoffset:0}
+    80%{opacity:1}
+    100%{stroke-dashoffset:0;opacity:0}
+}
+@keyframes ink-write{
+    0%{stroke-dashoffset:1200;fill-opacity:0;opacity:1}
+    25%{stroke-dashoffset:0;fill-opacity:0}
+    40%{fill-opacity:1}
+    80%{opacity:1}
+    100%{stroke-dashoffset:0;fill-opacity:1;opacity:0}
+}
 
 /* ---------- Piece page ---------- */
 .piece{display:grid;grid-template-columns:1.35fr 1fr;gap:clamp(24px,5vw,72px);align-items:start}

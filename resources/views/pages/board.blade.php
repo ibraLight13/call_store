@@ -16,7 +16,7 @@
         @forelse ($pieces as $index => $piece)
             @include('partials.pin-card', ['pin' => \App\Support\PinPresenter::present($piece, $loop->index)])
         @empty
-            <div class="empty-state" style="grid-column:1/-1">
+            <div class="empty-state" style="grid-column:1/-1">@include('partials.ink-pattern')
                 <div class="art">🔖</div>
                 <div>{{ __('social.board_empty') }}</div>
             </div>
