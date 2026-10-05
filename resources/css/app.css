@@ -126,16 +126,6 @@ main{display:block;min-height:calc(100vh - var(--top-h))}
     .page{padding-bottom:calc(var(--tab-h) + 32px)}
 }
 
-/* ---------- Chips ---------- */
-.chips{display:flex;gap:9px;overflow-x:auto;padding:2px 0 16px;scrollbar-width:none}
-.chips::-webkit-scrollbar{display:none}
-.chip{
-    white-space:nowrap;padding:8px 15px;border-radius:22px;background:var(--surface-2);
-    color:var(--ink-soft);font-size:13.5px;font-weight:600;border:1.5px solid transparent;transition:.15s var(--ease);
-}
-.chip:hover{color:var(--ink)}
-.chip.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
-
 /* ---------- Filter bar (explore) ---------- */
 .filterbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:13px 15px;margin-bottom:14px}
 .filterbar .fl{font-size:12px;font-weight:700;color:var(--ink-faint);margin-inline-end:2px}
@@ -180,6 +170,22 @@ main{display:block;min-height:calc(100vh - var(--top-h))}
 .skel{break-inside:avoid;margin:0 0 clamp(24px,3vw,40px);background:var(--surface);padding:clamp(8px,1.2vw,16px);box-shadow:var(--shadow-hang)}
 .skel span{display:block;aspect-ratio:4 / 3;background:var(--surface-2);animation:skel-pulse 1.2s ease-in-out infinite alternate}
 @keyframes skel-pulse{from{opacity:1}to{opacity:.45}}
+
+/* ---------- Home: hero + script ribbon ---------- */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(24px,5vw,80px);align-items:end;margin-bottom:clamp(28px,4vw,48px)}
+.hero h1{font-family:var(--f-disp);font-size:var(--t-hero);font-weight:700;line-height:1.15;margin:0}
+.hero p{color:var(--ink-soft);max-width:46ch;margin:14px 0 0;font-size:16px}
+.hero-feature .work{margin:0}
+.ribbon{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding:2px 2px 8px;margin-bottom:clamp(24px,3vw,40px)}
+.ribbon::-webkit-scrollbar{display:none}
+.ribbon a{
+    flex:0 0 auto;min-width:112px;padding:8px 18px;text-align:center;font-size:26px;line-height:1.5;
+    background:var(--surface);color:var(--ink);box-shadow:var(--shadow-1);
+}
+.ribbon a:hover{background:var(--surface-2)}
+.ribbon a[aria-current]{background:var(--ink);color:var(--surface)}
+.ribbon .ribbon-all{font-size:var(--t-base);font-weight:600;display:grid;place-items:center}
+@media(max-width:859px){.hero{grid-template-columns:1fr}}
 @media(max-width:859px){
     .pin-grid{columns:2;column-gap:14px}
     .work{margin-bottom:18px}

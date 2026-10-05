@@ -1,9 +1,11 @@
 <?php
 
 use App\Domain\Catalog\Models\Piece;
+use App\Domain\Catalog\Models\Script;
 use App\Domain\Discovery\Cache\FeedCache;
 use App\Models\User;
 use App\Support\PinPresenter;
+use Database\Seeders\CatalogSeeder;
 use Database\Seeders\RoleSeeder;
 
 function galleryPiece(array $overrides = []): Piece
@@ -129,4 +131,31 @@ it('tells visitors what to expect when the feed is empty', function () {
     FeedCache::flush();
 
     $this->get('/')->assertOk()->assertSee(__('shell.empty_feed_title'));
+});
+
+it('shows a script ribbon that links each script, set in its own face, into explore', function () {
+    $this->seed(CatalogSeeder::class);
+    $script = Script::query()->orderBy('sort')->firstOrFail();
+
+    $this->get('/')
+        ->assertOk()
+        ->assertSee('class="ribbon"', false)
+        ->assertSee(route('explore', ['script' => $script->id]), false)
+        ->assertSee($script->name_ar);
+});
+
+it('features the newest piece in the home hero', function () {
+    galleryPiece(['text' => 'إِنَّ مَعَ العُسرِ يُسرًا', 'normalized_text' => 'ان مع العسر يسرا']);
+    FeedCache::flush();
+
+    $this->get('/')->assertOk()->assertSee('class="hero-feature"', false);
+});
+
+it('renders the home page with no featured piece when the catalog is empty', function () {
+    FeedCache::flush();
+
+    $this->get('/')
+        ->assertOk()
+        ->assertSee('لوحاتٌ من نور الحرف')
+        ->assertDontSee('class="hero-feature"', false);
 });
