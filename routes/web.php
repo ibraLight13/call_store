@@ -42,8 +42,6 @@ Route::get('/status', StatusController::class)->name('status');
 Route::get('/explore', ExploreController::class)->name('explore');
 Route::get('/pieces/{piece}', [PiecesController::class, 'show'])->name('pieces.show');
 
-Route::get('/explore', fn () => view('pages.placeholder', ['title' => __('shell.nav_explore')]))->name('explore');
-
 Route::middleware('guest')->group(function (): void {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.store');

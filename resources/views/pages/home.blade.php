@@ -24,8 +24,6 @@
         @endforeach
     </div>
 
-    <div class="pin-grid">
-        @livewire('feed')
-    </div>
+    @livewire('feed')
 </section>
 @endsection
