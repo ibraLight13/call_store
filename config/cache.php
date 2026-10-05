@@ -1,5 +1,10 @@
 <?php
 
+use App\Domain\Catalog\Models\Color;
+use App\Domain\Catalog\Models\Medium;
+use App\Domain\Catalog\Models\Script;
+use App\Domain\Catalog\Models\Theme;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Str;
 
 return [
@@ -133,11 +138,11 @@ return [
 
     // Allow-list only what TaxonomyRepository caches (Eloquent collections of catalog facets).
     'serializable_classes' => [
-        Illuminate\Database\Eloquent\Collection::class,
-        App\Domain\Catalog\Models\Script::class,
-        App\Domain\Catalog\Models\Medium::class,
-        App\Domain\Catalog\Models\Theme::class,
-        App\Domain\Catalog\Models\Color::class,
+        Collection::class,
+        Script::class,
+        Medium::class,
+        Theme::class,
+        Color::class,
     ],
 
 ];

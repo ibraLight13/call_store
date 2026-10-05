@@ -2,11 +2,13 @@
 
 use App\Domain\Catalog\Models\Piece;
 use App\Domain\Catalog\Models\Script;
+use App\Domain\Catalog\Support\TaxonomyRepository;
 use App\Domain\Discovery\Cache\FeedCache;
 use App\Models\User;
 use App\Support\PinPresenter;
 use Database\Seeders\CatalogSeeder;
 use Database\Seeders\RoleSeeder;
+use Illuminate\Support\Facades\Cache;
 
 function galleryPiece(array $overrides = []): Piece
 {
@@ -108,13 +110,13 @@ it('labels sold and commission-only works honestly', function () {
 it('serves the taxonomy from a serializing cache store once warm', function () {
     // Production uses the database store, which serializes; the array store only does when asked.
     config(['cache.stores.array.serialize' => true]);
-    Illuminate\Support\Facades\Cache::forgetDriver('array');
-    $this->seed(Database\Seeders\CatalogSeeder::class);
+    Cache::forgetDriver('array');
+    $this->seed(CatalogSeeder::class);
 
-    app(App\Domain\Catalog\Support\TaxonomyRepository::class)->all(); // cold: computed + stored
-    $warm = app(App\Domain\Catalog\Support\TaxonomyRepository::class)->all()['scripts']->first();
+    app(TaxonomyRepository::class)->all(); // cold: computed + stored
+    $warm = app(TaxonomyRepository::class)->all()['scripts']->first();
 
-    expect($warm)->toBeInstanceOf(App\Domain\Catalog\Models\Script::class);
+    expect($warm)->toBeInstanceOf(Script::class);
 });
 
 it('renders the home feed as a single masonry grid of gallery cards', function () {
