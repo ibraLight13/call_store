@@ -14,4 +14,6 @@ return [
     'reason_copyright' => 'انتهاك حقوق',
     'reason_scam' => 'احتيال مشتبه',
     'reason_other' => 'أخرى',
+    'reason_label' => 'سبب البلاغ',
+    'note_label' => 'تفاصيل (اختياري)',
 ];

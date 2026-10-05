@@ -82,7 +82,7 @@
                     @endrole
                     <div class="menu-sep"></div>
                 @endauth
-                <div class="menu-lang" aria-label="{{ __('shell.language') }}">
+                <div class="menu-lang" role="group" aria-label="{{ __('shell.language') }}">
                     <a href="{{ request()->fullUrlWithQuery(['lang' => 'ar']) }}" @if (app()->getLocale() === 'ar') aria-current="true" @endif>العربية</a>
                     <a href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}" @if (app()->getLocale() === 'en') aria-current="true" @endif>English</a>
                 </div>
@@ -133,6 +133,15 @@ function toggleTheme(){
     root.dataset.theme = next;
     document.cookie = 'theme=' + next + ';path=/;max-age=31536000;samesite=lax';
 }
+// Native <details> has no Escape or outside-click dismissal; add both for the account menu.
+document.addEventListener('keydown', function (e) {
+    var menu = document.querySelector('details.menu[open]');
+    if (menu && e.key === 'Escape') { menu.open = false; menu.querySelector('summary').focus(); }
+});
+document.addEventListener('click', function (e) {
+    var menu = document.querySelector('details.menu[open]');
+    if (menu && !menu.contains(e.target)) menu.open = false;
+});
 </script>
 </body>
 </html>

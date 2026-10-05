@@ -101,7 +101,7 @@
     </div>
 
     <div class="sec-title">
-        <h3>{{ __('social.comments') }}</h3>
+        <h2>{{ __('social.comments') }}</h2>
         <span class="badge badge-soft">{{ $topLevel->count() + $repliesByParent->sum(fn ($replies) => $replies->count()) }}</span>
         @auth
             <details style="margin-inline-start:auto">
@@ -110,12 +110,14 @@
                     @csrf
                     <input type="hidden" name="reportable_type" value="piece">
                     <input type="hidden" name="reportable_id" value="{{ $piece->id }}">
-                    <select name="reason" class="input" required>
+                    <label for="report-reason" class="muted" style="font-size:var(--t-xs)">{{ __('reports.reason_label') }}</label>
+                    <select id="report-reason" name="reason" class="input" required>
                         @foreach (['inappropriate', 'offensive', 'copyright', 'scam', 'other'] as $reason)
                             <option value="{{ $reason }}">{{ __("reports.reason_$reason") }}</option>
                         @endforeach
                     </select>
-                    <textarea name="note" class="input" style="margin-top:8px" maxlength="1000"></textarea>
+                    <label for="report-note" class="muted" style="display:block;margin-top:8px;font-size:var(--t-xs)">{{ __('reports.note_label') }}</label>
+                    <textarea id="report-note" name="note" class="input" maxlength="1000"></textarea>
                     <button type="submit" class="btn btn-outline btn-sm" style="margin-top:8px">{{ __('reviews.report') }}</button>
                 </form>
             </details>
@@ -144,7 +146,7 @@
         @endauth
     </div>
 
-    <div class="sec-title"><h3>{{ __('shell.related') }}</h3></div>
+    <div class="sec-title"><h2>{{ __('shell.related') }}</h2></div>
     @if ($related->isNotEmpty())
         <div class="pin-grid">
             @foreach ($related as $relatedPiece)

@@ -14,4 +14,6 @@ return [
     'reason_copyright' => 'Copyright violation',
     'reason_scam' => 'Suspected scam',
     'reason_other' => 'Other',
+    'reason_label' => 'Reason',
+    'note_label' => 'Details (optional)',
 ];

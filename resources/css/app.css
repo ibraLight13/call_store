@@ -247,8 +247,8 @@ main{display:block;min-height:calc(100dvh - var(--top-h))}
 .badge-soft{background:var(--surface-2);color:var(--ink-soft)}
 .muted{color:var(--ink-soft)}
 .sec-title{display:flex;align-items:center;gap:10px;margin:34px 0 16px}
-.sec-title h3{margin:0;font-family:var(--f-disp);font-size:22px}
-html[dir="ltr"] .sec-title h3{font-family:var(--f-lat)}
+.sec-title h2,.sec-title h3{margin:0;font-family:var(--f-disp);font-size:22px}
+html[dir="ltr"] .sec-title h2,html[dir="ltr"] .sec-title h3{font-family:var(--f-lat)}
 
 /* ---------- Forms ---------- */
 .field{margin-bottom:16px}

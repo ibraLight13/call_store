@@ -7,7 +7,7 @@
             <a class="btn btn-dark" href="{{ route('explore') }}">{{ __('shell.nav_explore') }}</a>
         </div>
     @else
-        <div class="pin-grid">
+        <div class="pin-grid" wire:loading.attr="aria-busy" wire:target="loadMore">
             @foreach ($pins as $pin)
                 @include('partials.pin-card', ['pin' => $pin])
             @endforeach

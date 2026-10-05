@@ -204,3 +204,21 @@ it('gives the empty feed one clear next action', function () {
 
     $this->get('/')->assertOk()->assertSee('class="btn btn-dark" href="'.route('explore'), false);
 });
+
+it('labels the report fields and keeps heading levels in order on the piece page', function () {
+    $piece = galleryPiece();
+    $viewer = User::factory()->create();
+
+    $html = $this->actingAs($viewer)->get(route('pieces.show', $piece))->assertOk()->getContent();
+
+    expect($html)->toContain('<label for="report-reason"')
+        ->toContain('<label for="report-note"')
+        ->toContain('<h2>'.__('social.comments').'</h2>')
+        ->not->toContain('<h3>');
+});
+
+it('groups the language switch and lets Escape close the account menu', function () {
+    $this->get('/')
+        ->assertSee('class="menu-lang" role="group"', false)
+        ->assertSee("e.key === 'Escape'", false);
+});
