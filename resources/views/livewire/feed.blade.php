@@ -1,45 +1,26 @@
-<div class="pin-grid" wire:key="feed-{{ app()->getLocale() }}">
-    @foreach ($pins as $pin)
-        <article class="pcard" wire:key="pin-{{ $pin['id'] }}">
-            <a href="{{ $pin['url'] }}" class="pcard-media" aria-label="{{ $pin['text'] }}">
-                @if ($pin['img'])
-                    <img src="{{ $pin['img'] }}" alt="{{ $pin['text'] }}" loading="lazy"
-                         width="480" height="360">
-                @else
-                    <span class="pcard-art" style="background:{{ $pin['bg'] }};color:{{ $pin['ink'] }};font-family:{{ $pin['font'] }};font-weight:{{ $pin['weight'] }}">
-                        {{ $pin['text'] }}
-                        <span class="pcard-frame" aria-hidden="true"></span>
-                    </span>
-                @endif
-                @if ($pin['scriptName'])
-                    <span class="scr-seal">{{ $pin['scriptName'] }}</span>
-                @endif
-                @if ($pin['sold'])
-                    <span class="badge badge-gold pcard-sold">{{ __('commerce.sold') }}</span>
-                @endif
-            </a>
+<div wire:key="feed-{{ app()->getLocale() }}">
+    @if ($pins === [])
+        <div class="empty-state">
+            <div class="art">خَطّ</div>
+            <h2 class="h1" style="font-size:var(--t-lg)">{{ __('shell.empty_feed_title') }}</h2>
+            <p class="sub" style="margin:0">{{ __('shell.empty_feed_sub') }}</p>
+        </div>
+    @else
+        <div class="pin-grid">
+            @foreach ($pins as $pin)
+                @include('partials.pin-card', ['pin' => $pin])
+            @endforeach
 
-            <div class="pcard-body">
-                <a href="{{ $pin['url'] }}" class="pcard-title">{{ $pin['text'] }}</a>
-
-                <div class="pcard-meta">
-                    <a href="{{ $pin['sellerUrl'] }}" class="pcard-seller">{{ $pin['sellerName'] }}</a>
-
-                    @if ($pin['isReady'])
-                        <span class="pcard-price">{{ $pin['price'] }} <small>SAR</small></span>
-                    @else
-                        <span class="badge badge-primary">{{ __('shell.t_commission') }}</span>
-                    @endif
-                </div>
-            </div>
-        </article>
-    @endforeach
+            @for ($i = 0; $i < 3; $i++)
+                <div class="skel" wire:loading.block wire:target="loadMore" aria-hidden="true"><span></span></div>
+            @endfor
+        </div>
+    @endif
 
     @if ($hasMore)
-        <div style="grid-column:1/-1;text-align:center;padding:10px 0 30px">
-            <button type="button" class="btn btn-outline" wire:click="loadMore" wire:loading.attr="disabled">
-                <span wire:loading.remove wire:target="loadMore">{{ __('shell.load_more') }}</span>
-                <span wire:loading wire:target="loadMore">…</span>
+        <div style="text-align:center;padding:10px 0 30px">
+            <button type="button" class="btn btn-outline" wire:click="loadMore" wire:loading.attr="disabled" wire:target="loadMore">
+                {{ __('shell.load_more') }}
             </button>
         </div>
     @endif

@@ -177,6 +177,9 @@ main{display:block;min-height:calc(100vh - var(--top-h))}
 .wl-price{font-weight:600;color:var(--ink)}
 .wl-price.is-commission{color:var(--primary)}
 .wl-price.is-sold{color:var(--gold)}
+.skel{break-inside:avoid;margin:0 0 clamp(24px,3vw,40px);background:var(--surface);padding:clamp(8px,1.2vw,16px);box-shadow:var(--shadow-hang)}
+.skel span{display:block;aspect-ratio:4 / 3;background:var(--surface-2);animation:skel-pulse 1.2s ease-in-out infinite alternate}
+@keyframes skel-pulse{from{opacity:1}to{opacity:.45}}
 @media(max-width:859px){
     .pin-grid{columns:2;column-gap:14px}
     .work{margin-bottom:18px}

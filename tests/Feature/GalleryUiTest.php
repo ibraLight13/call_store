@@ -114,3 +114,19 @@ it('serves the taxonomy from a serializing cache store once warm', function () {
 
     expect($warm)->toBeInstanceOf(App\Domain\Catalog\Models\Script::class);
 });
+
+it('renders the home feed as a single masonry grid of gallery cards', function () {
+    galleryPiece();
+    FeedCache::flush();
+
+    $html = $this->get('/')->assertOk()->getContent();
+
+    expect(substr_count($html, 'class="pin-grid"'))->toBe(1);
+    expect($html)->toContain('class="wall-label"')->not->toContain('class="pcard"');
+});
+
+it('tells visitors what to expect when the feed is empty', function () {
+    FeedCache::flush();
+
+    $this->get('/')->assertOk()->assertSee(__('shell.empty_feed_title'));
+});

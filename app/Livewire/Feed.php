@@ -6,8 +6,7 @@ use App\Domain\Catalog\Models\Piece;
 use App\Domain\Discovery\Contracts\PieceSearcher;
 use App\Domain\Discovery\Data\FeedFilters;
 use App\Domain\Discovery\Queries\FeedQuery;
-use App\Support\Money;
-use App\Support\Palette;
+use App\Support\PinPresenter;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -57,42 +56,7 @@ final class Feed extends Component
         $rendered = [];
 
         foreach ($pieces as $piece) {
-            [$bg, $ink] = Palette::tint(count($rendered));
-
-            $script = $piece->script;
-            $scriptSlug = $script !== null ? $script->slug : 'naskh';
-            $scriptName = '';
-            if ($script !== null) {
-                $localized = $script->{'name_'.app()->getLocale()};
-                $scriptName = is_string($localized) ? $localized : '';
-            }
-
-            $cover = $piece->coverMedia();
-            $imgUrl = $cover?->derivativeUrl(480);
-
-            $isReady = $piece->isReady() && $piece->price_minor !== null;
-
-            $pin = [
-                'id' => $piece->id,
-                'url' => route('pieces.show', $piece),
-                'text' => $piece->text,
-                'img' => $imgUrl,
-                'bg' => $bg,
-                'ink' => $ink,
-                'font' => Palette::font($scriptSlug),
-                'weight' => Palette::weight($scriptSlug),
-                'size' => max(22, min(54, (int) (220 / max(6, mb_strlen($piece->text)) + 14))),
-                'scriptName' => $scriptName,
-                'sellerUrl' => $piece->seller->profileUrl(),
-                'sellerInitial' => mb_substr($piece->seller->name, 0, 1),
-                'sellerName' => $piece->seller->name,
-                'isReady' => $isReady,
-                'sold' => $piece->sold_at !== null,
-                'price' => Money::format($piece->price_minor),
-            ];
-
-            ksort($pin);
-            $rendered[] = $pin;
+            $rendered[] = PinPresenter::present($piece, count($rendered));
         }
 
         return $rendered;
