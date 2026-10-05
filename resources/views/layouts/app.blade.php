@@ -59,7 +59,8 @@
         <details class="menu">
             <summary aria-label="{{ __('shell.account') }}">
                 @auth
-                    <span class="avatar">{{ mb_substr(auth()->user()->name, 0, 1) }}</span>
+                    {{-- The bell is hidden on mobile, so the unread count also rides on the avatar. --}}
+                    <span class="avatar">{{ mb_substr(auth()->user()->name, 0, 1) }}@if ($unreadCount > 0)<span class="count">{{ $unreadCount > 9 ? '9+' : $unreadCount }}</span>@endif</span>
                 @else
                     <span class="iconbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span>
                 @endauth

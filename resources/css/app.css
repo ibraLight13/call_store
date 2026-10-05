@@ -85,6 +85,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
     position:absolute;top:2px;inset-inline-end:2px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;
     background:var(--danger);color:#fff;font-size:10px;font-weight:700;display:grid;place-items:center;
 }
+.avatar{position:relative}
 .dot,.avatar{
     width:40px;height:40px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;
     background:var(--ink);color:var(--surface);font-weight:600;

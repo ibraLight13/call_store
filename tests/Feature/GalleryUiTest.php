@@ -222,3 +222,29 @@ it('groups the language switch and lets Escape close the account menu', function
         ->assertSee('class="menu-lang" role="group"', false)
         ->assertSee("e.key === 'Escape'", false);
 });
+
+it('does not offer the seller to buy their own piece', function () {
+    $piece = galleryPiece();
+
+    $this->actingAs($piece->seller)
+        ->get(route('pieces.show', $piece))
+        ->assertOk()
+        ->assertDontSee(route('cart.add', $piece), false);
+});
+
+it('shows the unread count on the account menu so mobile users see it too', function () {
+    $user = User::factory()->create();
+    Illuminate\Support\Facades\DB::table('notifications')->insert([
+        'id' => (string) Illuminate\Support\Str::uuid(),
+        'type' => 'test',
+        'notifiable_type' => $user->getMorphClass(),
+        'notifiable_id' => $user->id,
+        'data' => '{}',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    $this->actingAs($user)->get('/')
+        ->assertOk()
+        ->assertSee('<span class="avatar">'.mb_substr($user->name, 0, 1).'<span class="count">1</span></span>', false);
+});

@@ -55,7 +55,7 @@
             @endif
 
             <div class="actions">
-                @if ($buyable)
+                @if ($buyable && ! $isOwner)
                     @auth
                         <form method="POST" action="{{ route('cart.add', $piece) }}">
                             @csrf
