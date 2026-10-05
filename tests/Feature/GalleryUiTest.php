@@ -9,6 +9,8 @@ use App\Support\PinPresenter;
 use Database\Seeders\CatalogSeeder;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 function galleryPiece(array $overrides = []): Piece
 {
@@ -234,8 +236,8 @@ it('does not offer the seller to buy their own piece', function () {
 
 it('shows the unread count on the account menu so mobile users see it too', function () {
     $user = User::factory()->create();
-    Illuminate\Support\Facades\DB::table('notifications')->insert([
-        'id' => (string) Illuminate\Support\Str::uuid(),
+    DB::table('notifications')->insert([
+        'id' => (string) Str::uuid(),
         'type' => 'test',
         'notifiable_type' => $user->getMorphClass(),
         'notifiable_id' => $user->id,
