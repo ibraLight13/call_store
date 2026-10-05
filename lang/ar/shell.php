@@ -17,6 +17,9 @@ return [
     'nav_dash' => 'لوحتي',
     'nav_admin' => 'الإشراف',
     'nav_profile' => 'حسابي',
+    'nav_main' => 'التنقل الرئيسي',
+    'search' => 'بحث',
+    'language' => 'اللغة',
 
     'home_eyebrow' => 'مختارات لك',
     'home_title' => 'لوحاتٌ من نور الحرف',

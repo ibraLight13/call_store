@@ -17,6 +17,9 @@ return [
     'nav_dash' => 'Dashboard',
     'nav_admin' => 'Moderate',
     'nav_profile' => 'Profile',
+    'nav_main' => 'Main navigation',
+    'search' => 'Search',
+    'language' => 'Language',
 
     'home_eyebrow' => 'Picked for you',
     'home_title' => 'Art from the light of letters',
