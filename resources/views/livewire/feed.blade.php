@@ -3,7 +3,8 @@
         <div class="empty-state">
             <div class="art">خَطّ</div>
             <h2 class="h1" style="font-size:var(--t-lg)">{{ __('shell.empty_feed_title') }}</h2>
-            <p class="sub" style="margin:0">{{ __('shell.empty_feed_sub') }}</p>
+            <p class="sub">{{ __('shell.empty_feed_sub') }}</p>
+            <a class="btn btn-dark" href="{{ route('explore') }}">{{ __('shell.nav_explore') }}</a>
         </div>
     @else
         <div class="pin-grid">

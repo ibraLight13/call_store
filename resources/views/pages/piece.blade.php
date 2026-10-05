@@ -152,7 +152,10 @@
             @endforeach
         </div>
     @else
-        <div class="empty-state"><p style="margin:0">{{ __('shell.no_results') }}</p></div>
+        <div class="empty-state">
+            <p class="sub">{{ __('shell.no_results') }}</p>
+            <a class="btn btn-dark" href="{{ route('explore') }}">{{ __('shell.nav_explore') }}</a>
+        </div>
     @endif
 </section>
 @endsection

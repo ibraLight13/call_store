@@ -198,3 +198,9 @@ it('keeps the skip link readable in both themes', function () {
     expect(file_get_contents(resource_path('css/app.css')))
         ->toMatch('/\.skip-link\{[^}]*background:var\(--primary\);color:var\(--on-primary\)/');
 });
+
+it('gives the empty feed one clear next action', function () {
+    FeedCache::flush();
+
+    $this->get('/')->assertOk()->assertSee('class="btn btn-dark" href="'.route('explore'), false);
+});
