@@ -4,6 +4,6 @@
     @foreach ($scripts as $script)
         <a href="{{ route('explore', ['script' => $script->id]) }}"
            @if ($activeId === (int) $script->id) aria-current="true" @endif
-           style="font-family:{{ \App\Support\Palette::font($script->slug) }};font-weight:{{ \App\Support\Palette::weight($script->slug) }}">{{ $script->{'name_'.app()->getLocale()} }}</a>
+           style="font-family:{{ \App\Support\Palette::font($script->slug, $script->font) }};font-weight:{{ \App\Support\Palette::weight($script->slug, $script->weight) }}">{{ $script->{'name_'.app()->getLocale()} }}</a>
     @endforeach
 </nav>

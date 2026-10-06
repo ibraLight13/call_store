@@ -1,9 +1,13 @@
 <?php
 
+use App\Domain\Catalog\Models\Script;
 use App\Domain\Content\Models\HomeSection;
 use App\Domain\Content\Support\HomeContent;
 use App\Filament\Admin\Pages\ManageHomeContent;
+use App\Filament\Admin\Resources\ScriptsResource;
+use App\Filament\Admin\Resources\ScriptsResource\Pages\ManageScripts;
 use App\Models\User;
+use Database\Seeders\CatalogSeeder;
 use Database\Seeders\RoleSeeder;
 use Livewire\Livewire;
 
@@ -78,4 +82,50 @@ it('keeps the home content page away from non-admins', function () {
     $user = User::factory()->create(['username' => 'plain-user']);
 
     $this->actingAs($user)->get(ManageHomeContent::getUrl())->assertForbidden();
+});
+
+it('leaves scripts switched off by an admin out of the home strip', function () {
+    $this->seed(CatalogSeeder::class);
+    [$shown, $hidden] = Script::query()->orderBy('sort')->take(2)->get();
+    $hidden->update(['show_on_home' => false]);
+
+    $html = $this->get('/')->assertOk()->getContent();
+
+    expect(substr_count($html, 'href="'.route('explore', ['script' => $shown->id]).'"'))->toBe(2)
+        ->and($html)->not->toContain('href="'.route('explore', ['script' => $hidden->id]).'"');
+});
+
+it('draws a script in the font an admin picked for it', function () {
+    $this->seed(CatalogSeeder::class);
+    $script = Script::query()->orderBy('sort')->firstOrFail();
+    $script->update(['font' => 'reem-kufi', 'weight' => 500]);
+
+    $this->get('/')->assertOk()
+        ->assertSee("font-family:'Reem Kufi', sans-serif;font-weight:500");
+});
+
+it('lets admins add and remove script styles', function () {
+    $admin = homeAdmin();
+
+    $this->actingAs($admin)->get(ScriptsResource::getUrl())->assertOk();
+
+    Livewire::actingAs($admin)
+        ->test(ManageScripts::class)
+        ->callAction('create', [
+            'name_ar' => 'مغربي',
+            'name_en' => 'Maghribi',
+            'slug' => 'maghribi',
+            'font' => 'aref-ruqaa',
+            'sort' => 7,
+            'show_on_home' => true,
+        ])
+        ->assertHasNoActionErrors();
+
+    $script = Script::query()->where('slug', 'maghribi')->firstOrFail();
+    expect($script->font)->toBe('aref-ruqaa');
+
+    $this->get('/')->assertSee('مغربي');
+
+    $script->delete();
+    $this->get('/')->assertDontSee('مغربي');
 });

@@ -4,6 +4,14 @@ return [
 
     'currency' => 'SAR',
 
+    // Fonts an admin can pick for a script style (all loaded in layouts/app.blade.php).
+    'fonts' => [
+        'amiri' => "'Amiri', serif",
+        'aref-ruqaa' => "'Aref Ruqaa', serif",
+        'reem-kufi' => "'Reem Kufi', sans-serif",
+        'plex-arabic' => "'IBM Plex Sans Arabic', sans-serif",
+    ],
+
     // Script slug => CSS font stack used to render piece text as art.
     'script_fonts' => [
         'thuluth' => "'Amiri', serif",

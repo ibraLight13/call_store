@@ -18,8 +18,15 @@ final class Palette
         return self::validTint($tints[$index % count($tints)]) ?? self::FALLBACK_TINT;
     }
 
-    public static function font(string $scriptSlug): string
+    /** $chosen is a script's admin-picked key into catalog.fonts; it wins over the per-slug default. */
+    public static function font(string $scriptSlug, ?string $chosen = null): string
     {
+        $choices = config('catalog.fonts');
+
+        if ($chosen !== null && is_array($choices) && is_string($choices[$chosen] ?? null)) {
+            return $choices[$chosen];
+        }
+
         $fonts = config('catalog.script_fonts');
 
         if (is_array($fonts)) {
@@ -33,8 +40,12 @@ final class Palette
         return "'Amiri', serif";
     }
 
-    public static function weight(string $scriptSlug): int
+    public static function weight(string $scriptSlug, ?int $chosen = null): int
     {
+        if ($chosen !== null && $chosen >= 100 && $chosen <= 900) {
+            return $chosen;
+        }
+
         $weights = config('catalog.script_weights');
 
         if (is_array($weights)) {

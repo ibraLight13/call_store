@@ -31,4 +31,17 @@ return [
     'add_question' => 'Add question',
     'question' => 'Question',
     'answer' => 'Answer',
+
+    'scripts_nav' => 'Script styles',
+    'script' => 'script style',
+    'name_ar' => 'Name (Arabic)',
+    'name_en' => 'Name (English)',
+    'slug' => 'Slug',
+    'slug_help' => 'Lowercase letters, numbers and dashes. Used in links; avoid changing it later.',
+    'font' => 'Font',
+    'weight' => 'Font weight',
+    'font_default' => 'Default for this style',
+    'sort' => 'Order',
+    'show_on_home' => 'Show in the home page strip',
+    'script_delete_warning' => 'Pieces and commission requests using this style will keep their text but lose their style tag.',
 ];

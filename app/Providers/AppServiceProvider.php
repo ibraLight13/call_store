@@ -107,6 +107,10 @@ class AppServiceProvider extends ServiceProvider
             $taxonomy::deleted(fn () => Cache::forget(FeedCache::TAXONOMY_KEY));
         }
 
+        // Cached feed cards carry each script's font, so an admin font change must refresh them too.
+        Script::saved(fn () => FeedCache::flush());
+        Script::deleted(fn () => FeedCache::flush());
+
         if ($this->app->isProduction()) {
             URL::forceScheme('https');
         }
