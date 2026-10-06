@@ -143,7 +143,7 @@ it('shows a script ribbon that links each script, set in its own face, into expl
 
     $this->get('/')
         ->assertOk()
-        ->assertSee('class="ribbon"', false)
+        ->assertSee('class="marquee"', false)
         ->assertSee(route('explore', ['script' => $script->id]), false)
         ->assertSee($script->name_ar);
 });
@@ -301,4 +301,49 @@ it('draws tashkeel as standalone marks beside bare letters', function () {
 
 it('keeps the nastaliq subset to the bare pattern letters', function () {
     $this->get('/')->assertSee('family=Gulzar&text=%D9%86%D8%B3%D9%82&display=swap', false);
+});
+
+it('highlights the accent phrase of the home headline', function () {
+    $this->get('/')->assertOk()
+        ->assertSee('<span class="accent">'.e(__('shell.home_title_accent')).'</span>', false);
+});
+
+it('gives the hero a primary and a secondary call to action', function () {
+    $this->get('/')->assertOk()
+        ->assertSee('class="btn btn-primary" href="'.route('explore').'"', false)
+        ->assertSee('class="btn btn-outline" href="'.route('explore', ['type' => 'commission']).'"', false);
+});
+
+it('scrolls the scripts in a marquee whose duplicate copy is hidden from assistive tech and the tab order', function () {
+    $this->seed(CatalogSeeder::class);
+    $script = Script::query()->orderBy('sort')->firstOrFail();
+    $html = $this->get('/')->assertOk()->getContent();
+
+    expect($html)->toContain('class="marquee"')
+        ->toContain('<div class="marquee-set" aria-hidden="true">');
+    expect(substr_count($html, 'href="'.route('explore', ['script' => $script->id]).'"'))->toBe(2);
+    expect($html)->toMatch('/<div class="marquee-set" aria-hidden="true">.*?tabindex="-1"/s');
+});
+
+it('explains how a commission works in three steps', function () {
+    $html = $this->get('/')->assertOk()->getContent();
+
+    expect(substr_count($html, 'class="step"'))->toBe(3);
+    foreach ([1, 2, 3] as $n) {
+        expect($html)->toContain(e(__("shell.how_{$n}_t")));
+    }
+});
+
+it('answers common questions in a native accordion and closes with a call to action', function () {
+    $html = $this->get('/')->assertOk()->getContent();
+
+    expect(substr_count($html, '<details class="faq-item"'))->toBe(4);
+    expect($html)->toContain('class="cta-band')->toContain(e(__('shell.cta_title')));
+});
+
+it('only hides reveal sections when scripting can bring them back', function () {
+    $css = file_get_contents(resource_path('css/app.css'));
+
+    expect($css)->toContain('.js .reveal{')->not->toMatch('/(^|\})\.reveal\{[^}]*opacity:0/m');
+    $this->get('/')->assertSee("document.documentElement.classList.add('js')", false);
 });

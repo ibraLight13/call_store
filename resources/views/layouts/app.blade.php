@@ -16,7 +16,8 @@
     <meta name="twitter:card" content="summary">
 
     {{-- Before first paint: a saved choice pins the theme; otherwise color-scheme follows the OS. --}}
-    <script>(function(){var m=document.cookie.match(/(?:^|;\s*)theme=(light|dark)/);if(m)document.documentElement.dataset.theme=m[1];})();</script>
+    {{-- The .js class gates scroll-reveal hiding, so content is never invisible when scripts don't run. --}}
+    <script>(function(){document.documentElement.classList.add('js');var m=document.cookie.match(/(?:^|;\s*)theme=(light|dark)/);if(m)document.documentElement.dataset.theme=m[1];})();</script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -141,12 +142,21 @@ document.addEventListener('keydown', function (e) {
     var menu = document.querySelector('details.menu[open]');
     if (menu && e.key === 'Escape') { menu.open = false; menu.querySelector('summary').focus(); }
 });
-// Ink patterns animate forever; pause the ones scrolled out of view.
+// Looping layers (ink patterns, script marquee) pause off-screen; .reveal sections fade in once when they arrive.
 if ('IntersectionObserver' in window) {
-    var inkObserver = new IntersectionObserver(function (entries) {
+    var loopObserver = new IntersectionObserver(function (entries) {
         entries.forEach(function (en) { en.target.classList.toggle('is-paused', !en.isIntersecting); });
     });
-    document.querySelectorAll('.ink-pattern').forEach(function (el) { inkObserver.observe(el); });
+    document.querySelectorAll('.ink-pattern, .marquee').forEach(function (el) { loopObserver.observe(el); });
+
+    var revealObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+            if (en.isIntersecting) { en.target.classList.add('is-visible'); revealObserver.unobserve(en.target); }
+        });
+    }, { rootMargin: '0px 0px -10% 0px' });
+    document.querySelectorAll('.reveal').forEach(function (el) { revealObserver.observe(el); });
+} else {
+    document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('is-visible'); });
 }
 document.addEventListener('click', function (e) {
     var menu = document.querySelector('details.menu[open]');
